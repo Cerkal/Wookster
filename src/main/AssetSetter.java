@@ -1,5 +1,6 @@
 package main;
 
+import entity.NPCDroids;
 import entity.NPCMom;
 import entity.NPCTrooper;
 import entity.Entity.Direction;
@@ -30,16 +31,20 @@ public class AssetSetter {
 
         this.gamePanel.objects.add(new ChestObject(this.gamePanel, 10, 8));
 
-        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 22, 7, new KeySpell(Direction.LEFT)));
-        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 12, new HealthSpell(10)));
-        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 30, new HealthSpell(-10)));
-
-        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 32, new SpeedSpell(6, 10)));
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel,  23, 30, new KeySpell(Direction.LEFT)));
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel, new HealthSpell(10)));
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 28, new SpeedSpell(6, 10)));
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel, new HealthSpell(-10)));
     }
 
     public void setNPCs() {
+        this.gamePanel.npcs.add(new NPCDroids(gamePanel, 9, 8));
         this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 21, 21));
+    }
+
+    public void getRandomTile() {
+
     }
 
 }

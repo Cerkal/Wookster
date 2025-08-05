@@ -2,6 +2,7 @@ package main;
 
 import entity.Entity;
 import entity.Entity.Direction;
+import entity.Entity.Entity_Type;
 import objects.SuperObject;
 
 public class Collision {
@@ -35,6 +36,7 @@ public class Collision {
                     gamePanel.tileManager.tile[tileNum2].collision == true
                 ){
                     entity.collisionOn = true;
+                    changeDirection(entity);
                 }
                 break;
             case Direction.DOWN:
@@ -46,6 +48,7 @@ public class Collision {
                     gamePanel.tileManager.tile[tileNum2].collision == true
                 ){
                     entity.collisionOn = true;
+                    changeDirection(entity);
                 }
                 break;
             case Direction.LEFT:
@@ -57,6 +60,7 @@ public class Collision {
                     gamePanel.tileManager.tile[tileNum2].collision == true
                 ){
                     entity.collisionOn = true;
+                    changeDirection(entity);
                 }
                 break;
             case Direction.RIGHT:
@@ -68,6 +72,7 @@ public class Collision {
                     gamePanel.tileManager.tile[tileNum2].collision == true
                 ){
                     entity.collisionOn = true;
+                    changeDirection(entity);
                 }
                 break;
         }
@@ -193,5 +198,12 @@ public class Collision {
         target.solidArea.x = target.solidAreaDefaultX;
         target.solidArea.y = target.solidAreaDefaultY;
         return collisionEntity;
+    }
+
+    private void changeDirection(Entity entity) {
+        if (entity.entityType != Entity_Type.PLAYER) {
+            entity.attemptedDirections.remove(entity.direction);
+            entity.setAction();
+        }
     }
 }

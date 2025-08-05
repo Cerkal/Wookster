@@ -9,19 +9,24 @@ public class DoorObject extends SuperObject {
 
     public DoorObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
-        this.name = NAME;
-        this.setImage(Constants.OBJECT_DOOR_IMAGE);
-        this.collision = true;
-        this.soundPrimary = Constants.SOUND_UNLOCK;
-        this.soundSecondary = Constants.SOUND_LOCK;
+        init();
     }
 
     public void activateObject() {
+        super.activateObject();
         if (this.gamePanel.player.getInventoryItem(Constants.OBJECT_KEY) > 0) {
             this.removeObject();
             this.gamePanel.player.removeInventoryItem(Constants.OBJECT_KEY);
         } else {
             this.playSecondarySound();
         }
+    }
+
+    private void init() {
+        this.name = NAME;
+        this.setImage(Constants.OBJECT_DOOR_IMAGE);
+        this.collision = true;
+        this.soundPrimary = Constants.SOUND_UNLOCK;
+        this.soundSecondary = Constants.SOUND_LOCK;
     }
 }

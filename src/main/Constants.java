@@ -84,6 +84,9 @@ public class Constants {
     public static final String TROOPER_IMAGE_RIGHT_0 = "./src/res/npc/trooper_right_0.png";
     public static final String TROOPER_IMAGE_RIGHT_1 = "./src/res/npc/trooper_right_1.png";
 
+    // Droids
+    public static final String DROIDS_IMAGE_DOWN_0 = "./src/res/npc/droids.png";
+
     // Effect
     public static final String SPELL_EFFECT_SPARKLE_0 = "./src/res/effects/sparkle_01.png";
     public static final String SPELL_EFFECT_SPARKLE_1 = "./src/res/effects/sparkle_02.png";

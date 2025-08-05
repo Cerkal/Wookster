@@ -19,6 +19,11 @@ public class SpeedSpell extends SuperSpell {
         }
     }
 
+    public void removeSpell(Player player) {
+        super.removeSpell(player);
+        player.speed = Player.DEFAULT_SPEED;
+    }
+
     public SpeedSpell(int speed, int time) {
         this(speed);
         this.spellTime = time;

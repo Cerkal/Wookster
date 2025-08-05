@@ -45,10 +45,8 @@ public class EventHandler {
 
     private void setRandomDamageTile() {
         for (int i = 0; i < 10; i++) {
-            int walkableTileSize = this.gamePanel.tileManager.walkableTiles.size();
-            int randomTileIndex = Utils.generateRandomInt(0, walkableTileSize);
-            TileLocation randomDamageTile = this.gamePanel.tileManager.walkableTiles.get(randomTileIndex);
-            randomDamage.add(randomDamageTile);
+            TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
+            randomDamage.add(tileLocation);
         }
     }
 

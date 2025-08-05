@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import main.Constants;
 import main.GamePanel;
 import spells.SuperSpell;
+import tile.TileManager.TileLocation;
 
 public class SuperObject {
 
@@ -26,6 +27,13 @@ public class SuperObject {
     public String soundPrimary;
     public String soundSecondary;
     public SuperSpell spell;
+
+    public SuperObject(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
+        TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
+        this.worldX = tileLocation.worldX * Constants.TILE_SIZE;
+        this.worldY = tileLocation.worldY * Constants.TILE_SIZE;
+    }
 
     public SuperObject(GamePanel gamePanel, int worldX, int worldY) {
         this.gamePanel = gamePanel;
@@ -68,7 +76,7 @@ public class SuperObject {
     }
 
     public void activateObject() {
-        // Placeholder
+        this.gamePanel.ui.stopDialogue();
     }
 
     protected void setImage(String imagePath) {
@@ -82,7 +90,9 @@ public class SuperObject {
 
     protected void setSpell() {
         if (this.spell != null) {
-            this.spell.startTime = this.gamePanel.gameTime;
+            if (this.spell.spellTime > 0) {
+                this.spell.startTime = this.gamePanel.gameTime;
+            }
             this.gamePanel.player.spells.put(spell.getSpellType(), this.spell);
             if (this.spell.message != null) {
                 this.gamePanel.ui.displayDialog(this.spell.message);

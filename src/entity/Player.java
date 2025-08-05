@@ -43,24 +43,27 @@ public class Player extends Entity {
         screenX = Constants.SCREEN_WIDTH/2 - (Constants.TILE_SIZE/2);
         screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
 
-        solidArea = new Rectangle();
-        solidArea.x = Constants.TILE_SIZE/4;
-        solidArea.y = Constants.TILE_SIZE/2;
-        solidAreaDefaultX = solidArea.x;
-        solidAreaDefaultY = solidArea.y;
-        solidArea.width = Constants.TILE_SIZE/2;
-        solidArea.height = Constants.TILE_SIZE/2;
+        this.solidArea = new Rectangle();
+        this.solidArea.x = Constants.TILE_SIZE/4;
+        this.solidArea.y = Constants.TILE_SIZE/2;
+        this.solidAreaDefaultX = this.solidArea.x;
+        this.solidAreaDefaultY = this.solidArea.y;
+        this.solidArea.width = Constants.TILE_SIZE/2;
+        this.solidArea.height = Constants.TILE_SIZE/2;
 
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
-        worldX = Constants.TILE_SIZE * 23;
-        worldY = Constants.TILE_SIZE * 21;
-        speed = DEFAULT_SPEED;
-        direction = Direction.DOWN;
-        entityType = ENTITY_TYPE.PLAYER;
+        this.worldX = Constants.TILE_SIZE * 23;
+        this.worldY = Constants.TILE_SIZE * 21;
+        this.speed = DEFAULT_SPEED;
+        this.direction = Direction.DOWN;
+        this.entityType = Entity_Type.PLAYER;
+
+        // Debug
+        this.inventory.put(Constants.OBJECT_KEY, 3);
     }
 
     public void update() {
@@ -195,10 +198,10 @@ public class Player extends Entity {
     }
 
     private void entityCollision() {
-    Entity collisionEntity = this.gamePanel.collision.entityCollision(this);
+        Entity collisionEntity = this.gamePanel.collision.entityCollision(this);
         if (collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                if (collisionEntity.entityType == ENTITY_TYPE.NPC) {
+                if (collisionEntity.entityType == Entity_Type.NPC) {
                     this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
                     collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
@@ -225,7 +228,7 @@ public class Player extends Entity {
             currentKeySpell.brokenSet.add(direction);
         }
         if (currentKeySpell.brokenSet.size() == KeySpell.KEY_COUNT) {
-            this.spells.remove(currentKeySpell.getSpellType());
+            currentKeySpell.removeSpell(this);
         }
     }
 
@@ -236,10 +239,8 @@ public class Player extends Entity {
                 if (spell.startTime != 0) {
                     long diff = this.gamePanel.gameTime - spell.startTime;
                     if ((diff / Constants.NANO_SECOND) > spell.spellTime) {
-                        this.spells.remove(spellName);
+                        spell.removeSpell(this);
                     }
-                } else {
-                    this.spells.remove(spellName);
                 }
             }
         } catch (Exception e) {
@@ -249,12 +250,10 @@ public class Player extends Entity {
 
     private void speedSpell() {
         try {
-            if (this.spells.get(SpellType.SPEED_SPELL) == null) {
-                this.speed = DEFAULT_SPEED;
-                return;
-            };
             SpeedSpell currentSpeedSpell = (SpeedSpell) spells.get(SpellType.SPEED_SPELL);
-            this.speed = currentSpeedSpell.speed;
+            if (currentSpeedSpell != null) {
+                this.speed = currentSpeedSpell.speed;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -268,7 +267,7 @@ public class Player extends Entity {
             HealthSpell currentHealthSpell = (HealthSpell) spells.get(SpellType.HEALTH_SPELL);
             if (currentHealthSpell.spellTime == 0) {
                 increaseHealth(currentHealthSpell.healthAmount);
-                this.spells.remove(currentHealthSpell.getSpellType());
+                currentHealthSpell.removeSpell(this);
             }
         } catch (Exception e) {
             e.printStackTrace();

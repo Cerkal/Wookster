@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class TileManager {
 
@@ -157,6 +158,18 @@ public class TileManager {
                 worldRow++;
             }
         }
+    }
+
+    public TileLocation getRandomTileLocation() {
+
+        int walkableTileSize = this.walkableTiles.size() - 1;
+        if (walkableTileSize == 0) {
+            throw new IllegalArgumentException("Not enough free tiles");
+        }
+        int randomTileIndex = Utils.generateRandomInt(0, walkableTileSize);
+        TileLocation randomDamageTile = this.walkableTiles.get(randomTileIndex);
+        walkableTiles.remove(randomTileIndex);
+        return randomDamageTile;
     }
 
     public class TileLocation {

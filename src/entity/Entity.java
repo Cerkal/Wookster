@@ -3,6 +3,9 @@ package entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 
 import main.Constants;
@@ -13,8 +16,9 @@ public class Entity {
     GamePanel gamePanel;
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
-    public enum ENTITY_TYPE { PLAYER, NPC, ENEMY }
-    
+    public enum Entity_Type { PLAYER, NPC, ENEMY }
+    public EnumSet<Direction> attemptedDirections = EnumSet.allOf(Direction.class);
+
     // Location
     public int worldX, worldY;
     public int speed;
@@ -23,7 +27,7 @@ public class Entity {
 
     // Sprite
     protected int spriteCounter = 0;
-    protected int spriteNumber = 1;
+    protected int spriteNumber = 0;
     protected boolean isMoving = false;
 
     // Collision
@@ -31,9 +35,10 @@ public class Entity {
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
     public int actionLockCounter = 0;
+    public boolean movable = true;
 
     // Entity Values
-    public ENTITY_TYPE entityType;
+    public Entity_Type entityType;
     public String name = "";
     public int maxHealth = 100;
     public int health = 100;
@@ -133,39 +138,36 @@ public class Entity {
         return image;
     }
 
-    private void setAction() {
+    public void setAction() {
+        if (!this.movable) { return; }
         actionLockCounter++;
-        if (actionLockCounter > Math.random() * 120 + 30) {
+        if (this.attemptedDirections.isEmpty()) {
+            this.attemptedDirections = EnumSet.allOf(Direction.class);
+        }
+        List<Direction> availableDirections = new ArrayList<>(this.attemptedDirections);
+        if (this.collisionOn || actionLockCounter > Math.random() * 120 + 50) {
             Random random = new Random();
-            int i = random.nextInt(100) + 1;
-            if (i < 25) {
-                direction = Direction.UP;
-            } else if (i < 50) {
-                direction = Direction.DOWN;
-            } else if (i < 75) {
-                direction = Direction.LEFT;
-            } else {
-                direction = Direction.RIGHT;
-            }
+            int randomIndex = random.nextInt(availableDirections.size());
+            direction = availableDirections.get(randomIndex);
             actionLockCounter = 0;
         }
         moveEntiy();
     }
 
     protected void moveEntiy() {
-        if (!collisionOn) {
-            switch (direction) {
+        if (!this.collisionOn) {
+            switch (this.direction) {
                 case Direction.UP:
-                    worldY -= speed;
+                    this.worldY -= speed;
                     break;
                 case Direction.DOWN:
-                    worldY += speed;
+                    this.worldY += speed;
                     break;
                 case Direction.LEFT:
-                    worldX -= speed;
+                    this.worldX -= speed;
                     break;
                 case Direction.RIGHT:
-                    worldX += speed;
+                    this.worldX += speed;
                     break;
             }
         } else {
@@ -173,14 +175,14 @@ public class Entity {
             Random random = new Random();
             random.nextInt(size);
         }
-        spriteCounter++;
-        if (spriteCounter > 5 && isMoving) {
-            if (spriteNumber == 1) {
-                spriteNumber = 0;
-            } else if (spriteNumber == 0) {
-                spriteNumber = 1;
+        this.spriteCounter++;
+        if (this.spriteCounter > 5 && this.isMoving) {
+            if (this.spriteNumber == 1) {
+                this.spriteNumber = 0;
+            } else if (this.spriteNumber == 0) {
+                this.spriteNumber = 1;
             }
-            spriteCounter = 0;
+            this.spriteCounter = 0;
         }
     }
 }

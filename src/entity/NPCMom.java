@@ -15,7 +15,7 @@ public class NPCMom extends Entity {
         this.speed = 2;
         this.getPlayerImage();
         this.setDialogue();
-        this.entityType = ENTITY_TYPE.NPC;
+        this.entityType = Entity_Type.NPC;
         this.name = "Mom";
     }
 

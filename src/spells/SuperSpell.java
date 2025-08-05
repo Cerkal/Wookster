@@ -2,6 +2,8 @@ package spells;
 
 import java.util.Objects;
 
+import entity.Player;
+
 public class SuperSpell {
     
     public enum SpellType {
@@ -13,6 +15,7 @@ public class SuperSpell {
     public SpellType spellType;
     public long startTime = 0;
     public int spellTime = 0;
+    public boolean timedSpell = false;
     public boolean positiveSpell = false;
     public String message;
 
@@ -22,6 +25,10 @@ public class SuperSpell {
 
     public SpellType getSpellType() {
         return this.spellType;
+    }
+
+    public void removeSpell(Player player) {
+        player.spells.remove(this.spellType);
     }
 
     @Override
