@@ -1,13 +1,11 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import entity.NPCDroids;
 import entity.NPCMom;
 import entity.NPCTrooper;
-import entity.Entity.Direction;
 import objects.PotionObject;
 import objects.ChestObject;
 import objects.DoorObject;
@@ -15,7 +13,6 @@ import objects.KeyObject;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
-import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
 public class AssetSetter {
