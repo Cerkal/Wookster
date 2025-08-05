@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.FontFormatException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +37,13 @@ public class UI {
 
         // Load custom font
         try {
-            this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE);
-            this.customFontMedium = Font.createFont(Font.TRUETYPE_FONT, new File(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_MEDIUM);
-            this.customFontLarge = Font.createFont(Font.TRUETYPE_FONT, new File(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_LARGE);
+            this.customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE);
+            this.customFontMedium = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_MEDIUM);
+            this.customFontLarge = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_LARGE);
         } catch (FontFormatException | IOException e) {
             this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
-            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 35);
-            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 50);
+            this.customFontMedium = new Font(Constants.FONT_ARIAL, Font.PLAIN, 35);
+            this.customFontLarge = new Font(Constants.FONT_ARIAL, Font.PLAIN, 50);
             e.printStackTrace();
         }
     }
@@ -156,7 +155,7 @@ public class UI {
             visibleMessage = message.substring(0, charsToShow);
             try {
                 if (charsToShow > currentCharacterIndex && charsToShow % 3 == 0) {
-                    this.gamePanel.sound.playingTextEffect();
+                    this.gamePanel.sound.playSoundEffect(Constants.SOUND_TEXT);
                     currentCharacterIndex = charsToShow;
                 }
             } catch (Exception e) {

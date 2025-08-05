@@ -170,10 +170,6 @@ public class Entity {
                     this.worldX += speed;
                     break;
             }
-        } else {
-            int size = Direction.values().length;
-            Random random = new Random();
-            random.nextInt(size);
         }
         this.spriteCounter++;
         if (this.spriteCounter > 5 && this.isMoving) {

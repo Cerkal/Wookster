@@ -49,114 +49,109 @@ public class Constants {
     );
 
     public static final String OBJECT_DOOR = "Door";
-    public static final String OBJECT_DOOR_IMAGE = "./src/res/objects/door.png";
+    public static final String OBJECT_DOOR_IMAGE = "/res/objects/door.png";
     public static final String OBJECT_KEY = "Key";
-    public static final String OBJECT_KEY_IMAGE = "./src/res/objects/key.png";
+    public static final String OBJECT_KEY_IMAGE = "/res/objects/key.png";
     public static final String OBJECT_CHEST = "Chest";
-    public static final String OBJECT_CHEST_IMAGE = "./src/res/objects/chest.png";
+    public static final String OBJECT_CHEST_IMAGE = "/res/objects/chest.png";
     public static final String OBJECT_ARROW = "Arrow";
-    public static final String OBJECT_ARROW_IMAGE = "./src/res/objects/heart_blank.png";
+    public static final String OBJECT_ARROW_IMAGE = "/res/objects/heart_blank.png";
     public static final String OBJECT_GREEN_POTION = "Green Potion";
-    public static final String OBJECT_GREEN_POTION_IMAGE = "./src/res/objects/potion_green.png";
+    public static final String OBJECT_GREEN_POTION_IMAGE = "/res/objects/potion_green.png";
     public static final String OBJECT_RED_POTION = "Red Potion";
-    public static final String OBJECT_RED_POTION_IMAGE = "./src/res/objects/potion_red.png";
+    public static final String OBJECT_RED_POTION_IMAGE = "/res/objects/potion_red.png";
 
     public static final String INVENTORY_ADDED_MESSAGE = " added to inventory";
     public static final String INVENTORY_REMOVED_MESSAGE = " removed from inventory";
 
     // Hero
-    public static final String PLAYER_IMAGE_UP_0 = "./src/res/player/wookster_up_0.png";
-    public static final String PLAYER_IMAGE_UP_1 = "./src/res/player/wookster_up_1.png";
-    public static final String PLAYER_IMAGE_DOWN_0 = "./src/res/player/wookster_down_0.png";
-    public static final String PLAYER_IMAGE_DOWN_1 = "./src/res/player/wookster_down_1.png";
-    public static final String PLAYER_IMAGE_LEFT_0 = "./src/res/player/wookster_left_0.png";
-    public static final String PLAYER_IMAGE_LEFT_1 = "./src/res/player/wookster_left_1.png";
-    public static final String PLAYER_IMAGE_RIGHT_0 = "./src/res/player/wookster_right_0.png";
-    public static final String PLAYER_IMAGE_RIGHT_1 = "./src/res/player/wookster_right_1.png";
+    public static final String PLAYER_IMAGE_UP_0 = "/res/player/wookster_up_0.png";
+    public static final String PLAYER_IMAGE_UP_1 = "/res/player/wookster_up_1.png";
+    public static final String PLAYER_IMAGE_DOWN_0 = "/res/player/wookster_down_0.png";
+    public static final String PLAYER_IMAGE_DOWN_1 = "/res/player/wookster_down_1.png";
+    public static final String PLAYER_IMAGE_LEFT_0 = "/res/player/wookster_left_0.png";
+    public static final String PLAYER_IMAGE_LEFT_1 = "/res/player/wookster_left_1.png";
+    public static final String PLAYER_IMAGE_RIGHT_0 = "/res/player/wookster_right_0.png";
+    public static final String PLAYER_IMAGE_RIGHT_1 = "/res/player/wookster_right_1.png";
 
     // NPC
-    public static final String TROOPER_IMAGE_UP_0 = "./src/res/npc/trooper_up_0.png";
-    public static final String TROOPER_IMAGE_UP_1 = "./src/res/npc/trooper_up_1.png";
-    public static final String TROOPER_IMAGE_DOWN_0 = "./src/res/npc/trooper_down_0.png";
-    public static final String TROOPER_IMAGE_DOWN_1 = "./src/res/npc/trooper_down_1.png";
-    public static final String TROOPER_IMAGE_LEFT_0 = "./src/res/npc/trooper_left_0.png";
-    public static final String TROOPER_IMAGE_LEFT_1 = "./src/res/npc/trooper_left_1.png";
-    public static final String TROOPER_IMAGE_RIGHT_0 = "./src/res/npc/trooper_right_0.png";
-    public static final String TROOPER_IMAGE_RIGHT_1 = "./src/res/npc/trooper_right_1.png";
+    public static final String TROOPER_IMAGE_UP_0 = "/res/npc/trooper_up_0.png";
+    public static final String TROOPER_IMAGE_UP_1 = "/res/npc/trooper_up_1.png";
+    public static final String TROOPER_IMAGE_DOWN_0 = "/res/npc/trooper_down_0.png";
+    public static final String TROOPER_IMAGE_DOWN_1 = "/res/npc/trooper_down_1.png";
+    public static final String TROOPER_IMAGE_LEFT_0 = "/res/npc/trooper_left_0.png";
+    public static final String TROOPER_IMAGE_LEFT_1 = "/res/npc/trooper_left_1.png";
+    public static final String TROOPER_IMAGE_RIGHT_0 = "/res/npc/trooper_right_0.png";
+    public static final String TROOPER_IMAGE_RIGHT_1 = "/res/npc/trooper_right_1.png";
 
     // Droids
-    public static final String DROIDS_IMAGE_DOWN_0 = "./src/res/npc/droids.png";
+    public static final String DROIDS_IMAGE_DOWN_0 = "/res/npc/droids.png";
 
     // Effect
-    public static final String SPELL_EFFECT_SPARKLE_0 = "./src/res/effects/sparkle_01.png";
-    public static final String SPELL_EFFECT_SPARKLE_1 = "./src/res/effects/sparkle_02.png";
-    public static final String SPELL_EFFECT_SPARKLE_2 = "./src/res/effects/sparkle_03.png";
+    public static final String SPELL_EFFECT_SPARKLE_0 = "/res/effects/sparkle_01.png";
+    public static final String SPELL_EFFECT_SPARKLE_1 = "/res/effects/sparkle_02.png";
+    public static final String SPELL_EFFECT_SPARKLE_2 = "/res/effects/sparkle_03.png";
 
-    public static final String WORLD_00 = "./src/res/maps/world00.txt";
+    public static final String WORLD_00 = "/res/maps/world00.txt";
 
     // Fonts
-    public static final String FONT_ARI = "src/res/fonts/ari-w9500.ttf";
-    public static final String FONT_ANALOG = "src/res/fonts/analog.ttf";
-    public static final String FONT_DELTARUNE = "src/res/fonts/deltarune.ttf";
-    public static final String FONT_DOS = "src/res/fonts/dos.ttf";
-    public static final String FONT_LARGE = "src/res/fonts/pixelout.ttf";
+    public static final String FONT_DOS = "/res/fonts/dos.ttf";
 
     // World tiles
-    public static final String TILE_GRASS_00 = "./src/res/tile/grass00.png";
-    public static final String TILE_GRASS_01 = "./src/res/tile/grass01.png";
-    public static final String TILE_EARTH = "./src/res/tile/earth.png";
-    public static final String TILE_WALL = "./src/res/tile/wall.png";
-    public static final String TILE_TREE = "./src/res/tile/tree.png";
+    public static final String TILE_GRASS_00 = "/res/tile/grass00.png";
+    public static final String TILE_GRASS_01 = "/res/tile/grass01.png";
+    public static final String TILE_EARTH = "/res/tile/earth.png";
+    public static final String TILE_WALL = "/res/tile/wall.png";
+    public static final String TILE_TREE = "/res/tile/tree.png";
     
     // Water tiles
-    public static final String TILE_WATER_00 = "./src/res/tile/water00.png";
-    public static final String TILE_WATER_01 = "./src/res/tile/water01.png";
-    public static final String TILE_WATER_02 = "./src/res/tile/water02.png";
-    public static final String TILE_WATER_03 = "./src/res/tile/water03.png";
-    public static final String TILE_WATER_04 = "./src/res/tile/water04.png";
-    public static final String TILE_WATER_05 = "./src/res/tile/water05.png";
-    public static final String TILE_WATER_06 = "./src/res/tile/water06.png";
-    public static final String TILE_WATER_07 = "./src/res/tile/water07.png";
-    public static final String TILE_WATER_08 = "./src/res/tile/water08.png";
-    public static final String TILE_WATER_09 = "./src/res/tile/water09.png";
-    public static final String TILE_WATER_10 = "./src/res/tile/water10.png";
-    public static final String TILE_WATER_11 = "./src/res/tile/water11.png";
-    public static final String TILE_WATER_12 = "./src/res/tile/water12.png";
-    public static final String TILE_WATER_13 = "./src/res/tile/water13.png";
+    public static final String TILE_WATER_00 = "/res/tile/water00.png";
+    public static final String TILE_WATER_01 = "/res/tile/water01.png";
+    public static final String TILE_WATER_02 = "/res/tile/water02.png";
+    public static final String TILE_WATER_03 = "/res/tile/water03.png";
+    public static final String TILE_WATER_04 = "/res/tile/water04.png";
+    public static final String TILE_WATER_05 = "/res/tile/water05.png";
+    public static final String TILE_WATER_06 = "/res/tile/water06.png";
+    public static final String TILE_WATER_07 = "/res/tile/water07.png";
+    public static final String TILE_WATER_08 = "/res/tile/water08.png";
+    public static final String TILE_WATER_09 = "/res/tile/water09.png";
+    public static final String TILE_WATER_10 = "/res/tile/water10.png";
+    public static final String TILE_WATER_11 = "/res/tile/water11.png";
+    public static final String TILE_WATER_12 = "/res/tile/water12.png";
+    public static final String TILE_WATER_13 = "/res/tile/water13.png";
     
     // Anaimted water tiles
-    public static final String TILE_WATER_A01 = "./src/res/tile/water01_a01.png";
-    public static final String TILE_WATER_A02 = "./src/res/tile/water01_a02.png";
-    public static final String TILE_WATER_A03 = "./src/res/tile/water01_a03.png";
+    public static final String TILE_WATER_A01 = "/res/tile/water01_a01.png";
+    public static final String TILE_WATER_A02 = "/res/tile/water01_a02.png";
+    public static final String TILE_WATER_A03 = "/res/tile/water01_a03.png";
 
     // Road tiles
-    public static final String TILE_ROAD_00 = "./src/res/tile/road00.png";
-    public static final String TILE_ROAD_01 = "./src/res/tile/road01.png";
-    public static final String TILE_ROAD_02 = "./src/res/tile/road02.png";
-    public static final String TILE_ROAD_03 = "./src/res/tile/road03.png";
-    public static final String TILE_ROAD_04 = "./src/res/tile/road04.png";
-    public static final String TILE_ROAD_05 = "./src/res/tile/road05.png";
-    public static final String TILE_ROAD_06 = "./src/res/tile/road06.png";
-    public static final String TILE_ROAD_07 = "./src/res/tile/road07.png";
-    public static final String TILE_ROAD_08 = "./src/res/tile/road08.png";
-    public static final String TILE_ROAD_09 = "./src/res/tile/road09.png";
-    public static final String TILE_ROAD_10 = "./src/res/tile/road10.png";
-    public static final String TILE_ROAD_11 = "./src/res/tile/road11.png";
-    public static final String TILE_ROAD_12 = "./src/res/tile/road12.png";
+    public static final String TILE_ROAD_00 = "/res/tile/road00.png";
+    public static final String TILE_ROAD_01 = "/res/tile/road01.png";
+    public static final String TILE_ROAD_02 = "/res/tile/road02.png";
+    public static final String TILE_ROAD_03 = "/res/tile/road03.png";
+    public static final String TILE_ROAD_04 = "/res/tile/road04.png";
+    public static final String TILE_ROAD_05 = "/res/tile/road05.png";
+    public static final String TILE_ROAD_06 = "/res/tile/road06.png";
+    public static final String TILE_ROAD_07 = "/res/tile/road07.png";
+    public static final String TILE_ROAD_08 = "/res/tile/road08.png";
+    public static final String TILE_ROAD_09 = "/res/tile/road09.png";
+    public static final String TILE_ROAD_10 = "/res/tile/road10.png";
+    public static final String TILE_ROAD_11 = "/res/tile/road11.png";
+    public static final String TILE_ROAD_12 = "/res/tile/road12.png";
 
-    public static final String SOUND_BG_01 = "./src/res/sounds/BlueBoyAdventure.wav";
-    public static final String SOUND_COIN = "./src/res/sounds/coin.wav";
-    public static final String SOUND_POWER_UP = "./src/res/sounds/powerup.wav";
-    public static final String SOUND_UNLOCK = "./src/res/sounds/unlock.wav";
-    public static final String SOUND_LOCK = "./src/res/sounds/lockeddoor.wav";
-    public static final String SOUND_FLARE = "./src/res/sounds/fanflare.wav";
-    public static final String SOUND_TEXT = "./src/res/sounds/text.wav";
-    public static final String SOUND_TEXT_LONG = "./src/res/sounds/text_long.wav";
-    public static final String SOUND_HURT = "./src/res/sounds/hurt.wav";
-    public static final String SOUND_STATIC = "./src/res/sounds/static.wav";
-    public static final String SOUND_TITLE_SCREEN = "./src/res/sounds/starwars_theme.wav";
-    public static final String SOUND_CURSOR = "./src/res/sounds/cursor.wav";
-    public static final String SOUND_LEVELUP = "./src/res/sounds/levelup.wav";
+    public static final String SOUND_BG_01 = "/res/sounds/backgroundmusic.wav";
+    public static final String SOUND_COIN = "/res/sounds/coin.wav";
+    public static final String SOUND_POWER_UP = "/res/sounds/powerup.wav";
+    public static final String SOUND_UNLOCK = "/res/sounds/unlock.wav";
+    public static final String SOUND_LOCK = "/res/sounds/lockeddoor.wav";
+    public static final String SOUND_FLARE = "/res/sounds/fanflare.wav";
+    public static final String SOUND_TEXT = "/res/sounds/text.wav";
+    public static final String SOUND_HURT = "/res/sounds/hurt.wav";
+    public static final String SOUND_STATIC = "/res/sounds/static.wav";
+    public static final String SOUND_TITLE_SCREEN = "/res/sounds/starwarstheme.wav";
+    public static final String SOUND_CURSOR = "/res/sounds/cursor.wav";
+    public static final String SOUND_LEVELUP = "/res/sounds/levelup.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
         List.of(
@@ -167,7 +162,6 @@ public class Constants {
             SOUND_LOCK,
             SOUND_FLARE,
             SOUND_TEXT,
-            SOUND_TEXT_LONG,
             SOUND_HURT,
             SOUND_STATIC,
             SOUND_TITLE_SCREEN,
@@ -180,6 +174,9 @@ public class Constants {
     public static final String RANDOM_HURT_DIALOGUE_02 = "Damn dirty bees! You pull out the stinger.";
     public static final String RANDOM_HURT_DIALOGUE_03 = "You step in ewok poo. Gross.";
     public static final String RANDOM_HURT_DIALOGUE_04 = "You step on a nail. Ouch.";
+
+    public static final String POTION_GOOD = "The potion is spicy and nice.";
+    public static final String POTION_BAD = "The potion is wet and smelly.";
 
     public static final List<String> RNADOM_HURT_DIALOGUE = new ArrayList<>(
         List.of(

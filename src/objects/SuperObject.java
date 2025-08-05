@@ -3,7 +3,6 @@ package objects;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.imageio.ImageIO;
 
@@ -81,8 +80,7 @@ public class SuperObject {
 
     protected void setImage(String imagePath) {
         try {
-            File image = new File(imagePath);
-            this.image = ImageIO.read(image);
+            this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
         } catch (Exception e) {
             e.printStackTrace();
         }

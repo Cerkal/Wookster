@@ -1,6 +1,6 @@
 package tile;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,9 +42,9 @@ public class TileManager {
             setTile(12, Constants.TILE_WATER_00, true);
             try {
                 tile[13] = new Tile();
-                tile[13].imageSequence.add(ImageIO.read(new File(Constants.TILE_WATER_A01)));
-                tile[13].imageSequence.add(ImageIO.read(new File(Constants.TILE_WATER_A02)));
-                tile[13].imageSequence.add(ImageIO.read(new File(Constants.TILE_WATER_A03)));
+                tile[13].imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.TILE_WATER_A01)));
+                tile[13].imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.TILE_WATER_A02)));
+                tile[13].imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.TILE_WATER_A03)));
                 tile[13].collision = true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,7 +87,7 @@ public class TileManager {
     private void setTile(int index, String imagePath, boolean collision) {
         try {
             tile[index] = new Tile();
-            tile[index].image = ImageIO.read(new File(imagePath));
+            tile[index].image = ImageIO.read(getClass().getResourceAsStream(imagePath));
             tile[index].collision = collision;
             if (!collision) {
                 walkableTileIndex.add(index);
@@ -98,35 +98,41 @@ public class TileManager {
     }
 
     public void loadMap(String path) {
-        try {
-            File mapFile = new File(path);
-            Scanner readMap = new Scanner(mapFile);
+        try (InputStream is = getClass().getResourceAsStream(path);
+            Scanner readMap = new Scanner(is)) {
+
+            if (is == null) {
+                throw new IllegalArgumentException("Map file not found: " + path);
+            }
 
             int col = 0;
             int row = 0;
 
             while (col < Constants.MAX_WORLD_COL && row < Constants.MAX_WORLD_ROW) {
                 String line = readMap.nextLine();
+                String[] sections = line.split(" ");
+
                 while (col < Constants.MAX_WORLD_COL) {
-                    String sections[] = line.split(" ");
                     int tileNumber = Integer.parseInt(sections[col]);
                     mapTileNum[col][row] = tileNumber;
+
                     if (walkableTileIndex.contains(tileNumber)) { 
-                        TileLocation tileLocation = new TileLocation(col, row);
-                        walkableTiles.add(tileLocation);
+                        walkableTiles.add(new TileLocation(col, row));
                     }
                     col++;
                 }
+
                 if (col == Constants.MAX_WORLD_COL) {
                     col = 0;
                     row++;
                 }
             }
-            readMap.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public void draw(Graphics2D graphics2D) {
 

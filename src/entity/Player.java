@@ -12,7 +12,6 @@ import tile.Tile;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -61,9 +60,6 @@ public class Player extends Entity {
         this.speed = DEFAULT_SPEED;
         this.direction = Direction.DOWN;
         this.entityType = Entity_Type.PLAYER;
-
-        // Debug
-        this.inventory.put(Constants.OBJECT_KEY, 3);
     }
 
     public void update() {
@@ -138,14 +134,14 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
         try {
-            this.up1 = ImageIO.read(new File(Constants.PLAYER_IMAGE_UP_0));
-            this.up2 = ImageIO.read(new File(Constants.PLAYER_IMAGE_UP_1));
-            this.down1 = ImageIO.read(new File(Constants.PLAYER_IMAGE_DOWN_0));
-            this.down2 = ImageIO.read(new File(Constants.PLAYER_IMAGE_DOWN_1));
-            this.left1 = ImageIO.read(new File(Constants.PLAYER_IMAGE_LEFT_0));
-            this.left2 = ImageIO.read(new File(Constants.PLAYER_IMAGE_LEFT_1));
-            this.right1 = ImageIO.read(new File(Constants.PLAYER_IMAGE_RIGHT_0));
-            this.right2 = ImageIO.read(new File(Constants.PLAYER_IMAGE_RIGHT_1));
+            this.up1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_0));
+            this.up2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_1));
+            this.down1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_0));
+            this.down2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_1));
+            this.left1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_0));
+            this.left2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1));
+            this.right1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0));
+            this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
         }
@@ -170,9 +166,9 @@ public class Player extends Entity {
         if (this.spells.size() == 0) return;
         Tile sparkle = new Tile();
         try {
-            sparkle.imageSequence.add(ImageIO.read(new File(Constants.SPELL_EFFECT_SPARKLE_0)));
-            sparkle.imageSequence.add(ImageIO.read(new File(Constants.SPELL_EFFECT_SPARKLE_1)));
-            sparkle.imageSequence.add(ImageIO.read(new File(Constants.SPELL_EFFECT_SPARKLE_2)));
+            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_0)));
+            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_1)));
+            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_2)));
             sparkle.collision = false;
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,6 +194,7 @@ public class Player extends Entity {
     }
 
     private void entityCollision() {
+        this.entityInDialogue = null;
         Entity collisionEntity = this.gamePanel.collision.entityCollision(this);
         if (collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {

@@ -37,6 +37,7 @@ public class KeyHandler implements KeyListener {
                 }
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                     String selection = Constants.GAME_TITLE_MENU.get(this.gamePanel.ui.commandNumber);
+                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     switch (selection) {
                         case Constants.GAME_TITLE_SCREEN_NEW_GAME:
                             this.gamePanel.gameState = GameState.PLAY;

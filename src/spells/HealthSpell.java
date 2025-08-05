@@ -1,23 +1,40 @@
 package spells;
 
+import main.Constants;
+import main.Utils;
+
 public class HealthSpell extends SuperSpell {
 
     public SpellType spellType;
     public double healthAmount;
 
+    public HealthSpell() {
+        super(SpellType.HEALTH_SPELL);
+        randomHealth();
+        init();
+    }
+
     public HealthSpell(double healthAmount) {
         super(SpellType.HEALTH_SPELL);
         this.healthAmount = healthAmount;
-        if (healthAmount > 0) {
-            this.positiveSpell = true;
-            this.message = "The potion is spicy and nice.";
-        } else {
-            this.message = "The potion is wet and smelly.";
-        }
+        init();
     }
 
     public HealthSpell(double healthAmount, int time) {
         this(healthAmount);
         this.spellTime = time;
+    }
+
+    private void init() {
+        if (this.healthAmount > 0) {
+            this.positiveSpell = true;
+            this.message = Constants.POTION_GOOD;
+        } else {
+            this.message = Constants.POTION_BAD;
+        }
+    }
+
+    private void randomHealth() {
+        this.healthAmount = Utils.generateRandomInt(-30, 30);
     }
 }
