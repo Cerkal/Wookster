@@ -1,0 +1,26 @@
+package objects.weapons;
+
+import entity.Player;
+import main.GamePanel;
+
+public class Crossbow {
+
+    int speed = 10;
+    long lastShot = 0;
+    GamePanel gamePanel;
+    Player player;
+
+    public boolean isEquipped;
+
+    public Crossbow(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
+        this.player = gamePanel.player;
+    }
+
+    public void shoot() {
+        if ((this.gamePanel.gameTime - this.lastShot) / 1000000 > 500) {
+            this.lastShot = this.gamePanel.gameTime;
+            this.gamePanel.arrows.add(new Arrow(this.gamePanel));
+        }
+    }
+}

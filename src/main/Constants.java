@@ -92,6 +92,9 @@ public class Constants {
     public static final String SPELL_EFFECT_SPARKLE_1 = "/res/effects/sparkle_02.png";
     public static final String SPELL_EFFECT_SPARKLE_2 = "/res/effects/sparkle_03.png";
 
+    // Weapon
+    public static final String WEAPON_PROJECTILE_ARROW = "/res/objects/arrow.png";
+
     public static final String WORLD_00 = "/res/maps/world00.txt";
 
     // Fonts

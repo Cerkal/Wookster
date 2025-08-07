@@ -2,6 +2,7 @@ package entity;
 
 import main.KeyHandler;
 import objects.SuperObject;
+import objects.weapons.Crossbow;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -32,6 +33,8 @@ public class Player extends Entity {
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public HashMap<String, Integer> inventory = new HashMap<>();
     public Entity entityInDialogue;
+    public Crossbow crossbow;
+    public Entity collisionEntity;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
@@ -52,6 +55,8 @@ public class Player extends Entity {
 
         setDefaultValues();
         getPlayerImage();
+
+        this.crossbow = new Crossbow(gamePanel);
     }
 
     public void setDefaultValues() {
@@ -64,7 +69,6 @@ public class Player extends Entity {
 
     public void update() {
         isMoving = false;
-
         if (
             (
                 keyHandler.upPressed ||
@@ -91,6 +95,12 @@ public class Player extends Entity {
             moveEntiy();            
         }
         spellCheck();
+
+        if (this.collisionEntity == null) {
+            if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+                this.crossbow.shoot();
+            }
+        }
     }
 
     public int getCurrentHealth() {
@@ -99,24 +109,24 @@ public class Player extends Entity {
     }
 
     public void addInventoryItem(String objectType) {
-        gamePanel.ui.displayMessage(objectType + Constants.INVENTORY_ADDED_MESSAGE);
-        if (inventory.containsKey(objectType)) {
+        this.gamePanel.ui.displayMessage(objectType + Constants.INVENTORY_ADDED_MESSAGE);
+        if (this.inventory.containsKey(objectType)) {
             Integer quantity = inventory.get(objectType);
             quantity++;
-            inventory.put(objectType, quantity);
+            this.inventory.put(objectType, quantity);
         } else {
-            inventory.put(objectType, 1);
+            this.inventory.put(objectType, 1);
         }
     }
 
     public void removeInventoryItem(String objectType) {
-        if (inventory.containsKey(objectType)) {
+        if (this.inventory.containsKey(objectType)) {
             int quantity = inventory.get(objectType);
             if (quantity == 1) {
-                inventory.remove(objectType);
+                this.inventory.remove(objectType);
             } else {
                 quantity--;
-                inventory.put(objectType, quantity);
+                this.inventory.put(objectType, quantity);
             }
         }
     }
@@ -195,12 +205,12 @@ public class Player extends Entity {
 
     private void entityCollision() {
         this.entityInDialogue = null;
-        Entity collisionEntity = this.gamePanel.collision.entityCollision(this);
-        if (collisionEntity != null) {
+        this.collisionEntity = this.gamePanel.collision.entityCollision(this);
+        if (this.collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                if (collisionEntity.entityType == Entity_Type.NPC) {
+                if (this.collisionEntity.entityType == Entity_Type.NPC) {
                     this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
-                    collisionEntity.speak();
+                    this.collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
                 }
             }

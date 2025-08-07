@@ -12,6 +12,7 @@ import javax.swing.plaf.DimensionUIResource;
 import entity.Entity;
 import entity.Player;
 import objects.SuperObject;
+import objects.weapons.Arrow;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -34,6 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Collision collision = new Collision(this);
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
+    public List<Arrow> arrows = new ArrayList<>();
     public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
     public UI ui = new UI(this);
@@ -136,12 +138,20 @@ public class GamePanel extends JPanel implements Runnable {
     private void runGame(Graphics2D graphics2D) {
         this.tileManager.draw(graphics2D);
 
-        for (SuperObject object : objects) {
+        for (SuperObject object : this.objects) {
             object.draw(graphics2D);
         }
 
-        for (Entity npc : npcs) {
+        for (Entity npc : this.npcs) {
             npc.draw(graphics2D);
+        }
+
+        try {
+            for (Arrow arrow : this.arrows) {
+                arrow.draw(graphics2D);
+            }    
+        } catch (Exception e) {
+            // System.out.println("Removed arrow.");
         }
 
         this.player.draw(graphics2D);
