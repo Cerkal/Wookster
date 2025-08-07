@@ -12,6 +12,7 @@ public class Tile {
     public List<BufferedImage> imageSequence = new ArrayList<BufferedImage>();
     public int imageIndex = 0;
     public boolean collision = false;
+    public boolean projectileCollision = false;
 
     public BufferedImage getCurrentImage(long gameTime) {
         if (imageSequence != null && imageSequence.size() > 0) {

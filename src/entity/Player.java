@@ -53,6 +53,8 @@ public class Player extends Entity {
         this.solidArea.width = Constants.TILE_SIZE/2;
         this.solidArea.height = Constants.TILE_SIZE/2;
 
+        this.damageSound = Constants.SOUND_HURT;
+
         setDefaultValues();
         getPlayerImage();
 
@@ -103,10 +105,6 @@ public class Player extends Entity {
         }
     }
 
-    public int getCurrentHealth() {
-        if (maxHealth == 0) return 0;
-        return (int) ((this.health * 100.0) / this.maxHealth);
-    }
 
     public void addInventoryItem(String objectType) {
         this.gamePanel.ui.displayMessage(objectType + Constants.INVENTORY_ADDED_MESSAGE);
@@ -154,21 +152,6 @@ public class Player extends Entity {
             this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
-        }
-    }
-
-    public void takeDamage(int amount) {
-        this.health -= amount;
-        if (this.health < 0) {
-            this.health = 0;
-        }
-        this.gamePanel.sound.playSoundEffect(Constants.SOUND_HURT);
-    }
-
-    public void increaseHealth(double amount) {
-        this.health += amount;
-        if (this.health > this.maxHealth) {
-            this.health = this.maxHealth;
         }
     }
 

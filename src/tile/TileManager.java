@@ -35,11 +35,11 @@ public class TileManager {
     public void gameTileImage() {
 
             // Grass tiles
-            setTile(10, Constants.TILE_GRASS_00, false);
-            setTile(11, Constants.TILE_GRASS_01, false);
+            setTile(10, Constants.TILE_GRASS_00, false, false);
+            setTile(11, Constants.TILE_GRASS_01, false, false);
 
             // Water tiles
-            setTile(12, Constants.TILE_WATER_00, true);
+            setTile(12, Constants.TILE_WATER_00, true, false);
             try {
                 tile[13] = new Tile();
                 tile[13].imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.TILE_WATER_A01)));
@@ -50,45 +50,46 @@ public class TileManager {
                 e.printStackTrace();
             }
 
-            setTile(14, Constants.TILE_WATER_02, true);
-            setTile(15, Constants.TILE_WATER_03, true);
-            setTile(16, Constants.TILE_WATER_04, true);
-            setTile(17, Constants.TILE_WATER_05, true);
-            setTile(18, Constants.TILE_WATER_06, true);
-            setTile(19, Constants.TILE_WATER_07, true);
-            setTile(20, Constants.TILE_WATER_08, true);
-            setTile(21, Constants.TILE_WATER_09, true);
-            setTile(22, Constants.TILE_WATER_10, true);
-            setTile(23, Constants.TILE_WATER_11, true);
-            setTile(24, Constants.TILE_WATER_12, true);
-            setTile(25, Constants.TILE_WATER_13, true);
+            setTile(14, Constants.TILE_WATER_02, true, false);
+            setTile(15, Constants.TILE_WATER_03, true, false);
+            setTile(16, Constants.TILE_WATER_04, true, false);
+            setTile(17, Constants.TILE_WATER_05, true, false);
+            setTile(18, Constants.TILE_WATER_06, true, false);
+            setTile(19, Constants.TILE_WATER_07, true, false);
+            setTile(20, Constants.TILE_WATER_08, true, false);
+            setTile(21, Constants.TILE_WATER_09, true, false);
+            setTile(22, Constants.TILE_WATER_10, true, false);
+            setTile(23, Constants.TILE_WATER_11, true, false);
+            setTile(24, Constants.TILE_WATER_12, true, false);
+            setTile(25, Constants.TILE_WATER_13, true, false);
 
             // Road tiles
-            setTile(26, Constants.TILE_ROAD_00, false);
-            setTile(27, Constants.TILE_ROAD_01, false);
-            setTile(28, Constants.TILE_ROAD_02, false);
-            setTile(29, Constants.TILE_ROAD_03, false);
-            setTile(30, Constants.TILE_ROAD_04, false);
-            setTile(31, Constants.TILE_ROAD_05, false);
-            setTile(32, Constants.TILE_ROAD_06, false);
-            setTile(33, Constants.TILE_ROAD_07, false);
-            setTile(34, Constants.TILE_ROAD_08, false);
-            setTile(35, Constants.TILE_ROAD_09, false);
-            setTile(36, Constants.TILE_ROAD_10, false);
-            setTile(37, Constants.TILE_ROAD_11, false);
-            setTile(38, Constants.TILE_ROAD_12, false);
+            setTile(26, Constants.TILE_ROAD_00, false, false);
+            setTile(27, Constants.TILE_ROAD_01, false, false);
+            setTile(28, Constants.TILE_ROAD_02, false, false);
+            setTile(29, Constants.TILE_ROAD_03, false, false);
+            setTile(30, Constants.TILE_ROAD_04, false, false);
+            setTile(31, Constants.TILE_ROAD_05, false, false);
+            setTile(32, Constants.TILE_ROAD_06, false, false);
+            setTile(33, Constants.TILE_ROAD_07, false, false);
+            setTile(34, Constants.TILE_ROAD_08, false, false);
+            setTile(35, Constants.TILE_ROAD_09, false, false);
+            setTile(36, Constants.TILE_ROAD_10, false, false);
+            setTile(37, Constants.TILE_ROAD_11, false, false);
+            setTile(38, Constants.TILE_ROAD_12, false, false);
 
             // World tiles
-            setTile(39, Constants.TILE_EARTH, false);
-            setTile(40, Constants.TILE_WALL, true);
-            setTile(41, Constants.TILE_TREE, true);
+            setTile(39, Constants.TILE_EARTH, false, false);
+            setTile(40, Constants.TILE_WALL, true , true);
+            setTile(41, Constants.TILE_TREE, true, true);
     }
 
-    private void setTile(int index, String imagePath, boolean collision) {
+    private void setTile(int index, String imagePath, boolean collision, boolean projectileCollision) {
         try {
             tile[index] = new Tile();
             tile[index].image = ImageIO.read(getClass().getResourceAsStream(imagePath));
             tile[index].collision = collision;
+            tile[index].projectileCollision = projectileCollision;
             if (!collision) {
                 walkableTileIndex.add(index);
             }
@@ -151,7 +152,7 @@ public class TileManager {
                 worldX + (Constants.TILE_SIZE) > (gamePanel.player.worldX - gamePanel.player.screenX) &&
                 worldX - (Constants.TILE_SIZE) < (gamePanel.player.worldX + gamePanel.player.screenX) &&
                 worldY + (Constants.TILE_SIZE) > (gamePanel.player.worldY - gamePanel.player.screenY) &&
-                worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.worldY)
+                worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY)
             ){
                 BufferedImage tileImage = tile[tileSec].getCurrentImage(gamePanel.gameTime);
                 graphics2D.drawImage(tileImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);

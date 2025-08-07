@@ -45,6 +45,9 @@ public class Entity {
     public String[] dialogue;
     public int dialogueIndex = 0;
 
+    // Sounds
+    protected String damageSound;
+
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
@@ -64,7 +67,7 @@ public class Entity {
             worldX + (Constants.TILE_SIZE) > (gamePanel.player.worldX - gamePanel.player.screenX) &&
             worldX - (Constants.TILE_SIZE) < (gamePanel.player.worldX + gamePanel.player.screenX) &&
             worldY + (Constants.TILE_SIZE) > (gamePanel.player.worldY - gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.worldY)
+            worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY)
         ){
             graphics2D.drawImage(image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         }
@@ -72,22 +75,22 @@ public class Entity {
 
     public void update() {
         setAction();
-        collisionOn = false;
-        gamePanel.collision.checkTile(this);
-        gamePanel.collision.getCollidEntity(this, gamePanel.player);
-        gamePanel.collision.objectCollision(this, false);
+        this.collisionOn = false;
+        this.gamePanel.collision.checkTile(this);
+        this.gamePanel.collision.getCollidEntity(this, gamePanel.player);
+        this.gamePanel.collision.objectCollision(this, false);
     }
 
     public void speak() {
-        if (dialogueIndex >= dialogue.length) {
-            gamePanel.ui.stopDialogue();
-            dialogueIndex = 0;
+        if (this.dialogueIndex >= this.dialogue.length) {
+            this.gamePanel.ui.stopDialogue();
+            this.dialogueIndex = 0;
             return;
         }
-        gamePanel.ui.displayDialog(dialogue[dialogueIndex]);
-        dialogueIndex++;
+        this.gamePanel.ui.displayDialog(this.dialogue[this.dialogueIndex]);
+        this.dialogueIndex++;
     
-        switch (gamePanel.player.direction) {
+        switch (this.gamePanel.player.direction) {
             case Direction.UP:
                 this.direction = Direction.DOWN;
                 break;
@@ -107,31 +110,31 @@ public class Entity {
         BufferedImage image = null;
         switch (this.direction) {
             case Direction.UP:
-                if (spriteNumber == 0) {
-                    image = up1;
+                if (this.spriteNumber == 0) {
+                    image = this.up1;
                 } else {
-                    image = up2;
+                    image = this.up2;
                 }
                 break;
             case Direction.DOWN:
-                if (spriteNumber == 0) {
-                    image = down1;
+                if (this.spriteNumber == 0) {
+                    image = this.down1;
                 } else {
-                    image = down2;
+                    image = this.down2;
                 }
                 break;
             case Direction.LEFT:
-                if (spriteNumber == 0) {
-                    image = left1;
+                if (this.spriteNumber == 0) {
+                    image = this.left1;
                 } else {
-                    image = left2;
+                    image = this.left2;
                 }
                 break;
             case Direction.RIGHT:
-                if (spriteNumber == 0) {
-                    image = right1;
+                if (this.spriteNumber == 0) {
+                    image = this.right1;
                 } else {
-                    image = right2;
+                    image = this.right2;
                 }
                 break;
         }
@@ -140,18 +143,39 @@ public class Entity {
 
     public void setAction() {
         if (!this.movable) { return; }
-        actionLockCounter++;
+        this.actionLockCounter++;
         if (this.attemptedDirections.isEmpty()) {
             this.attemptedDirections = EnumSet.allOf(Direction.class);
         }
         List<Direction> availableDirections = new ArrayList<>(this.attemptedDirections);
-        if (this.collisionOn || actionLockCounter > Math.random() * 120 + 50) {
+        if (this.collisionOn || this.actionLockCounter > Math.random() * 120 + 50) {
             Random random = new Random();
             int randomIndex = random.nextInt(availableDirections.size());
-            direction = availableDirections.get(randomIndex);
-            actionLockCounter = 0;
+            this.direction = availableDirections.get(randomIndex);
+            this.actionLockCounter = 0;
         }
         moveEntiy();
+    }
+
+    public void takeDamage(int amount) {
+        this.health -= amount;
+        if (this.health < 0) {
+            this.health = 0;
+        }
+        this.gamePanel.playSoundEffect(this.damageSound);
+        System.out.println(this.entityType + ": " + getCurrentHealth());
+    }
+
+    public void increaseHealth(double amount) {
+        this.health += amount;
+        if (this.health > this.maxHealth) {
+            this.health = this.maxHealth;
+        }
+    }
+
+    public int getCurrentHealth() {
+        if (this.maxHealth == 0) return 0;
+        return (int) ((this.health * 100.0) / this.maxHealth);
     }
 
     protected void moveEntiy() {

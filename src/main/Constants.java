@@ -54,8 +54,6 @@ public class Constants {
     public static final String OBJECT_KEY_IMAGE = "/res/objects/key.png";
     public static final String OBJECT_CHEST = "Chest";
     public static final String OBJECT_CHEST_IMAGE = "/res/objects/chest.png";
-    public static final String OBJECT_ARROW = "Arrow";
-    public static final String OBJECT_ARROW_IMAGE = "/res/objects/heart_blank.png";
     public static final String OBJECT_GREEN_POTION = "Green Potion";
     public static final String OBJECT_GREEN_POTION_IMAGE = "/res/objects/potion_green.png";
     public static final String OBJECT_RED_POTION = "Red Potion";
@@ -155,6 +153,7 @@ public class Constants {
     public static final String SOUND_TITLE_SCREEN = "/res/sounds/starwarstheme.wav";
     public static final String SOUND_CURSOR = "/res/sounds/cursor.wav";
     public static final String SOUND_LEVELUP = "/res/sounds/levelup.wav";
+    public static final String SOUND_ARROW = "/res/sounds/arrow.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
         List.of(
@@ -169,7 +168,8 @@ public class Constants {
             SOUND_STATIC,
             SOUND_TITLE_SCREEN,
             SOUND_CURSOR,
-            SOUND_LEVELUP
+            SOUND_LEVELUP,
+            SOUND_ARROW
         )
     );
 

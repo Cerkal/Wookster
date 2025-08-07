@@ -1,6 +1,7 @@
 package objects.weapons;
 
 import entity.Player;
+import main.Constants;
 import main.GamePanel;
 
 public class Crossbow {
@@ -20,7 +21,8 @@ public class Crossbow {
     public void shoot() {
         if ((this.gamePanel.gameTime - this.lastShot) / 1000000 > 500) {
             this.lastShot = this.gamePanel.gameTime;
-            this.gamePanel.arrows.add(new Arrow(this.gamePanel));
+            this.gamePanel.projectiles.add(new Arrow(this.gamePanel));
+            this.gamePanel.playSoundEffect(Constants.SOUND_ARROW);
         }
     }
 }

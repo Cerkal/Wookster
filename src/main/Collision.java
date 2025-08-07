@@ -4,6 +4,7 @@ import entity.Entity;
 import entity.Entity.Direction;
 import entity.Entity.Entity_Type;
 import objects.SuperObject;
+import objects.weapons.Projectile;
 
 public class Collision {
 
@@ -198,6 +199,67 @@ public class Collision {
         target.solidArea.x = target.solidAreaDefaultX;
         target.solidArea.y = target.solidAreaDefaultY;
         return collisionEntity;
+    }
+
+    public void checkTileProjectile(Projectile projectile) {
+        int projectileBoundaryLeft = projectile.worldX + projectile.solidArea.x;
+        int projectileBoundaryRight = projectile.worldX + projectile.solidArea.x + projectile.solidArea.width;
+        int projectileBoundaryTop = projectile.worldY + projectile.solidArea.y;
+        int projectileBoundaryBottom = projectile.worldY + projectile.solidArea.y + projectile.solidArea.height;
+
+        int projectileLeftCol = projectileBoundaryLeft/Constants.TILE_SIZE;
+        int projectileRightCol = projectileBoundaryRight/Constants.TILE_SIZE;
+        int projectileTopRow = projectileBoundaryTop/Constants.TILE_SIZE;
+        int projectileBottomRow = projectileBoundaryBottom/Constants.TILE_SIZE;
+
+        int tileNum1, tileNum2;
+
+        switch (projectile.direction) {
+            case Direction.UP:
+                projectileTopRow = (projectileBoundaryTop - projectile.speed)/Constants.TILE_SIZE;
+                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
+                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
+                if (
+                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+                ){
+                    projectile.collisionOn = true;
+                }
+                break;
+            case Direction.DOWN:
+                projectileBottomRow = (projectileBoundaryBottom + projectile.speed)/Constants.TILE_SIZE;
+                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
+                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
+                if (
+                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+                ){
+                    projectile.collisionOn = true;
+                }
+                break;
+            case Direction.LEFT:
+                projectileLeftCol = (projectileBoundaryLeft - projectile.speed)/Constants.TILE_SIZE;
+                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
+                tileNum2 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
+                if (
+                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+                ){
+                    projectile.collisionOn = true;
+                }
+                break;
+            case Direction.RIGHT:
+                projectileRightCol = (projectileBoundaryRight + projectile.speed)/Constants.TILE_SIZE;
+                tileNum1 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
+                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
+                if (
+                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+                ){
+                    projectile.collisionOn = true;
+                }
+                break;
+        }
     }
 
     private void changeDirection(Entity entity) {
