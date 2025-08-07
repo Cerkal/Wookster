@@ -11,6 +11,9 @@ public class Crossbow {
     GamePanel gamePanel;
     Player player;
 
+    // In milliseconds
+    public final static int CROSSBOW_DELAY = 500;
+
     public boolean isEquipped;
 
     public Crossbow(GamePanel gamePanel) {
@@ -19,7 +22,7 @@ public class Crossbow {
     }
 
     public void shoot() {
-        if ((this.gamePanel.gameTime - this.lastShot) / 1000000 > 500) {
+        if ((this.gamePanel.gameTime - this.lastShot) / 1000000 > CROSSBOW_DELAY) {
             this.lastShot = this.gamePanel.gameTime;
             this.gamePanel.projectiles.add(new Arrow(this.gamePanel));
             this.gamePanel.playSoundEffect(Constants.SOUND_ARROW);

@@ -201,6 +201,62 @@ public class Collision {
         return collisionEntity;
     }
 
+    public Entity projectileCollision(Projectile projectile) {
+        Entity collisionEntity = null;
+        for (Entity target : gamePanel.npcs) {
+            collisionEntity = getProjectileEntity(projectile, target);
+            if (collisionEntity != null) {
+                return collisionEntity;
+            }
+        }
+        return collisionEntity;
+    }
+
+    public Entity getProjectileEntity(Projectile projectile, Entity target) {
+        Entity collisionEntity = null;
+
+        projectile.solidArea.x = projectile.worldX + projectile.solidArea.x;
+        projectile.solidArea.y = projectile.worldY + projectile.solidArea.y;
+        target.solidArea.x = target.worldX + target.solidArea.x;
+        target.solidArea.y = target.worldY + target.solidArea.y;
+
+        switch (projectile.direction) {
+            case Direction.UP:
+                projectile.solidArea.y -= projectile.speed;
+                if (projectile.solidArea.intersects(target.solidArea)) {
+                    projectile.collisionOn = true;
+                    collisionEntity = target;
+                }
+                break;
+            case Direction.DOWN:
+                projectile.solidArea.y += projectile.speed;
+                if (projectile.solidArea.intersects(target.solidArea)) {
+                    projectile.collisionOn = true;
+                    collisionEntity = target;
+                }
+                break;
+            case Direction.LEFT:
+                projectile.solidArea.x -= projectile.speed;
+                if (projectile.solidArea.intersects(target.solidArea)) {
+                    projectile.collisionOn = true;
+                    collisionEntity = target;
+                }
+                break;
+            case Direction.RIGHT:
+                projectile.solidArea.x += projectile.speed;
+                if (projectile.solidArea.intersects(target.solidArea)) {
+                    projectile.collisionOn = true;
+                    collisionEntity = target;
+                }
+                break;
+        }
+        projectile.solidArea.x = projectile.solidAreaDefaultX;
+        projectile.solidArea.y = projectile.solidAreaDefaultY;
+        target.solidArea.x = target.solidAreaDefaultX;
+        target.solidArea.y = target.solidAreaDefaultY;
+        return collisionEntity;
+    }
+
     public void checkTileProjectile(Projectile projectile) {
         int projectileBoundaryLeft = projectile.worldX + projectile.solidArea.x;
         int projectileBoundaryRight = projectile.worldX + projectile.solidArea.x + projectile.solidArea.width;

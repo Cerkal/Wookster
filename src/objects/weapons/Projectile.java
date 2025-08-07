@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
@@ -40,14 +42,16 @@ public class Projectile {
         this.direction = gamePanel.player.direction;
         this.worldX = this.gamePanel.player.worldX;
         this.worldY = this.gamePanel.player.worldY;
-        this.solidAreaDefaultX = this.worldX;
-        this.solidAreaDefaultY = this.worldY;
+        this.solidAreaDefaultX = 0;
+        this.solidAreaDefaultY = 0;
+        getDirection();
         setImage(Constants.WEAPON_PROJECTILE_ARROW);
     }
 
     public void draw(Graphics2D graphics2D) {
-        getDirection();
+        moveProjectile();
         this.gamePanel.collision.checkTileProjectile(this);
+        this.gamePanel.collision.projectileCollision(this);
         int screenX = this.worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = this.worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         if (
@@ -59,31 +63,45 @@ public class Projectile {
         ){
             graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         } else {
+            System.out.println("Arrows size: " + this.gamePanel.projectiles.size());
             this.gamePanel.projectiles.remove(0);
+        }
+    }
+
+    private void moveProjectile() {
+        switch (this.direction) {
+            case Direction.UP:
+                this.worldY -= this.speed;
+                this.image = this.originalImage;
+                break;
+            case Direction.DOWN:
+                this.worldY += this.speed;
+                this.image = rotateSquareImage(this.originalImage, 180);
+                break;
+            case Direction.LEFT:
+                this.worldX -= this.speed;
+                this.image = rotateSquareImage(this.originalImage, 270);
+                break;
+            case Direction.RIGHT:
+                this.worldX += this.speed;
+                this.image = rotateSquareImage(this.originalImage, 90);
+                break;
         }
     }
 
     private void getDirection() {
         switch (this.direction) {
             case Direction.UP:
-                this.worldY -= this.speed;
                 this.solidArea = this.solidAreaUp;
-                this.image = this.originalImage;
                 break;
             case Direction.DOWN:
-                this.worldY += this.speed;
                 this.solidArea = this.solidAreaDown;
-                this.image = rotateSquareImage(this.originalImage, 180);
                 break;
             case Direction.LEFT:
-                this.worldX -= this.speed;
                 this.solidArea = this.solidAreaLeft;
-                this.image = rotateSquareImage(this.originalImage, 270);
                 break;
             case Direction.RIGHT:
-                this.worldX += this.speed;
                 this.solidArea = this.solidAreaRight;
-                this.image = rotateSquareImage(this.originalImage, 90);
                 break;
         }
     }
