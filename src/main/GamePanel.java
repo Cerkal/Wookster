@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.plaf.DimensionUIResource;
 
+import effects.Effect;
 import entity.Entity;
 import entity.Player;
 import objects.SuperObject;
@@ -36,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable {
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
+    public List<Effect> effects = new ArrayList<>();
     public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
     public UI ui = new UI(this);
@@ -140,6 +142,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         for (SuperObject object : this.objects) {
             object.draw(graphics2D);
+        }
+
+        for (Effect effect : effects) {
+            effect.draw(graphics2D);
         }
 
         for (Entity npc : this.npcs) {

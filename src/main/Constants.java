@@ -85,10 +85,15 @@ public class Constants {
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/res/npc/droids.png";
 
-    // Effect
+    // Effects
     public static final String SPELL_EFFECT_SPARKLE_0 = "/res/effects/sparkle_01.png";
     public static final String SPELL_EFFECT_SPARKLE_1 = "/res/effects/sparkle_02.png";
     public static final String SPELL_EFFECT_SPARKLE_2 = "/res/effects/sparkle_03.png";
+    
+    public static final String EFFECT_BLOOD_0 = "/res/effects/blood_01.png";
+    public static final String EFFECT_BLOOD_1 = "/res/effects/blood_02.png";
+    public static final String EFFECT_BLOOD_2 = "/res/effects/blood_03.png";
+
 
     // Weapon
     public static final String WEAPON_PROJECTILE_ARROW = "/res/objects/arrow.png";

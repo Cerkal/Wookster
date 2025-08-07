@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 
+import effects.Effect;
 import main.Constants;
 import main.GamePanel;
 
@@ -163,6 +164,7 @@ public class Entity {
             this.health = 0;
         }
         this.gamePanel.playSoundEffect(this.damageSound);
+        this.gamePanel.effects.add(new Effect(this.gamePanel, this.worldX, this.worldY));
         System.out.println(this.entityType + ": " + getCurrentHealth());
     }
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import entity.Entity;
 import entity.Entity.Direction;
 import main.Constants;
 import main.GamePanel;
@@ -50,8 +51,7 @@ public class Projectile {
 
     public void draw(Graphics2D graphics2D) {
         moveProjectile();
-        this.gamePanel.collision.checkTileProjectile(this);
-        this.gamePanel.collision.projectileCollision(this);
+        collision();
         int screenX = this.worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = this.worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         if (
@@ -63,7 +63,6 @@ public class Projectile {
         ){
             graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         } else {
-            System.out.println("Arrows size: " + this.gamePanel.projectiles.size());
             this.gamePanel.projectiles.remove(0);
         }
     }
@@ -125,5 +124,17 @@ public class Projectile {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected void collision() {
+        this.gamePanel.collision.checkTileProjectile(this);
+        Entity entity = this.gamePanel.collision.projectileCollision(this);
+        if (entity != null) {
+            handleEntityCollision(entity);
+        }
+    }
+
+    protected void handleEntityCollision(Entity entity) {
+        // Handle in sub class
     }
 }
