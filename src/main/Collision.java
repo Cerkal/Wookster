@@ -4,7 +4,7 @@ import entity.Entity;
 import entity.Entity.Direction;
 import entity.Entity.Entity_Type;
 import objects.SuperObject;
-import objects.weapons.Projectile;
+import objects.projectiles.Projectile;
 
 public class Collision {
 

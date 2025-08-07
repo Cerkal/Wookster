@@ -2,7 +2,8 @@ package entity;
 
 import main.KeyHandler;
 import objects.SuperObject;
-import objects.weapons.Crossbow;
+import objects.weapons.CrossbowWeapon;
+import objects.weapons.Weapon;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -33,7 +34,7 @@ public class Player extends Entity {
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public HashMap<String, Integer> inventory = new HashMap<>();
     public Entity entityInDialogue;
-    public Crossbow crossbow;
+    public Weapon weapon;
     public Entity collisionEntity;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
@@ -58,7 +59,8 @@ public class Player extends Entity {
         setDefaultValues();
         getPlayerImage();
 
-        this.crossbow = new Crossbow(gamePanel);
+        // Weapon test
+        this.weapon = new CrossbowWeapon(gamePanel);
     }
 
     public void setDefaultValues() {
@@ -98,9 +100,9 @@ public class Player extends Entity {
         }
         spellCheck();
 
-        if (this.collisionEntity == null) {
+        if (this.collisionEntity == null && this.weapon != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                this.crossbow.shoot();
+                this.weapon.shoot();
             }
         }
     }
@@ -138,6 +140,7 @@ public class Player extends Entity {
         BufferedImage image = getSpriteByDirection();
         graphics2D.drawImage(image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         drawSpellEffect(graphics2D);
+        drawEffect(graphics2D);
     }
 
     public void getPlayerImage() {

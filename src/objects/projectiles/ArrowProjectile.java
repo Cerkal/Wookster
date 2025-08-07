@@ -1,4 +1,4 @@
-package objects.weapons;
+package objects.projectiles;
 
 import java.awt.Rectangle;
 
@@ -6,7 +6,7 @@ import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 
-public class Arrow extends Projectile {
+public class ArrowProjectile extends Projectile {
 
     // Collision
     static final Rectangle SOLID_AREA_UP    = new Rectangle(Constants.TILE_SIZE/2, 0, 1, 1);
@@ -18,7 +18,7 @@ public class Arrow extends Projectile {
     public static final int ARROW_SPEED = 14;
     public static final int ARROW_DAMAGE = 50;
 
-    public Arrow(GamePanel gamePanel) {
+    public ArrowProjectile(GamePanel gamePanel) {
         super(gamePanel);
         this.speed = ARROW_SPEED;
         this.damage = ARROW_DAMAGE;

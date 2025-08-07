@@ -94,6 +94,9 @@ public class Constants {
     public static final String EFFECT_BLOOD_1 = "/res/effects/blood_02.png";
     public static final String EFFECT_BLOOD_2 = "/res/effects/blood_03.png";
 
+    public static final String EFFECT_ALERT = "/res/effects/alert.png";
+    public static final String EFFECT_UKNOWN = "/res/effects/questionmark.png";
+
 
     // Weapon
     public static final String WEAPON_PROJECTILE_ARROW = "/res/objects/arrow.png";

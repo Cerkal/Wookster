@@ -13,7 +13,7 @@ import effects.Effect;
 import entity.Entity;
 import entity.Player;
 import objects.SuperObject;
-import objects.weapons.Projectile;
+import objects.projectiles.Projectile;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {

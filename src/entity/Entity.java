@@ -8,6 +8,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 
+import effects.AlertEffect;
+import effects.BloodEffect;
 import effects.Effect;
 import main.Constants;
 import main.GamePanel;
@@ -45,6 +47,7 @@ public class Entity {
     public int health = 100;
     public String[] dialogue;
     public int dialogueIndex = 0;
+    public Effect effect;
 
     // Sounds
     protected String damageSound;
@@ -62,16 +65,17 @@ public class Entity {
 
     public void draw(Graphics2D graphics2D) {
         BufferedImage image = getSpriteByDirection();
-        int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
-        int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
         if (
-            worldX + (Constants.TILE_SIZE) > (gamePanel.player.worldX - gamePanel.player.screenX) &&
-            worldX - (Constants.TILE_SIZE) < (gamePanel.player.worldX + gamePanel.player.screenX) &&
-            worldY + (Constants.TILE_SIZE) > (gamePanel.player.worldY - gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY)
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
         ){
             graphics2D.drawImage(image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         }
+        drawEffect(graphics2D);
     }
 
     public void update() {
@@ -164,7 +168,8 @@ public class Entity {
             this.health = 0;
         }
         this.gamePanel.playSoundEffect(this.damageSound);
-        this.gamePanel.effects.add(new Effect(this.gamePanel, this.worldX, this.worldY));
+        this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
+        this.effect = new AlertEffect(this.gamePanel, this);
         System.out.println(this.entityType + ": " + getCurrentHealth());
     }
 
@@ -205,6 +210,18 @@ public class Entity {
                 this.spriteNumber = 1;
             }
             this.spriteCounter = 0;
+        }
+    }
+
+    protected void drawEffect(Graphics2D graphics2D) {
+        if (this.effect != null) {
+            if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > 500) {
+                this.effect = null;
+            } else {
+                this.effect.worldX = this.worldX;
+                this.effect.worldY = this.worldY;
+                this.effect.draw(graphics2D);
+            }
         }
     }
 }
