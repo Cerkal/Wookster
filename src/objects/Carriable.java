@@ -10,4 +10,9 @@ public class Carriable {
     public int count;
     public int price;
     public int condition;
+
+    @Override
+    public String toString() {
+        return inventoryName + ": " + count;
+    }
 }

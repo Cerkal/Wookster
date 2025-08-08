@@ -16,7 +16,7 @@ public class DoorObject extends SuperObject {
         super.activateObject();
         if (this.gamePanel.player.getInventoryItem(Constants.OBJECT_KEY) > 0) {
             this.removeObject();
-            this.gamePanel.player.removeInventoryItem(Constants.OBJECT_KEY);
+            this.gamePanel.player.removeInventoryItem(new KeyObject(gamePanel));
         } else {
             this.playSecondarySound();
         }

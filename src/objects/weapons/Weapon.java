@@ -25,6 +25,7 @@ public class Weapon extends Carriable {
 
     public Weapon(GamePanel gamePanel) {
         super();
+        this.gamePanel = gamePanel;
         this.player = gamePanel.player;
     }
 
@@ -47,9 +48,12 @@ public class Weapon extends Carriable {
     }
 
     public int getAmmoCount() {
-        if (!this.gamePanel.player.inventory.containsKey(this.projectileType.name())) {
-            return 0;
+        if (this.gamePanel.player != null) {
+            if (!this.gamePanel.player.inventory.containsKey(this.projectileType.name())) {
+                return 0;
+            }
+            return this.gamePanel.player.getInventoryItem(this.projectileType.name());
         }
-        return this.gamePanel.player.getInventoryItem(this.projectileType.name());
+        return 0;
     }
 }

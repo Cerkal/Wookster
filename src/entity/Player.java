@@ -64,8 +64,8 @@ public class Player extends Entity {
         getPlayerImage();
 
         // Weapon test
-        this.weapon = new CrossbowWeapon(gamePanel);
-        this.inventory.put(this.weapon.projectileType.toString(), this.weapon);
+        // this.weapon = new CrossbowWeapon(gamePanel);
+        // this.inventory.put(this.weapon.projectileType.toString(), this.weapon);
 
         this.weapon = new BlasterWeapon(gamePanel);
         this.inventory.put(this.weapon.projectileType.toString(), this.weapon);
