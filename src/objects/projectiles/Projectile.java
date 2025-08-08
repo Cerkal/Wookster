@@ -10,9 +10,9 @@ import entity.Entity;
 import entity.Entity.Direction;
 import main.Constants;
 import main.GamePanel;
-import main.Utils;
+import objects.Carriable;
 
-public class Projectile {
+public class Projectile extends Carriable{
 
     protected GamePanel gamePanel;
     protected BufferedImage image;
@@ -29,6 +29,7 @@ public class Projectile {
 
     public int speed = 14;
     public int damage = 10;
+    public Projectile_Type projectileType;
 
     public enum Projectile_Type {
         ARROWS,

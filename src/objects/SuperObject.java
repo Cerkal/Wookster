@@ -11,7 +11,7 @@ import main.GamePanel;
 import spells.SuperSpell;
 import tile.TileManager.TileLocation;
 
-public class SuperObject {
+public class SuperObject extends Carriable {
 
     GamePanel gamePanel;
 

@@ -3,12 +3,11 @@ package objects.weapons;
 import java.awt.Graphics2D;
 
 import entity.Player;
-import main.Constants;
 import main.GamePanel;
-import objects.projectiles.ArrowProjectile;
+import objects.Carriable;
 import objects.projectiles.Projectile.Projectile_Type;
 
-public class Weapon {
+public class Weapon extends Carriable {
 
     int speed = 10;
     long lastShot = 0;
@@ -25,7 +24,7 @@ public class Weapon {
     }
 
     public Weapon(GamePanel gamePanel) {
-        this.gamePanel = gamePanel;
+        super();
         this.player = gamePanel.player;
     }
 
@@ -36,7 +35,7 @@ public class Weapon {
     }
 
     public void removeAmmo() {
-        this.gamePanel.player.removeInventoryItem(this.projectileType.name());
+        this.gamePanel.player.removeInventoryItem(this);
     }
 
     public void playSound() {

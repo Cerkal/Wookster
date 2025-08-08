@@ -3,9 +3,13 @@ package objects.projectiles;
 import entity.Entity;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import entity.Entity.Direction;
 
 public class ArrowProjectile extends Projectile {
+
+    static final int ARROW_AMMO_WEIGHT = 1;
+    static final int ARROW_AMMO_PRICE = 2;
 
     public static final int DAMAGE_MODIFIER = 2;
 
@@ -15,6 +19,11 @@ public class ArrowProjectile extends Projectile {
         this.damage = getDamageFromSpeed(speed);
         this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
         startPosition();
+
+        // Carriable
+        this.inventoryName = Utils.capitalizeString(this.projectileType.name());
+        this.weight = ARROW_AMMO_PRICE;
+        this.price = ARROW_AMMO_WEIGHT;
     }
 
     @Override

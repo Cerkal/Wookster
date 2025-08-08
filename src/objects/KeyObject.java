@@ -2,6 +2,7 @@ package objects;
 
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class KeyObject extends SuperObject {
 
@@ -9,6 +10,11 @@ public class KeyObject extends SuperObject {
 
     public KeyObject(GamePanel gamePanel) {
         super(gamePanel);
+        
+        // Carriable
+        this.inventoryName = Utils.capitalizeString(NAME);
+        this.weight = 0;
+        this.price = 0;
         init();
     }
     
@@ -20,7 +26,7 @@ public class KeyObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addInventoryItem(this.NAME);
+        this.gamePanel.player.addInventoryItem(this);
     }
 
     private void init() {

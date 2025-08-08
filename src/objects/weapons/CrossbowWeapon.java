@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import objects.projectiles.ArrowProjectile;
 import objects.projectiles.Projectile.Projectile_Type;
 
@@ -12,11 +13,13 @@ public class CrossbowWeapon extends Weapon {
 
     // In milliseconds
     static final int CROSSBOW_DELAY = 500;
-    
-    static final int HOLD_COUNT_MIN = 20;
-    static final int HOLD_COUNT_MAX = 100;
-    static final int SPEED_MODIFIER = 3;
-    static final int MAX_ARROWS = 50;
+    static final int CROSSBOW_WEIGHT = 10;
+    static final int CROSSBOW_PRICE = 40;
+
+    static final int CROSSBOW_HOLD_COUNT_MIN = 20;
+    static final int CROSSBOW_HOLD_COUNT_MAX = 100;
+    static final int CROSSBOW_SPEED_MODIFIER = 3;
+    static final int CROSSBOW_MAX_ARROWS = 50;
 
     int arrows = 10;
 
@@ -25,6 +28,13 @@ public class CrossbowWeapon extends Weapon {
         this.weaponType = Weapon_Type.CROSSBOW;
         this.projectileType = Projectile_Type.ARROWS;
         this.sound = Constants.SOUND_ARROW;
+        
+        // Carriable
+        this.inventoryName = Utils.capitalizeString(this.weaponType.name());
+        this.weight = CROSSBOW_WEIGHT;
+        this.count = 1;
+        this.price = CROSSBOW_PRICE;
+        this.condition = 100;
     }
 
     public void shoot() {
@@ -67,7 +77,7 @@ public class CrossbowWeapon extends Weapon {
     }
 
     private void shootArrow() {
-        if (this.hold > HOLD_COUNT_MIN) {
+        if (this.hold > CROSSBOW_HOLD_COUNT_MIN) {
             getSpeed(hold);
             if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > CROSSBOW_DELAY) {
                 this.lastShot = this.gamePanel.gameTime;
@@ -79,10 +89,10 @@ public class CrossbowWeapon extends Weapon {
     }
 
     private void getSpeed(int hold) {
-        if (hold > HOLD_COUNT_MAX) {
-            this.speed = HOLD_COUNT_MAX/SPEED_MODIFIER;
+        if (hold > CROSSBOW_HOLD_COUNT_MAX) {
+            this.speed = CROSSBOW_HOLD_COUNT_MAX/CROSSBOW_SPEED_MODIFIER;
         } else {
-            this.speed = hold/SPEED_MODIFIER;
+            this.speed = hold/CROSSBOW_SPEED_MODIFIER;
         }
     }
 }

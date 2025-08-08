@@ -1,6 +1,8 @@
 package entity;
 
 import main.KeyHandler;
+import objects.Carriable;
+import objects.KeyObject;
 import objects.SuperObject;
 import objects.projectiles.Projectile.Projectile_Type;
 import objects.weapons.BlasterWeapon;
@@ -42,7 +44,9 @@ public class Player extends Entity {
     HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    public HashMap<String, Integer> inventory = new HashMap<>();
+    public HashMap<String, Integer> inventoryOld = new HashMap<>();
+    public HashMap<String, Carriable> inventory = new HashMap<>();
+
     public Entity entityInDialogue;
     public Entity collisionEntity;
     
@@ -61,10 +65,13 @@ public class Player extends Entity {
 
         // Weapon test
         this.weapon = new CrossbowWeapon(gamePanel);
-        this.inventory.put(this.weapon.projectileType.toString(), 10);
+        this.inventory.put(this.weapon.projectileType.toString(), this.weapon);
 
         this.weapon = new BlasterWeapon(gamePanel);
-        this.inventory.put(this.weapon.projectileType.toString(), 50);
+        this.inventory.put(this.weapon.projectileType.toString(), this.weapon);
+
+        this.inventory.put(Constants.OBJECT_KEY, new KeyObject(gamePanel));
+        this.inventory.get(Constants.OBJECT_KEY).count = 3;
     }
 
     public void setDefaultValues() {
@@ -111,40 +118,39 @@ public class Player extends Entity {
     }
 
 
-    public void addInventoryItem(String objectType) {
-        addInventoryItem(objectType, 1);
+    public void addInventoryItem(Carriable object) {
+        addInventoryItem(object, 1);
     }
 
-    public void addInventoryItem(String objectType, int count) {
+    public void addInventoryItem(Carriable object, int count) {
         if (count > 1) {
-            this.gamePanel.ui.displayMessage(count + " " + objectType.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+            this.gamePanel.ui.displayMessage(count + " " + object.inventoryName.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
         } else {
-            this.gamePanel.ui.displayMessage(objectType+ Constants.MESSGE_INVENTORY_ADDED);
+            this.gamePanel.ui.displayMessage(object.inventoryName + Constants.MESSGE_INVENTORY_ADDED);
         }
-        if (this.inventory.containsKey(objectType)) {
-            Integer quantity = inventory.get(objectType);
-            quantity += 10;
-            this.inventory.put(objectType, quantity);
+        if (this.inventory.containsKey(object.inventoryName)) {
+            inventory.get(object.inventoryName).count += count;
         } else {
-            this.inventory.put(objectType, count);
+            this.inventory.put(object.inventoryName, object);
         }
     }
 
-    public void removeInventoryItem(String objectType) {
-        if (this.inventory.containsKey(objectType)) {
-            int quantity = inventory.get(objectType);
+    public void removeInventoryItem(Carriable object) {
+        if (this.inventory.containsKey(object.inventoryName)) {
+            int quantity = this.inventory.get(object.inventoryName).count;
             if (quantity == 1) {
-                this.inventory.remove(objectType);
+                this.inventory.remove(object.inventoryName);
             } else {
-                quantity--;
-                this.inventory.put(objectType, quantity);
+                Carriable current = this.inventory.get(object.inventoryName);
+                current.count--;
+                this.inventory.put(object.inventoryName, current);
             }
         }
     }
 
     public int getInventoryItem(String objectType) {
         if (this.inventory.get(objectType) == null) return 0;
-        return this.inventory.get(objectType);
+        return this.inventory.get(objectType).count;
     }
 
     public void draw(Graphics2D graphics2D) {

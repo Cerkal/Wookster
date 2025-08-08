@@ -3,16 +3,26 @@ package objects.projectiles;
 import entity.Entity;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import entity.Entity.Direction;
 
 public class LaserProjectile extends Projectile {
+
+    static final int LASER_AMMO_WEIGHT = 1;
+    static final int LASER_AMMO_PRICE = 1;
 
     public LaserProjectile(GamePanel gamePanel, int speed) {
         super(gamePanel);
         this.speed = speed;
         this.damage = 10;
+        this.projectileType = Projectile_Type.LASER;
         this.setImage(Constants.WEAPON_PROJECTILE_LASER);
         startPosition();
+
+        // Carriable
+        this.inventoryName = Utils.capitalizeString(this.projectileType.name());
+        this.weight = LASER_AMMO_WEIGHT;
+        this.price = LASER_AMMO_PRICE;
     }
 
     @Override

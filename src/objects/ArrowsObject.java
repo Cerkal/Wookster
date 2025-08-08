@@ -26,7 +26,7 @@ public class ArrowsObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addInventoryItem(this.NAME, Utils.generateRandomInt(MIN_RANDOM_ARROW_AMOUNT, MAX_RANDOM_ARROW_AMOUNT));
+        this.gamePanel.player.addInventoryItem(this, Utils.generateRandomInt(MIN_RANDOM_ARROW_AMOUNT, MAX_RANDOM_ARROW_AMOUNT));
     }
 
     private void init() {
