@@ -103,7 +103,7 @@ public class Collision {
         for (Entity target : gamePanel.npcs) {
             collisionEntity = getCollidEntity(entity, target);
             if (collisionEntity != null) {
-                changeDirection(collisionEntity);
+                // changeDirection(collisionEntity);
                 return collisionEntity;
             }
         }
@@ -221,7 +221,6 @@ public class Collision {
 
     private void changeDirection(Entity entity) {
         if (entity.entityType != Entity_Type.PLAYER) {
-            entity.attemptedDirections.remove(entity.direction);
             entity.setAction();
         }
     }

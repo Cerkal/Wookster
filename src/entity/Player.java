@@ -37,6 +37,7 @@ public class Player extends Entity {
     public Weapon weapon;
     public Entity collisionEntity;
 
+    
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
         super(gamePanel);
@@ -45,14 +46,6 @@ public class Player extends Entity {
 
         screenX = Constants.SCREEN_WIDTH/2 - (Constants.TILE_SIZE/2);
         screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
-
-        this.solidArea = new Rectangle();
-        this.solidArea.x = Constants.TILE_SIZE/4;
-        this.solidArea.y = Constants.TILE_SIZE/2;
-        this.solidArea.width = Constants.TILE_SIZE/2;
-        this.solidArea.height = Constants.TILE_SIZE/2;
-        this.solidAreaDefaultX = this.solidArea.x;
-        this.solidAreaDefaultY = this.solidArea.y;
 
         this.damageSound = Constants.SOUND_HURT;
 
@@ -101,7 +94,7 @@ public class Player extends Entity {
             moveEntiy();            
         }
         spellCheck();
-
+        invincableCheck();
         if (this.collisionEntity == null && this.weapon != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
                 this.weapon.shoot();
@@ -143,6 +136,7 @@ public class Player extends Entity {
         graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         drawSpellEffect(graphics2D);
         drawEffect(graphics2D);
+        drawDebugCollision(graphics2D, screenX, screenY);
     }
 
     public void getPlayerImage() {
@@ -175,6 +169,16 @@ public class Player extends Entity {
         if (sparkle != null) {
             BufferedImage sparkleImage = sparkle.getCurrentImage(this.gamePanel.gameTime);
             graphics2D.drawImage(sparkleImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+        }
+    }
+
+    private void invincableCheck() {
+        if (this.invincable) {
+            invincableCounter++;
+            if (invincableCounter > Constants.FPS) {
+                invincable = false;
+                invincableCounter = 0;
+            }
         }
     }
 

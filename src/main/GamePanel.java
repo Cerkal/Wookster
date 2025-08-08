@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -38,6 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Collision collision = new Collision(this);
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
+    public ArrayList<Entity> entityList = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
     public List<Effect> effects = new ArrayList<>();
     public AssetSetter assetSetter = new AssetSetter(this);
@@ -124,7 +127,7 @@ public class GamePanel extends JPanel implements Runnable {
                 titleScreen(graphics2D);
                 break;
             default:
-                runGame(graphics2D);
+                drawGame(graphics2D);
                 break;
         }        
     }
@@ -145,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.ui.titleScreen(graphics2D);
     }
 
-    private void runGame(Graphics2D graphics2D) {
+    private void drawGame(Graphics2D graphics2D) {
         this.tileManager.draw(graphics2D);
 
         for (SuperObject object : this.objects) {
@@ -156,8 +159,20 @@ public class GamePanel extends JPanel implements Runnable {
             effect.draw(graphics2D);
         }
 
-        for (Entity npc : this.npcs) {
-            npc.draw(graphics2D);
+        // Compare Y Values for drawing
+        entityList.add(this.player);
+        entityList.addAll(this.npcs);
+        
+        Collections.sort(entityList, new Comparator<Entity>() {
+            @Override
+            public int compare(Entity entity1, Entity entity2) {
+                int result = Integer.compare(entity1.worldY, entity2.worldY);
+                return result;
+            }
+        });
+
+        for (Entity entity : this.entityList) {
+            entity.draw(graphics2D);
         }
 
         try {
@@ -168,7 +183,7 @@ public class GamePanel extends JPanel implements Runnable {
             // System.out.println("Removed projectile.");
         }
 
-        this.player.draw(graphics2D);
+        entityList.removeAll(entityList);
 
         this.ui.draw(graphics2D);
         graphics2D.dispose();
