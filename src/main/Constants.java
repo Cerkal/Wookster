@@ -36,6 +36,7 @@ public class Constants {
     // Title Menu Screen
     public static final String GAME_TITLE = "BLAM!";
     public static final String GAME_PAUSED = "Game Paused";
+    public static final String GAME_DEATH = "Dead";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
@@ -71,6 +72,7 @@ public class Constants {
     public static final String PLAYER_IMAGE_LEFT_1 = "/res/player/wookster_left_1.png";
     public static final String PLAYER_IMAGE_RIGHT_0 = "/res/player/wookster_right_0.png";
     public static final String PLAYER_IMAGE_RIGHT_1 = "/res/player/wookster_right_1.png";
+    public static final String PLAYER_IMAGE_DEAD = "/res/player/wookster_dead.png";
 
     // NPC
     public static final String TROOPER_IMAGE_UP_0 = "/res/npc/trooper_up_0.png";
@@ -81,6 +83,7 @@ public class Constants {
     public static final String TROOPER_IMAGE_LEFT_1 = "/res/npc/trooper_left_1.png";
     public static final String TROOPER_IMAGE_RIGHT_0 = "/res/npc/trooper_right_0.png";
     public static final String TROOPER_IMAGE_RIGHT_1 = "/res/npc/trooper_right_1.png";
+    public static final String TROOPER_IMAGE_DEAD = "/res/npc/trooper_dead.png";
 
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/res/npc/droids.png";
@@ -162,6 +165,7 @@ public class Constants {
     public static final String SOUND_CURSOR = "/res/sounds/cursor.wav";
     public static final String SOUND_LEVELUP = "/res/sounds/levelup.wav";
     public static final String SOUND_ARROW = "/res/sounds/arrow.wav";
+    public static final String SOUND_DEATH = "/res/sounds/youbemorecareful.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
         List.of(
@@ -177,7 +181,8 @@ public class Constants {
             SOUND_TITLE_SCREEN,
             SOUND_CURSOR,
             SOUND_LEVELUP,
-            SOUND_ARROW
+            SOUND_ARROW,
+            SOUND_DEATH
         )
     );
 

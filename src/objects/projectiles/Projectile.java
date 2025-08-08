@@ -1,11 +1,10 @@
 package objects.projectiles;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 
 import entity.Entity;
@@ -15,38 +14,28 @@ import main.GamePanel;
 
 public class Projectile {
 
-    GamePanel gamePanel;
-    BufferedImage image;
-    BufferedImage originalImage;
-    
+    protected GamePanel gamePanel;
+    protected BufferedImage image;
+    protected BufferedImage originalImage;
+
     public int worldX;
     public int worldY;
     public Direction direction;
     public boolean collisionOn = false;
 
-    // Collision
-    protected Rectangle SOLID_AREA_FULL  = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
-    protected Rectangle solidAreaUp    = SOLID_AREA_FULL;
-    protected Rectangle solidAreaDown  = SOLID_AREA_FULL;
-    protected Rectangle solidAreaRight = SOLID_AREA_FULL;
-    protected Rectangle solidAreaLeft  = SOLID_AREA_FULL;
-    
-    public Rectangle solidArea = solidAreaUp;
+    public Rectangle solidArea = new Rectangle(Constants.TILE_SIZE/2, Constants.TILE_SIZE/2, 1, 1);
+    public int solidAreaDefaultX = solidArea.x;
+    public int solidAreaDefaultY = solidArea.y;
+
     public int speed = 14;
     public int damage = 10;
-
-    public int solidAreaDefaultX = 0;
-    public int solidAreaDefaultY = 0;
 
     public Projectile(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.direction = gamePanel.player.direction;
-        this.worldX = this.gamePanel.player.worldX;
-        this.worldY = this.gamePanel.player.worldY;
-        this.solidAreaDefaultX = 0;
-        this.solidAreaDefaultY = 0;
-        getDirection();
-        setImage(Constants.WEAPON_PROJECTILE_ARROW);
+        this.worldX = gamePanel.player.worldX;
+        this.worldY = gamePanel.player.worldY;
+        this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
     }
 
     public void draw(Graphics2D graphics2D) {
@@ -55,12 +44,12 @@ public class Projectile {
         int screenX = this.worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = this.worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         if (
-            this.worldX + (Constants.TILE_SIZE) > (gamePanel.player.worldX - gamePanel.player.screenX) &&
-            this.worldX - (Constants.TILE_SIZE) < (gamePanel.player.worldX + gamePanel.player.screenX) &&
-            this.worldY + (Constants.TILE_SIZE) > (gamePanel.player.worldY - gamePanel.player.screenY) &&
-            this.worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY) &&
-            collisionOn == false
-        ){
+            this.worldX + Constants.TILE_SIZE > gamePanel.player.worldX - gamePanel.player.screenX &&
+            this.worldX - Constants.TILE_SIZE < gamePanel.player.worldX + gamePanel.player.screenX &&
+            this.worldY + Constants.TILE_SIZE > gamePanel.player.worldY - gamePanel.player.screenY &&
+            this.worldY - Constants.TILE_SIZE < gamePanel.player.worldY + gamePanel.player.screenY &&
+            !collisionOn
+        ) {
             graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         } else {
             this.gamePanel.projectiles.remove(0);
@@ -69,38 +58,21 @@ public class Projectile {
 
     private void moveProjectile() {
         switch (this.direction) {
-            case Direction.UP:
+            case UP:
                 this.worldY -= this.speed;
                 this.image = this.originalImage;
                 break;
-            case Direction.DOWN:
+            case DOWN:
                 this.worldY += this.speed;
                 this.image = rotateSquareImage(this.originalImage, 180);
                 break;
-            case Direction.LEFT:
+            case LEFT:
                 this.worldX -= this.speed;
                 this.image = rotateSquareImage(this.originalImage, 270);
                 break;
-            case Direction.RIGHT:
+            case RIGHT:
                 this.worldX += this.speed;
                 this.image = rotateSquareImage(this.originalImage, 90);
-                break;
-        }
-    }
-
-    private void getDirection() {
-        switch (this.direction) {
-            case Direction.UP:
-                this.solidArea = this.solidAreaUp;
-                break;
-            case Direction.DOWN:
-                this.solidArea = this.solidAreaDown;
-                break;
-            case Direction.LEFT:
-                this.solidArea = this.solidAreaLeft;
-                break;
-            case Direction.RIGHT:
-                this.solidArea = this.solidAreaRight;
                 break;
         }
     }
@@ -135,6 +107,6 @@ public class Projectile {
     }
 
     protected void handleEntityCollision(Entity entity) {
-        // Handle in sub class
+        // Overridden in subclasses
     }
 }

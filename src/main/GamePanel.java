@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,8 @@ public class GamePanel extends JPanel implements Runnable {
         TITLE,
         PLAY,
         PAUSE,
-        DIALOGUE
+        DIALOGUE,
+        DEATH
     }
 
     boolean fpsDebug = false;
@@ -43,6 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     public EventHandler eventHandler = new EventHandler(this);
 
+    BufferedImage deathScreen;
+
     public GamePanel() {
         this.setPreferredSize(new DimensionUIResource(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
         this.setBackground(Color.BLACK);
@@ -54,6 +58,10 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         this.assetSetter.setObject();
         this.assetSetter.setNPCs();
+
+        // MUTE IT!
+        this.sound.mute = true;
+
         playMusic(Constants.SOUND_TITLE_SCREEN);
     }
 
@@ -164,6 +172,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         this.ui.draw(graphics2D);
         graphics2D.dispose();
+    }
+
+    public void getGraphicsSnapshot() {
+        this.deathScreen = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = this.deathScreen.createGraphics();
+        this.paint(g2d);
+        g2d.dispose();
     }
 }
 

@@ -35,11 +35,17 @@ public class AssetSetter {
         this.gamePanel.objects.add(new ChestObject(this.gamePanel, 10, 8));
         
         generateRandomObjects();
+
+        // Game ender
+        // this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 23, new HealthSpell(-100)));
     }
 
     public void setNPCs() {
         this.gamePanel.npcs.add(new NPCDroids(gamePanel, 9, 8));
         this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 8));
+        this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 9));
+        this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 10));
+        this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 11));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 21, 21));
     }
 

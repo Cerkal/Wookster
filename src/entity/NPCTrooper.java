@@ -27,6 +27,7 @@ public class NPCTrooper extends Entity {
             this.left2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_LEFT_1));
             this.right1 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_0));
             this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_1));
+            this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DEAD));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
         }

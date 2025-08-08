@@ -10,7 +10,7 @@ import main.Utils;
 public class BloodEffect extends Effect {
 
     public BloodEffect(GamePanel gamePanel, int worldX, int worldY) {
-        super(gamePanel, worldX, worldY);
+        super(gamePanel, worldX, worldY + Constants.TILE_SIZE/2 + 5);
         setImage();
     }
 

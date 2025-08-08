@@ -49,10 +49,10 @@ public class Player extends Entity {
         this.solidArea = new Rectangle();
         this.solidArea.x = Constants.TILE_SIZE/4;
         this.solidArea.y = Constants.TILE_SIZE/2;
-        this.solidAreaDefaultX = this.solidArea.x;
-        this.solidAreaDefaultY = this.solidArea.y;
         this.solidArea.width = Constants.TILE_SIZE/2;
         this.solidArea.height = Constants.TILE_SIZE/2;
+        this.solidAreaDefaultX = this.solidArea.x;
+        this.solidAreaDefaultY = this.solidArea.y;
 
         this.damageSound = Constants.SOUND_HURT;
 
@@ -75,10 +75,12 @@ public class Player extends Entity {
         isMoving = false;
         if (
             (
-                keyHandler.upPressed ||
-                keyHandler.downPressed ||
-                keyHandler.leftPressed ||
-                keyHandler.rightPressed
+                (
+                    keyHandler.upPressed ||
+                    keyHandler.downPressed ||
+                    keyHandler.leftPressed ||
+                    keyHandler.rightPressed
+                ) && !isDead
             )
         ){
             isMoving = true;
@@ -137,8 +139,8 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D graphics2D) {
-        BufferedImage image = getSpriteByDirection();
-        graphics2D.drawImage(image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+        getSpriteByDirection();
+        graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         drawSpellEffect(graphics2D);
         drawEffect(graphics2D);
     }
@@ -153,6 +155,7 @@ public class Player extends Entity {
             this.left2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1));
             this.right1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0));
             this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1));
+            this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
         }
@@ -259,7 +262,7 @@ public class Player extends Entity {
             };
             HealthSpell currentHealthSpell = (HealthSpell) spells.get(SpellType.HEALTH_SPELL);
             if (currentHealthSpell.spellTime == 0) {
-                increaseHealth(currentHealthSpell.healthAmount);
+                adjustHealth(currentHealthSpell.healthAmount);
                 currentHealthSpell.removeSpell(this);
             }
         } catch (Exception e) {

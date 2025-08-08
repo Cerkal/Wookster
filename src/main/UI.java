@@ -73,6 +73,16 @@ public class UI {
             int y = getYForCenteredText();
             graphics2D.drawString(Constants.GAME_PAUSED, x, y);
         }
+
+        if (this.gamePanel.gameState == GamePanel.GameState.DEATH) {
+            graphics2D.setFont(this.customFontLarge);
+            graphics2D.setColor(Color.WHITE);
+            int x = getXForCenteredText(graphics2D, Constants.GAME_DEATH, this.customFontLarge);
+            int y = getYForCenteredText();
+            graphics2D.drawString(Constants.GAME_DEATH, x, y);
+            this.gamePanel.stopMusic();
+            this.gamePanel.playSoundEffect(Constants.SOUND_ARROW);
+        }
     }
 
     public void displayMessage(String message) {
@@ -99,6 +109,28 @@ public class UI {
     }
 
     public void titleScreen(Graphics2D graphics2D) {
+        graphics2D.setFont(this.customFontLarge);
+        graphics2D.setColor(Color.WHITE);
+        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
+        int y = getYForCenteredText();
+        graphics2D.drawString(Constants.GAME_TITLE, x, y - 100);
+
+        graphics2D.setFont(this.customFontMedium);
+
+        int i = 0;
+        for (String menuOption : Constants.GAME_TITLE_MENU) {
+            x = getXForCenteredText(graphics2D, menuOption, this.customFontMedium);
+            y = y + 50;
+            if (this.commandNumber == i) {
+                setTitleCursor(graphics2D, y);
+            }
+            graphics2D.setColor(Color.WHITE);
+            graphics2D.drawString(menuOption, x, y);
+            i++;
+        }
+    }
+
+    public void deathScreen(Graphics2D graphics2D) {
         graphics2D.setFont(this.customFontLarge);
         graphics2D.setColor(Color.WHITE);
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);

@@ -25,57 +25,37 @@ public class Collision {
         int entityTopRow = entityBoundaryTop/Constants.TILE_SIZE;
         int entityBottomRow = entityBoundaryBottom/Constants.TILE_SIZE;
 
-        int tileNum1, tileNum2;
+        int tileNum1 = 0;
+        int tileNum2 = 0;
 
         switch (entity.direction) {
             case Direction.UP:
                 entityTopRow = (entityBoundaryTop - entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityTopRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].collision == true ||
-                    gamePanel.tileManager.tile[tileNum2].collision == true
-                ){
-                    entity.collisionOn = true;
-                    changeDirection(entity);
-                }
                 break;
             case Direction.DOWN:
                 entityBottomRow = (entityBoundaryBottom + entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityBottomRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].collision == true ||
-                    gamePanel.tileManager.tile[tileNum2].collision == true
-                ){
-                    entity.collisionOn = true;
-                    changeDirection(entity);
-                }
                 break;
             case Direction.LEFT:
                 entityLeftCol = (entityBoundaryLeft - entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].collision == true ||
-                    gamePanel.tileManager.tile[tileNum2].collision == true
-                ){
-                    entity.collisionOn = true;
-                    changeDirection(entity);
-                }
                 break;
             case Direction.RIGHT:
                 entityRightCol = (entityBoundaryRight + entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityRightCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].collision == true ||
-                    gamePanel.tileManager.tile[tileNum2].collision == true
-                ){
-                    entity.collisionOn = true;
-                    changeDirection(entity);
-                }
                 break;
+        }
+        if (
+            gamePanel.tileManager.tile[tileNum1].collision == true ||
+            gamePanel.tileManager.tile[tileNum2].collision == true
+        ){
+            entity.collisionOn = true;
+            changeDirection(entity);
         }
     }
 
@@ -92,50 +72,23 @@ public class Collision {
             switch (entity.direction) {
                 case Direction.UP:
                     entity.solidArea.y -= entity.speed;
-                    if (entity.solidArea.intersects(object.solidArea)) {
-                        if (object.collision) {
-                            entity.collisionOn = true;
-                        }
-                        if (player && object.visibility) {
-                            collisionObject = object;
-                        }
-                    }
                     break;
                 case Direction.DOWN:
                     entity.solidArea.y += entity.speed;
-                    if (entity.solidArea.intersects(object.solidArea)) {
-                        if (object.collision) {
-                            entity.collisionOn = true;
-                        }
-                        if (player && object.visibility) {
-                            collisionObject = object;
-                        }
-                    }
                     break;
                 case Direction.LEFT:
-                    entity.solidArea.x -= entity.speed;
-                    if (entity.solidArea.intersects(object.solidArea)) {
-                        if (object.collision) {
-                            entity.collisionOn = true;
-                        }
-                        if (player && object.visibility) {
-                            collisionObject = object;
-                        }
-                    }
                     break;
                 case Direction.RIGHT:
                     entity.solidArea.x += entity.speed;
-                    if (entity.solidArea.intersects(object.solidArea)) {
-                        if (object.collision) {
-                            entity.collisionOn = true;
-                        }
-                        if (player && object.visibility) {
-                            collisionObject = object;
-                        }
-                    }
                     break;
-                default:
-                    break;
+            }
+            if (entity.solidArea.intersects(object.solidArea)) {
+                if (object.collision) {
+                    entity.collisionOn = true;
+                }
+                if (player && object.visibility) {
+                    collisionObject = object;
+                }
             }
             entity.solidArea.x = entity.solidAreaDefaultX;
             entity.solidArea.y = entity.solidAreaDefaultY;
@@ -150,6 +103,7 @@ public class Collision {
         for (Entity target : gamePanel.npcs) {
             collisionEntity = getCollidEntity(entity, target);
             if (collisionEntity != null) {
+                changeDirection(collisionEntity);
                 return collisionEntity;
             }
         }
@@ -167,32 +121,24 @@ public class Collision {
         switch (entity.direction) {
             case Direction.UP:
                 entity.solidArea.y -= entity.speed;
-                if (entity.solidArea.intersects(target.solidArea)) {
-                    entity.collisionOn = true;
-                    collisionEntity = target;
-                }
                 break;
             case Direction.DOWN:
                 entity.solidArea.y += entity.speed;
-                if (entity.solidArea.intersects(target.solidArea)) {
-                    entity.collisionOn = true;
-                    collisionEntity = target;
-                }
                 break;
             case Direction.LEFT:
                 entity.solidArea.x -= entity.speed;
-                if (entity.solidArea.intersects(target.solidArea)) {
-                    entity.collisionOn = true;
-                    collisionEntity = target;
-                }
                 break;
             case Direction.RIGHT:
                 entity.solidArea.x += entity.speed;
-                if (entity.solidArea.intersects(target.solidArea)) {
-                    entity.collisionOn = true;
-                    collisionEntity = target;
-                }
                 break;
+        }
+        if (
+            !target.isDead &&
+            entity != target &&
+            entity.solidArea.intersects(target.solidArea)
+        ){
+            entity.collisionOn = true;
+            collisionEntity = target;
         }
         entity.solidArea.x = entity.solidAreaDefaultX;
         entity.solidArea.y = entity.solidAreaDefaultY;
@@ -214,41 +160,13 @@ public class Collision {
 
     public Entity getProjectileEntity(Projectile projectile, Entity target) {
         Entity collisionEntity = null;
-
         projectile.solidArea.x = projectile.worldX + projectile.solidArea.x;
         projectile.solidArea.y = projectile.worldY + projectile.solidArea.y;
         target.solidArea.x = target.worldX + target.solidArea.x;
         target.solidArea.y = target.worldY + target.solidArea.y;
-
-        switch (projectile.direction) {
-            case Direction.UP:
-                projectile.solidArea.y -= projectile.speed;
-                if (projectile.solidArea.intersects(target.solidArea)) {
-                    projectile.collisionOn = true;
-                    collisionEntity = target;
-                }
-                break;
-            case Direction.DOWN:
-                projectile.solidArea.y += projectile.speed;
-                if (projectile.solidArea.intersects(target.solidArea)) {
-                    projectile.collisionOn = true;
-                    collisionEntity = target;
-                }
-                break;
-            case Direction.LEFT:
-                projectile.solidArea.x -= projectile.speed;
-                if (projectile.solidArea.intersects(target.solidArea)) {
-                    projectile.collisionOn = true;
-                    collisionEntity = target;
-                }
-                break;
-            case Direction.RIGHT:
-                projectile.solidArea.x += projectile.speed;
-                if (projectile.solidArea.intersects(target.solidArea)) {
-                    projectile.collisionOn = true;
-                    collisionEntity = target;
-                }
-                break;
+        if (projectile.solidArea.intersects(target.solidArea)) {
+            projectile.collisionOn = true;
+            collisionEntity = target;
         }
         projectile.solidArea.x = projectile.solidAreaDefaultX;
         projectile.solidArea.y = projectile.solidAreaDefaultY;
@@ -268,53 +186,36 @@ public class Collision {
         int projectileTopRow = projectileBoundaryTop/Constants.TILE_SIZE;
         int projectileBottomRow = projectileBoundaryBottom/Constants.TILE_SIZE;
 
-        int tileNum1, tileNum2;
+        int tileNum1 = 0;
+        int tileNum2 = 0;
 
         switch (projectile.direction) {
             case Direction.UP:
                 projectileTopRow = (projectileBoundaryTop - projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
-                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
-                ){
-                    projectile.collisionOn = true;
-                }
                 break;
             case Direction.DOWN:
                 projectileBottomRow = (projectileBoundaryBottom + projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
-                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
-                ){
-                    projectile.collisionOn = true;
-                }
                 break;
             case Direction.LEFT:
                 projectileLeftCol = (projectileBoundaryLeft - projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
-                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
-                ){
-                    projectile.collisionOn = true;
-                }
                 break;
             case Direction.RIGHT:
                 projectileRightCol = (projectileBoundaryRight + projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
-                if (
-                    gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
-                    gamePanel.tileManager.tile[tileNum2].projectileCollision == true
-                ){
-                    projectile.collisionOn = true;
-                }
                 break;
+        }
+        if (
+            gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+            gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+        ){
+            projectile.collisionOn = true;
         }
     }
 

@@ -6,9 +6,11 @@ import java.io.InputStream;
 
 public class Sound {
 
+    public boolean mute = false;
     private Clip musicClip;
 
     public void playSoundEffect(String soundName) {
+        if (this.mute) { return; }
         if (soundName == null) {
             System.err.println("Sound not found: " + soundName);
             return;
@@ -34,6 +36,7 @@ public class Sound {
     }
 
     public void playMusic(String soundName) {
+        if (this.mute) { return; }
         stopMusic();
         if (soundName == null) {
             System.err.println("Music not found: " + soundName);

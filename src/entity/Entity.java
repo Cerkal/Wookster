@@ -13,10 +13,12 @@ import effects.BloodEffect;
 import effects.Effect;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class Entity {
 
     GamePanel gamePanel;
+    boolean debugCollision = false;
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
     public enum Entity_Type { PLAYER, NPC, ENEMY }
@@ -25,7 +27,8 @@ public class Entity {
     // Location
     public int worldX, worldY;
     public int speed;
-    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage image;
+    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2, dead;
     public Direction direction;
 
     // Sprite
@@ -39,6 +42,8 @@ public class Entity {
     public boolean collisionOn = false;
     public int actionLockCounter = 0;
     public boolean movable = true;
+    public boolean invincable = false;
+    public int invincableCounter;
 
     // Entity Values
     public Entity_Type entityType;
@@ -48,6 +53,8 @@ public class Entity {
     public String[] dialogue;
     public int dialogueIndex = 0;
     public Effect effect;
+
+    public boolean isDead = false;
 
     // Sounds
     protected String damageSound;
@@ -64,9 +71,10 @@ public class Entity {
     }
 
     public void draw(Graphics2D graphics2D) {
-        BufferedImage image = getSpriteByDirection();
+        getSpriteByDirection();
         int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
         int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+
         if (
             worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
             worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
@@ -74,7 +82,18 @@ public class Entity {
             worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
         ){
             graphics2D.drawImage(image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+
+            if (this.debugCollision) {
+                graphics2D.setColor(java.awt.Color.RED);
+                graphics2D.drawRect(
+                    screenX + solidArea.x,
+                    screenY + solidArea.y,
+                    solidArea.width,
+                    solidArea.height
+                );
+            }
         }
+
         drawEffect(graphics2D);
     }
 
@@ -82,6 +101,7 @@ public class Entity {
         setAction();
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);
+        this.gamePanel.collision.entityCollision(this);
         this.gamePanel.collision.getCollidEntity(this, gamePanel.player);
         this.gamePanel.collision.objectCollision(this, false);
     }
@@ -111,39 +131,41 @@ public class Entity {
         }
     }
 
-    protected BufferedImage getSpriteByDirection() {
-        BufferedImage image = null;
+    protected void getSpriteByDirection() {
+        if (this.isDead) {
+            this.image = this.dead;
+            return;
+        }
         switch (this.direction) {
             case Direction.UP:
                 if (this.spriteNumber == 0) {
-                    image = this.up1;
+                    this.image = this.up1;
                 } else {
-                    image = this.up2;
+                    this.image = this.up2;
                 }
                 break;
             case Direction.DOWN:
                 if (this.spriteNumber == 0) {
-                    image = this.down1;
+                    this.image = this.down1;
                 } else {
-                    image = this.down2;
+                    this.image = this.down2;
                 }
                 break;
             case Direction.LEFT:
                 if (this.spriteNumber == 0) {
-                    image = this.left1;
+                    this.image = this.left1;
                 } else {
-                    image = this.left2;
+                    this.image = this.left2;
                 }
                 break;
             case Direction.RIGHT:
                 if (this.spriteNumber == 0) {
-                    image = this.right1;
+                    this.image = this.right1;
                 } else {
-                    image = this.right2;
+                    this.image = this.right2;
                 }
                 break;
         }
-        return image;
     }
 
     public void setAction() {
@@ -152,11 +174,27 @@ public class Entity {
         if (this.attemptedDirections.isEmpty()) {
             this.attemptedDirections = EnumSet.allOf(Direction.class);
         }
+        if (this.collisionOn) {
+            System.out.println(this.attemptedDirections);
+        }
         List<Direction> availableDirections = new ArrayList<>(this.attemptedDirections);
         if (this.collisionOn || this.actionLockCounter > Math.random() * 120 + 50) {
-            Random random = new Random();
-            int randomIndex = random.nextInt(availableDirections.size());
+            int randomIndex = Utils.generateRandomInt(0, this.attemptedDirections.size() - 1);
             this.direction = availableDirections.get(randomIndex);
+            switch (this.direction) {
+                case Direction.UP:
+                    this.worldY -= this.speed;
+                    break;
+                case Direction.DOWN:
+                    this.worldY += this.speed;
+                    break;
+                case Direction.RIGHT:
+                    this.worldX += this.speed;
+                    break;
+                case Direction.LEFT:
+                    this.worldX -= this.speed;
+                    break;
+            }
             this.actionLockCounter = 0;
         }
         moveEntiy();
@@ -164,19 +202,28 @@ public class Entity {
 
     public void takeDamage(int amount) {
         this.health -= amount;
-        if (this.health < 0) {
+        if (this.health <= 0) {
             this.health = 0;
+            this.isDead = true;
+            this.movable = false;
         }
         this.gamePanel.playSoundEffect(this.damageSound);
         this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
         this.effect = new AlertEffect(this.gamePanel, this);
-        System.out.println(this.entityType + ": " + getCurrentHealth());
     }
 
     public void increaseHealth(double amount) {
         this.health += amount;
         if (this.health > this.maxHealth) {
             this.health = this.maxHealth;
+        }
+    }
+
+    public void adjustHealth(double amount) {
+        if (amount > 0) {
+            increaseHealth(Math.abs(amount));
+        } else {
+            takeDamage((int) Math.abs(amount));
         }
     }
 
