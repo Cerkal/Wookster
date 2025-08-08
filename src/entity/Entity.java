@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -33,14 +34,16 @@ public class Entity {
     // Location
     public int worldX, worldY;
     public int speed;
-    public BufferedImage image;
-    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2, dead;
     public Direction direction;
 
     // Sprite
     protected int spriteCounter = 0;
     protected int spriteNumber = 0;
     protected boolean isMoving = false;
+    public HashMap<Direction, List<BufferedImage>> imageMap = new HashMap<>();
+    public HashMap<Direction, List<BufferedImage>> imageMapDefault = new HashMap<>();
+    public BufferedImage image;
+    public BufferedImage dead;
 
     // Collision
     public Rectangle solidArea = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
@@ -142,20 +145,21 @@ public class Entity {
         this.gamePanel.ui.displayDialog(this.dialogue[this.dialogueIndex]);
         this.dialogueIndex++;
     
-        switch (this.gamePanel.player.direction) {
+        this.direction = getOppositeDirection(this.gamePanel.player.direction);
+    }
+
+    public Direction getOppositeDirection(Direction direction) {
+        switch (direction) {
             case Direction.UP:
-                this.direction = Direction.DOWN;
-                break;
+                return Direction.DOWN;
             case Direction.DOWN:
-                this.direction = Direction.UP;
-                break;
+                return Direction.UP;
             case Direction.LEFT:
-                this.direction = Direction.RIGHT;
-                break;
+                return Direction.RIGHT;
             case Direction.RIGHT:
-                this.direction = Direction.LEFT;
-                break;
+                return Direction.LEFT;
         }
+        return null;
     }
 
     protected void getSpriteByDirection() {
@@ -163,37 +167,7 @@ public class Entity {
             this.image = this.dead;
             return;
         }
-        this.image = null;
-        switch (this.direction) {
-            case Direction.UP:
-                if (this.spriteNumber == 0) {
-                    this.image = this.up1;
-                } else {
-                    this.image = this.up2;
-                }
-                break;
-            case Direction.DOWN:
-                if (this.spriteNumber == 0) {
-                    this.image = this.down1;
-                } else {
-                    this.image = this.down2;
-                }
-                break;
-            case Direction.LEFT:
-                if (this.spriteNumber == 0) {
-                    this.image = this.left1;
-                } else {
-                    this.image = this.left2;
-                }
-                break;
-            case Direction.RIGHT:
-                if (this.spriteNumber == 0) {
-                    this.image = this.right1;
-                } else {
-                    this.image = this.right2;
-                }
-                break;
-        }
+        this.image = this.imageMap.get(this.direction).get(this.spriteNumber);
     }
 
     public void setAction() {

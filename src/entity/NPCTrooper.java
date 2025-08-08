@@ -1,5 +1,8 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 
 import main.Constants;
@@ -19,14 +22,23 @@ public class NPCTrooper extends Entity {
 
     public void getPlayerImage() {
         try {
-            this.up1 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_UP_0));
-            this.up2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_UP_1));
-            this.down1 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DOWN_0));
-            this.down2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DOWN_1));
-            this.left1 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_LEFT_0));
-            this.left2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_LEFT_1));
-            this.right1 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_0));
-            this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_1));
+            this.imageMapDefault.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_UP_1))
+            )));
+            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DOWN_1))
+            )));
+            this.imageMapDefault.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_LEFT_1))
+            )));
+            this.imageMapDefault.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_RIGHT_1))
+            )));
+            this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DEAD));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());

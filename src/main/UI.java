@@ -52,8 +52,8 @@ public class UI {
         graphics2D.setFont(this.customFont);
         
         drawHealth(graphics2D);
-        drawInventory(graphics2D);
-        drawSpells(graphics2D);
+        drawDebug(graphics2D);
+        drawWeapon(graphics2D);
         
         if (this.messageDisplay) {
             drawMessage(graphics2D, this.currentMessage, false);
@@ -152,29 +152,23 @@ public class UI {
         }
     }
 
-    private void drawInventory(Graphics2D graphics2D) {
+    private void drawDebug(Graphics2D graphics2D) {
         String playerLocation = locationToString(
             this.gamePanel.player.worldX/Constants.TILE_SIZE,
             this.gamePanel.player.worldY/Constants.TILE_SIZE
         );
-
-        graphics2D.setFont(this.customFont);
-        graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString(
-            playerLocation +
-            "Inv: " + this.gamePanel.player.inventory.toString(), 10, 75
-        );
-        graphics2D.drawString(Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND), 10, 75 + 30);
-    }
-
-    private void drawSpells(Graphics2D graphics2D) {
         List<String> spells = new ArrayList<String>();
         for (SpellType spellType : this.gamePanel.player.spells.keySet()) {
             spells.add(spellType.toString());
         }
         graphics2D.setFont(this.customFont);
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString("Spells: " + spells.toString(), 10, 75 + 30 + 30);
+        graphics2D.drawString(
+            Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " +
+            playerLocation +
+            "Inv: " + this.gamePanel.player.inventory.toString() + " " +
+            "Spells: " + spells.toString(), 10, Constants.SCREEN_HEIGHT - 10
+        );
     }
 
     private void drawMessage(Graphics2D graphics2D, String message, boolean slowType) {
@@ -269,6 +263,12 @@ public class UI {
 
         graphics2D.setColor(Color.WHITE);
         graphics2D.drawString(currentHealth + " / " + maxHealth, x, y - 10);
+    }
+
+    private void drawWeapon(Graphics2D graphics2D) {
+        if (this.gamePanel.player.weapon != null) {
+            this.gamePanel.player.weapon.drawWeaponInfo(graphics2D, 85);
+        }
     }
 
     private static String locationToString(int x, int y) {

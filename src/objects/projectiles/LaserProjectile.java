@@ -5,25 +5,19 @@ import main.Constants;
 import main.GamePanel;
 import entity.Entity.Direction;
 
-public class ArrowProjectile extends Projectile {
+public class LaserProjectile extends Projectile {
 
-    public static final int DAMAGE_MODIFIER = 2;
-
-    public ArrowProjectile(GamePanel gamePanel, int speed) {
+    public LaserProjectile(GamePanel gamePanel, int speed) {
         super(gamePanel);
         this.speed = speed;
-        this.damage = getDamageFromSpeed(speed);
-        this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
+        this.damage = 10;
+        this.setImage(Constants.WEAPON_PROJECTILE_LASER);
         startPosition();
     }
 
     @Override
     protected void handleEntityCollision(Entity entity) {
         entity.takeDamage(this.damage);
-    }
-
-    private int getDamageFromSpeed(int speed) {
-        return speed * DAMAGE_MODIFIER;
     }
 
     private void startPosition() {

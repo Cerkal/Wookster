@@ -1,5 +1,8 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 
 import main.Constants;
@@ -20,7 +23,11 @@ public class NPCDroids extends Entity {
 
     public void getPlayerImage() {
         try {
-            this.down1 = ImageIO.read(getClass().getResourceAsStream(Constants.DROIDS_IMAGE_DOWN_0));
+            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.DROIDS_IMAGE_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.DROIDS_IMAGE_DOWN_0))
+            )));
+            this.imageMap = this.imageMapDefault;
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
         }

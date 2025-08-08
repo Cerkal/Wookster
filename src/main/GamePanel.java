@@ -63,7 +63,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.assetSetter.setNPCs();
 
         // MUTE IT!
-        this.sound.mute = true;
+        this.sound.mute = false;
 
         playMusic(Constants.SOUND_TITLE_SCREEN);
     }
@@ -151,12 +151,12 @@ public class GamePanel extends JPanel implements Runnable {
     private void drawGame(Graphics2D graphics2D) {
         this.tileManager.draw(graphics2D);
 
-        for (SuperObject object : this.objects) {
-            object.draw(graphics2D);
-        }
-
         for (Effect effect : effects) {
             effect.draw(graphics2D);
+        }
+
+        for (SuperObject object : this.objects) {
+            object.draw(graphics2D);
         }
 
         // Compare Y Values for drawing
@@ -179,11 +179,9 @@ public class GamePanel extends JPanel implements Runnable {
             for (Projectile projectile : this.projectiles) {
                 projectile.draw(graphics2D);
             }    
-        } catch (Exception e) {
-            // System.out.println("Removed projectile.");
-        }
+        } catch (Exception e) { }
 
-        entityList.removeAll(entityList);
+        entityList.clear();
 
         this.ui.draw(graphics2D);
         graphics2D.dispose();

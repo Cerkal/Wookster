@@ -10,6 +10,7 @@ import entity.Entity;
 import entity.Entity.Direction;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class Projectile {
 
@@ -28,6 +29,11 @@ public class Projectile {
 
     public int speed = 14;
     public int damage = 10;
+
+    public enum Projectile_Type {
+        ARROWS,
+        LASER
+    };
 
     public Projectile(GamePanel gamePanel) {
         this.gamePanel = gamePanel;

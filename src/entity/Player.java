@@ -2,8 +2,11 @@ package entity;
 
 import main.KeyHandler;
 import objects.SuperObject;
+import objects.projectiles.Projectile.Projectile_Type;
+import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
 import objects.weapons.Weapon;
+import objects.weapons.Weapon.Weapon_Type;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -13,8 +16,11 @@ import tile.Tile;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -27,32 +33,38 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
-
     public static final int DEFAULT_SPEED = 4;
+
+    // Weapons
+    public int hold = 0;
+    public boolean attacking = false;
+    public Weapon weapon;
+    HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public HashMap<String, Integer> inventory = new HashMap<>();
     public Entity entityInDialogue;
-    public Weapon weapon;
     public Entity collisionEntity;
-
     
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
         super(gamePanel);
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
+        this.damageSound = Constants.SOUND_HURT;
 
         screenX = Constants.SCREEN_WIDTH/2 - (Constants.TILE_SIZE/2);
         screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
-
-        this.damageSound = Constants.SOUND_HURT;
 
         setDefaultValues();
         getPlayerImage();
 
         // Weapon test
         this.weapon = new CrossbowWeapon(gamePanel);
+        this.inventory.put(this.weapon.projectileType.toString(), 10);
+
+        this.weapon = new BlasterWeapon(gamePanel);
+        this.inventory.put(this.weapon.projectileType.toString(), 50);
     }
 
     public void setDefaultValues() {
@@ -64,52 +76,57 @@ public class Player extends Entity {
     }
 
     public void update() {
-        isMoving = false;
+        this.isMoving = false;
         if (
             (
                 (
-                    keyHandler.upPressed ||
-                    keyHandler.downPressed ||
-                    keyHandler.leftPressed ||
-                    keyHandler.rightPressed
-                ) && !isDead
+                    this.keyHandler.upPressed ||
+                    this.keyHandler.downPressed ||
+                    this.keyHandler.leftPressed ||
+                    this.keyHandler.rightPressed ||
+                    this.keyHandler.enterPressed
+                ) && !this.isDead
             )
         ){
-            isMoving = true;
+            this.isMoving = true;
 
-            if (keyHandler.upPressed) {
-                direction = Direction.UP;
+            if (this.keyHandler.upPressed) {
+                this.direction = Direction.UP;
             }
-            if (keyHandler.downPressed) {
-                direction = Direction.DOWN;
+            if (this.keyHandler.downPressed) {
+                this.direction = Direction.DOWN;
             }
-            if (keyHandler.leftPressed) {
-                direction = Direction.LEFT;
+            if (this.keyHandler.leftPressed) {
+                this.direction = Direction.LEFT;
             }
-            if (keyHandler.rightPressed) {
-                direction = Direction.RIGHT;
+            if (this.keyHandler.rightPressed) {
+                this.direction = Direction.RIGHT;
             }
             collision();
             moveEntiy();            
         }
         spellCheck();
         invincableCheck();
-        if (this.collisionEntity == null && this.weapon != null) {
-            if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                this.weapon.shoot();
-            }
-        }
+        weapon();
     }
 
 
     public void addInventoryItem(String objectType) {
-        this.gamePanel.ui.displayMessage(objectType + Constants.MESSGE_INVENTORY_ADDED);
+        addInventoryItem(objectType, 1);
+    }
+
+    public void addInventoryItem(String objectType, int count) {
+        if (count > 1) {
+            this.gamePanel.ui.displayMessage(count + " " + objectType.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+        } else {
+            this.gamePanel.ui.displayMessage(objectType+ Constants.MESSGE_INVENTORY_ADDED);
+        }
         if (this.inventory.containsKey(objectType)) {
             Integer quantity = inventory.get(objectType);
-            quantity++;
+            quantity += 10;
             this.inventory.put(objectType, quantity);
         } else {
-            this.inventory.put(objectType, 1);
+            this.inventory.put(objectType, count);
         }
     }
 
@@ -131,6 +148,7 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D graphics2D) {
+        getCurrentSpriteSet();
         getSpriteByDirection();
         graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         drawSpellEffect(graphics2D);
@@ -140,14 +158,65 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
         try {
-            this.up1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_0));
-            this.up2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_1));
-            this.down1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_0));
-            this.down2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_1));
-            this.left1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_0));
-            this.left2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1));
-            this.right1 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0));
-            this.right2 = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1));
+            // Default
+            this.imageMapDefault.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_1))
+            )));
+            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_1))
+            )));
+            this.imageMapDefault.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1))
+            )));
+            this.imageMapDefault.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1))
+            )));
+
+            // Crossbow
+            HashMap<Direction, List<BufferedImage>> imageMapCrossBow = new HashMap<>();
+            imageMapCrossBow.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_UP_1))
+            )));
+            imageMapCrossBow.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_DOWN_1))
+            )));
+            imageMapCrossBow.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_LEFT_1))
+            )));
+            imageMapCrossBow.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1))
+            )));
+            imageMapWeapons.put(Weapon_Type.CROSSBOW, imageMapCrossBow);
+
+            // Blaster
+            HashMap<Direction, List<BufferedImage>> imageMapBlaster = new HashMap<>();
+            imageMapBlaster.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_UP_1))
+            )));
+            imageMapBlaster.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_DOWN_1))
+            )));
+            imageMapBlaster.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_LEFT_1))
+            )));
+            imageMapBlaster.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_1))
+            )));
+            imageMapWeapons.put(Weapon_Type.BLASTER, imageMapBlaster);
+
+            this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage() + e.getStackTrace());
@@ -160,6 +229,12 @@ public class Player extends Entity {
         obectCollision();
         entityCollision();
         this.gamePanel.eventHandler.checkEvent();
+    }
+
+    private void weapon() {
+        if (this.collisionEntity == null && this.weapon != null) {
+            this.weapon.shoot();
+        }
     }
 
     private void drawSpellEffect(Graphics2D graphics2D) {
@@ -176,6 +251,16 @@ public class Player extends Entity {
         if (sparkle != null) {
             BufferedImage sparkleImage = sparkle.getCurrentImage(this.gamePanel.gameTime);
             graphics2D.drawImage(sparkleImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+        }
+    }
+
+    private void getCurrentSpriteSet() {
+        if (this.attacking) {
+            if (this.weapon != null && this.imageMapWeapons.get(this.weapon.weaponType) != null) {
+                this.imageMap = this.imageMapWeapons.get(this.weapon.weaponType);
+            }
+        } else {
+            this.imageMap = this.imageMapDefault;
         }
     }
 
@@ -204,19 +289,21 @@ public class Player extends Entity {
                     this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
                     this.collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
+                } else {
+                    this.attacking = true;
                 }
             }
         }
     }
 
     private void spellCheck() {
-        brokenKey();
         timedSpell();
+        keySpell();
         speedSpell();
         healthSpell();
     }
 
-    private void brokenKey() {
+    private void keySpell() {
         if (this.spells.get(SpellType.KEY_SPELL) == null) return;
         KeySpell currentKeySpell = (KeySpell) spells.get(SpellType.KEY_SPELL);
         if (currentKeySpell.brokeDirection == this.direction) {

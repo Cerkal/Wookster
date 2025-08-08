@@ -61,6 +61,10 @@ public class Constants {
     public static final String OBJECT_RED_POTION_IMAGE = "/res/objects/potion_red.png";
     public static final String OBJECT_SIGN = "Sign";
     public static final String OBJECT_SIGN_IMAGE = "/res/objects/sign.png";
+    public static final String OBJECT_AMMO_ARROWS_IMAGE = "/res/objects/arrows.png";
+
+    // Weapons
+    public static final String WEAPON_CROSSBOW_NAME = "Crossbow";
 
     // Hero
     public static final String PLAYER_IMAGE_UP_0 = "/res/player/wookster_up_0.png";
@@ -71,7 +75,27 @@ public class Constants {
     public static final String PLAYER_IMAGE_LEFT_1 = "/res/player/wookster_left_1.png";
     public static final String PLAYER_IMAGE_RIGHT_0 = "/res/player/wookster_right_0.png";
     public static final String PLAYER_IMAGE_RIGHT_1 = "/res/player/wookster_right_1.png";
+
+    public static final String PLAYER_IMAGE_CROSSBOW_UP_0 = "/res/player/wookster_crossbow_up_0.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_UP_1 = "/res/player/wookster_crossbow_up_1.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_DOWN_0 = "/res/player/wookster_crossbow_down_0.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_DOWN_1 = "/res/player/wookster_crossbow_down_1.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_LEFT_0 = "/res/player/wookster_crossbow_left_0.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_LEFT_1 = "/res/player/wookster_crossbow_left_1.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_RIGHT_0 = "/res/player/wookster_crossbow_right_0.png";
+    public static final String PLAYER_IMAGE_CROSSBOW_RIGHT_1 = "/res/player/wookster_crossbow_right_1.png";
+
+    public static final String PLAYER_IMAGE_BLASTER_UP_0 = "/res/player/wookster_blaster_up_0.png";
+    public static final String PLAYER_IMAGE_BLASTER_UP_1 = "/res/player/wookster_blaster_up_1.png";
+    public static final String PLAYER_IMAGE_BLASTER_DOWN_0 = "/res/player/wookster_blaster_down_0.png";
+    public static final String PLAYER_IMAGE_BLASTER_DOWN_1 = "/res/player/wookster_blaster_down_1.png";
+    public static final String PLAYER_IMAGE_BLASTER_LEFT_0 = "/res/player/wookster_blaster_left_0.png";
+    public static final String PLAYER_IMAGE_BLASTER_LEFT_1 = "/res/player/wookster_blaster_left_1.png";
+    public static final String PLAYER_IMAGE_BLASTER_RIGHT_0 = "/res/player/wookster_blaster_right_0.png";
+    public static final String PLAYER_IMAGE_BLASTER_RIGHT_1 = "/res/player/wookster_blaster_right_1.png";
+
     public static final String PLAYER_IMAGE_DEAD = "/res/player/wookster_dead.png";
+
 
     // NPC
     public static final String TROOPER_IMAGE_UP_0 = "/res/npc/trooper_up_0.png";
@@ -99,9 +123,9 @@ public class Constants {
     public static final String EFFECT_ALERT = "/res/effects/alert.png";
     public static final String EFFECT_UKNOWN = "/res/effects/questionmark.png";
 
-
     // Weapon
     public static final String WEAPON_PROJECTILE_ARROW = "/res/objects/arrow.png";
+    public static final String WEAPON_PROJECTILE_LASER = "/res/objects/laser.png";
 
     public static final String WORLD_00 = "/res/maps/world00.txt";
 
@@ -164,6 +188,7 @@ public class Constants {
     public static final String SOUND_CURSOR = "/res/sounds/cursor.wav";
     public static final String SOUND_LEVELUP = "/res/sounds/levelup.wav";
     public static final String SOUND_ARROW = "/res/sounds/arrow.wav";
+    public static final String SOUND_LASER = "/res/sounds/laser.wav";
     public static final String SOUND_DEATH = "/res/sounds/youbemorecareful.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
@@ -181,6 +206,7 @@ public class Constants {
             SOUND_CURSOR,
             SOUND_LEVELUP,
             SOUND_ARROW,
+            SOUND_LASER,
             SOUND_DEATH
         )
     );
