@@ -7,6 +7,7 @@ import entity.NPCDroids;
 import entity.NPCMom;
 import entity.NPCTrooper;
 import objects.PotionObject;
+import objects.SignObject;
 import objects.ChestObject;
 import objects.DoorObject;
 import objects.KeyObject;
@@ -33,7 +34,9 @@ public class AssetSetter {
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
 
         this.gamePanel.objects.add(new ChestObject(this.gamePanel, 10, 8));
-        
+
+        this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, "No wookies allowed..."));
+
         generateRandomObjects();
 
         // Game ender

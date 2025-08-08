@@ -164,7 +164,10 @@ public class Collision {
         projectile.solidArea.y = projectile.worldY + projectile.solidArea.y;
         target.solidArea.x = target.worldX + target.solidArea.x;
         target.solidArea.y = target.worldY + target.solidArea.y;
-        if (projectile.solidArea.intersects(target.solidArea)) {
+        if (
+            projectile.solidArea.intersects(target.solidArea) &&
+            !target.isDead
+        ){
             projectile.collisionOn = true;
             collisionEntity = target;
         }

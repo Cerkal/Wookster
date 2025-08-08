@@ -28,9 +28,9 @@ public class HealthSpell extends SuperSpell {
     private void init() {
         if (this.healthAmount > 0) {
             this.positiveSpell = true;
-            this.message = Constants.POTION_GOOD;
+            this.message = Constants.MESSAGE_POTION_GOOD;
         } else {
-            this.message = Constants.POTION_BAD;
+            this.message = Constants.MESSAGE_POTION_BAD;
         }
     }
 

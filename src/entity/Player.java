@@ -12,7 +12,6 @@ import spells.SuperSpell.SpellType;
 import tile.Tile;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -104,7 +103,7 @@ public class Player extends Entity {
 
 
     public void addInventoryItem(String objectType) {
-        this.gamePanel.ui.displayMessage(objectType + Constants.INVENTORY_ADDED_MESSAGE);
+        this.gamePanel.ui.displayMessage(objectType + Constants.MESSGE_INVENTORY_ADDED);
         if (this.inventory.containsKey(objectType)) {
             Integer quantity = inventory.get(objectType);
             quantity++;
@@ -155,6 +154,14 @@ public class Player extends Entity {
         }
     }
 
+    public void collision() {
+        this.collisionOn = false;
+        this.gamePanel.collision.checkTile(this);
+        obectCollision();
+        entityCollision();
+        this.gamePanel.eventHandler.checkEvent();
+    }
+
     private void drawSpellEffect(Graphics2D graphics2D) {
         if (this.spells.size() == 0) return;
         Tile sparkle = new Tile();
@@ -180,14 +187,6 @@ public class Player extends Entity {
                 invincableCounter = 0;
             }
         }
-    }
-
-    private void collision() {
-        this.collisionOn = false;
-        this.gamePanel.collision.checkTile(this);
-        obectCollision();
-        entityCollision();
-        this.gamePanel.eventHandler.checkEvent();
     }
 
     private void obectCollision() {

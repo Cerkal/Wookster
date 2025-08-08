@@ -88,6 +88,8 @@ public class KeyHandler implements KeyListener {
                     }
                 }
                 break;
+            default:
+                break;
         }
     }
 

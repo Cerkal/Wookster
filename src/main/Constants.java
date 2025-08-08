@@ -59,9 +59,8 @@ public class Constants {
     public static final String OBJECT_GREEN_POTION_IMAGE = "/res/objects/potion_green.png";
     public static final String OBJECT_RED_POTION = "Red Potion";
     public static final String OBJECT_RED_POTION_IMAGE = "/res/objects/potion_red.png";
-
-    public static final String INVENTORY_ADDED_MESSAGE = " added to inventory";
-    public static final String INVENTORY_REMOVED_MESSAGE = " removed from inventory";
+    public static final String OBJECT_SIGN = "Sign";
+    public static final String OBJECT_SIGN_IMAGE = "/res/objects/sign.png";
 
     // Hero
     public static final String PLAYER_IMAGE_UP_0 = "/res/player/wookster_up_0.png";
@@ -186,13 +185,18 @@ public class Constants {
         )
     );
 
+    public static final String MESSGE_INVENTORY_ADDED = " added to inventory";
+    public static final String MESSAGE_INVENTORY_REMOVED = " removed from inventory";
+
+    public static final String MESSAGE_SIGN_READS = "The sign reads ";
+
     public static final String RANDOM_HURT_DIALOGUE_01 = "A spider bites you, but it appologizes.";
     public static final String RANDOM_HURT_DIALOGUE_02 = "Damn dirty bees! You pull out the stinger.";
     public static final String RANDOM_HURT_DIALOGUE_03 = "You step in ewok poo. Gross.";
     public static final String RANDOM_HURT_DIALOGUE_04 = "You step on a nail. Ouch.";
 
-    public static final String POTION_GOOD = "The potion is spicy and nice.";
-    public static final String POTION_BAD = "The potion is wet and smelly.";
+    public static final String MESSAGE_POTION_GOOD = "The potion is spicy and nice.";
+    public static final String MESSAGE_POTION_BAD = "The potion is wet and smelly.";
 
     public static final List<String> RNADOM_HURT_DIALOGUE = new ArrayList<>(
         List.of(

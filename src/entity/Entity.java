@@ -19,7 +19,7 @@ public class Entity {
 
     GamePanel gamePanel;
 
-    boolean debugCollision = true;
+    boolean debugCollision = false;
 
     public static final int SOLID_AREA_X = 10;
     public static final int SOLID_AREA_Y = 14;
@@ -111,11 +111,26 @@ public class Entity {
 
     public void update() {
         setAction();
+        collision();
+    }
+
+    public void collision() {
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);
-        this.gamePanel.collision.getCollidEntity(this, gamePanel.player);
         this.gamePanel.collision.entityCollision(this);
+        checkPlayerCollision();
         this.gamePanel.collision.objectCollision(this, false);
+    }
+
+    public void checkPlayerCollision() {
+        Entity entity = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
+        if (entity != null) {
+            handlePlayerCollision(this.gamePanel.player);
+        }
+    }
+
+    public void handlePlayerCollision(Player player) {
+        // for override in sub class
     }
 
     public void speak() {
