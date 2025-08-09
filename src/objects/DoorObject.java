@@ -5,8 +5,6 @@ import main.GamePanel;
 
 public class DoorObject extends SuperObject {
 
-    public final String NAME  = Constants.OBJECT_DOOR;
-
     public DoorObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         init();
@@ -14,16 +12,18 @@ public class DoorObject extends SuperObject {
 
     public void activateObject() {
         super.activateObject();
-        if (this.gamePanel.player.getInventoryItem(Constants.OBJECT_KEY) > 0) {
+        String key = Object_Type.KEY.name();
+        if (this.gamePanel.player.getInventoryItem(key) > 0) {
             this.removeObject();
-            this.gamePanel.player.removeInventoryItem(Constants.OBJECT_KEY);
+            this.gamePanel.player.removeInventoryItem(key);
         } else {
             this.playSecondarySound();
         }
     }
 
     private void init() {
-        this.name = NAME;
+        this.objectType = Object_Type.DOOR;
+        this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_DOOR_IMAGE);
         this.collision = true;
         this.soundPrimary = Constants.SOUND_UNLOCK;

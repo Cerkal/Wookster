@@ -2,9 +2,9 @@ package entity;
 
 import main.KeyHandler;
 import objects.SuperObject;
-import objects.projectiles.Projectile.Projectile_Type;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
+import objects.weapons.FistWeapon;
 import objects.weapons.Weapon;
 import objects.weapons.Weapon.Weapon_Type;
 import spells.HealthSpell;
@@ -26,6 +26,7 @@ import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.GamePanel;
+import main.InventoryItem;
 
 public class Player extends Entity {
 
@@ -39,10 +40,11 @@ public class Player extends Entity {
     public int hold = 0;
     public boolean attacking = false;
     public Weapon weapon;
+    public HashMap<Weapon_Type, Weapon> weapons = new HashMap<>();
     HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    public HashMap<String, Integer> inventory = new HashMap<>();
+    public HashMap<String, InventoryItem> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
     
@@ -58,13 +60,6 @@ public class Player extends Entity {
 
         setDefaultValues();
         getPlayerImage();
-
-        // Weapon test
-        this.weapon = new CrossbowWeapon(gamePanel);
-        this.inventory.put(this.weapon.projectileType.toString(), 10);
-
-        this.weapon = new BlasterWeapon(gamePanel);
-        this.inventory.put(this.weapon.projectileType.toString(), 50);
     }
 
     public void setDefaultValues() {
@@ -73,6 +68,10 @@ public class Player extends Entity {
         this.speed = DEFAULT_SPEED;
         this.direction = Direction.DOWN;
         this.entityType = Entity_Type.PLAYER;
+
+        addWeapon(Weapon_Type.BLASTER);
+        addWeapon(Weapon_Type.CROSSBOW);
+        addWeapon(Weapon_Type.FIST);
     }
 
     public void update() {
@@ -108,43 +107,6 @@ public class Player extends Entity {
         spellCheck();
         invincableCheck();
         weapon();
-    }
-
-
-    public void addInventoryItem(String objectType) {
-        addInventoryItem(objectType, 1);
-    }
-
-    public void addInventoryItem(String objectType, int count) {
-        if (count > 1) {
-            this.gamePanel.ui.displayMessage(count + " " + objectType.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
-        } else {
-            this.gamePanel.ui.displayMessage(objectType+ Constants.MESSGE_INVENTORY_ADDED);
-        }
-        if (this.inventory.containsKey(objectType)) {
-            Integer quantity = inventory.get(objectType);
-            quantity += 10;
-            this.inventory.put(objectType, quantity);
-        } else {
-            this.inventory.put(objectType, count);
-        }
-    }
-
-    public void removeInventoryItem(String objectType) {
-        if (this.inventory.containsKey(objectType)) {
-            int quantity = inventory.get(objectType);
-            if (quantity == 1) {
-                this.inventory.remove(objectType);
-            } else {
-                quantity--;
-                this.inventory.put(objectType, quantity);
-            }
-        }
-    }
-
-    public int getInventoryItem(String objectType) {
-        if (this.inventory.get(objectType) == null) return 0;
-        return this.inventory.get(objectType);
     }
 
     public void draw(Graphics2D graphics2D) {
@@ -216,6 +178,26 @@ public class Player extends Entity {
             )));
             imageMapWeapons.put(Weapon_Type.BLASTER, imageMapBlaster);
 
+            // Fist
+            HashMap<Direction, List<BufferedImage>> imageMapFist = new HashMap<>();
+            imageMapFist.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_UP_1))
+            )));
+            imageMapFist.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_DOWN_1))
+            )));
+            imageMapFist.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_LEFT_1))
+            )));
+            imageMapFist.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_1))
+            )));
+            imageMapWeapons.put(Weapon_Type.FIST, imageMapFist);
+
             this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
         } catch (Exception e) {
@@ -231,8 +213,96 @@ public class Player extends Entity {
         this.gamePanel.eventHandler.checkEvent();
     }
 
+    public void addInventoryItem(InventoryItem item) {
+        if (item.count > 1) {
+            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+        } else {
+            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
+        }
+        if (this.inventory.containsKey(item.name)) {
+            this.inventory.get(item.name).count += item.count;
+        } else {
+            this.inventory.put(item.name, item);
+        }
+    }
+
+    public void removeInventoryItem(InventoryItem item) {
+        if (this.inventory.containsKey(item.name)) {
+            int quantity = this.inventory.get(item.name).count;
+            if (quantity == 1) {
+                this.inventory.remove(item.name);
+            } else {
+                this.inventory.get(item.name).count--;
+            }
+        }
+    }
+
+    public void removeInventoryItem(String name) {
+        if (this.inventory.containsKey(name)) {
+            int quantity = this.inventory.get(name).count;
+            if (quantity == 1) {
+                this.inventory.remove(name);
+            } else {
+                this.inventory.get(name).count--;
+            }
+        }
+    }
+
+    public int getInventoryItem(String objectType) {
+        if (this.inventory.get(objectType) == null) return 0;
+        return this.inventory.get(objectType).count;
+    }
+
+    public List<InventoryItem> getInventory() {
+        List<InventoryItem> selectableList = new ArrayList<>();
+        for (String key : this.inventory.keySet()) {
+            InventoryItem item = this.inventory.get(key);
+            if (item.usable) {
+                selectableList.add(item);
+            }
+        };
+        return selectableList;
+    }
+
+    public List<InventoryItem> getInventoryNonSelectable() {
+        List<InventoryItem> nonSelectableList = new ArrayList<>();
+        for (String key : this.inventory.keySet()) {
+            InventoryItem item = this.inventory.get(key);
+            if (!item.usable && item.visibility) {
+                nonSelectableList.add(item);
+            }
+        };
+        return nonSelectableList;
+    }
+
+    public void addWeapon(Weapon_Type weaponType) {
+        switch (weaponType) {
+            case Weapon_Type.BLASTER:
+                this.weapons.put(weaponType, new BlasterWeapon(gamePanel, this));
+                break;
+            case Weapon_Type.CROSSBOW:
+                this.weapons.put(weaponType, new CrossbowWeapon(gamePanel, this));
+                break;
+            case Weapon_Type.FIST:
+                this.weapons.put(weaponType, new FistWeapon(gamePanel, this));
+                break;
+            default:
+                break;
+        }
+        switchWeapon(weaponType);
+    }
+
+    public void switchWeapon(Weapon_Type weaponType) {
+        if (!this.weapons.containsKey(weaponType)) { return; }
+        this.weapon = this.weapons.get(weaponType);
+    }
+
     private void weapon() {
-        if (this.collisionEntity == null && this.weapon != null) {
+        if (this.weapon == null) { return; }
+        if (
+            this.collisionEntity == null ||
+            (this.collisionEntity != null && this.collisionEntity.entityType == Entity_Type.ENEMY)
+        ){
             this.weapon.shoot();
         }
     }
@@ -286,11 +356,8 @@ public class Player extends Entity {
         if (this.collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
                 if (this.collisionEntity.entityType == Entity_Type.NPC) {
-                    this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
                     this.collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
-                } else {
-                    this.attacking = true;
                 }
             }
         }

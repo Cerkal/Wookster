@@ -5,17 +5,17 @@ import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
 
-public class ArrowsObject extends SuperObject {
+public class LasersObject extends SuperObject {
 
-    static final int MIN_RANDOM_ARROW_AMOUNT = 10;
-    static final int MAX_RANDOM_ARROW_AMOUNT = 20;
+    static final int MIN_RANDOM_LASER_AMOUNT = 10;
+    static final int MAX_RANDOM_LASER_AMOUNT = 50;
 
-    public ArrowsObject(GamePanel gamePanel) {
+    public LasersObject(GamePanel gamePanel) {
         super(gamePanel);
         init();
     }
     
-    public ArrowsObject(GamePanel gamePanel, int worldX, int worldY) {
+    public LasersObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         init();
     }
@@ -27,13 +27,13 @@ public class ArrowsObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.ARROWS;
+        this.objectType = Object_Type.LASERS;
         this.name = this.objectType.name();
-        this.setImage(Constants.OBJECT_AMMO_ARROWS_IMAGE);
+        this.setImage(Constants.OBJECT_AMMO_LASERS_IMAGE);
         this.collision = true;
         this.inventoryItem = new InventoryItem(
             this.name,
-            Utils.generateRandomInt(MIN_RANDOM_ARROW_AMOUNT, MAX_RANDOM_ARROW_AMOUNT),
+            Utils.generateRandomInt(MIN_RANDOM_LASER_AMOUNT, MAX_RANDOM_LASER_AMOUNT), 
             false,
             false
         );

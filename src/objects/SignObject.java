@@ -5,13 +5,13 @@ import main.GamePanel;
 
 public class SignObject extends SuperObject {
 
-    public final String NAME  = Constants.OBJECT_SIGN;
     
     String message;
 
     public SignObject(GamePanel gamePanel, int worldX, int worldY, String message) {
         super(gamePanel, worldX, worldY);
         this.message = message;
+        this.objectType = Object_Type.SIGN;
         init();
     }
 
@@ -21,8 +21,8 @@ public class SignObject extends SuperObject {
     }
 
     private void init() {
-        this.name = NAME;
-        this.setImage(Constants.OBJECT_SIGN_IMAGE);
+        this.name = objectType.name();
         this.collision = true;
+        this.setImage(Constants.OBJECT_SIGN_IMAGE);
     }
 }

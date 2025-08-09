@@ -26,6 +26,7 @@ public class GamePanel extends JPanel implements Runnable {
         PLAY,
         PAUSE,
         DIALOGUE,
+        INVENTORY,
         DEATH
     }
 
@@ -36,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GameState gameState = GameState.TITLE;
     public long gameTime = 0;
     public KeyHandler keyHandler = new KeyHandler(this);
+    public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
     public Collision collision = new Collision(this);
     public List<SuperObject> objects = new ArrayList<>();
@@ -45,7 +47,6 @@ public class GamePanel extends JPanel implements Runnable {
     public List<Effect> effects = new ArrayList<>();
     public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
-    public UI ui = new UI(this);
     public EventHandler eventHandler = new EventHandler(this);
 
     BufferedImage deathScreen;

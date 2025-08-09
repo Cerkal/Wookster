@@ -29,6 +29,7 @@ public class Constants {
     public static final int MESSAGE_DISPLAY_SLOW_TYPE_TIME = 50;
 
     // Fonts
+    public static final float FONT_SIZE_SMALL = 15f;
     public static final float FONT_SIZE = 20f;
     public static final float FONT_SIZE_MEDIUM = 25f;
     public static final float FONT_SIZE_LARGE = 50f;
@@ -48,23 +49,17 @@ public class Constants {
             GAME_TITLE_SCREEN_QUIT_GAME
         )
     );
+    public static final String GAME_INVENTORY = "Inventory";
 
-    public static final String OBJECT_DOOR = "Door";
+    // Objects
     public static final String OBJECT_DOOR_IMAGE = "/res/objects/door.png";
-    public static final String OBJECT_KEY = "Key";
     public static final String OBJECT_KEY_IMAGE = "/res/objects/key.png";
-    public static final String OBJECT_CHEST = "Chest";
     public static final String OBJECT_CHEST_IMAGE = "/res/objects/chest.png";
-    public static final String OBJECT_GREEN_POTION = "Green Potion";
     public static final String OBJECT_GREEN_POTION_IMAGE = "/res/objects/potion_green.png";
-    public static final String OBJECT_RED_POTION = "Red Potion";
-    public static final String OBJECT_RED_POTION_IMAGE = "/res/objects/potion_red.png";
-    public static final String OBJECT_SIGN = "Sign";
+    public static final String OBJECT_PURPLE_POTION_IMAGE = "/res/objects/potion_purple.png";
     public static final String OBJECT_SIGN_IMAGE = "/res/objects/sign.png";
     public static final String OBJECT_AMMO_ARROWS_IMAGE = "/res/objects/arrows.png";
-
-    // Weapons
-    public static final String WEAPON_CROSSBOW_NAME = "Crossbow";
+    public static final String OBJECT_AMMO_LASERS_IMAGE = "/res/objects/lasers.png";
 
     // Hero
     public static final String PLAYER_IMAGE_UP_0 = "/res/player/wookster_up_0.png";
@@ -94,8 +89,16 @@ public class Constants {
     public static final String PLAYER_IMAGE_BLASTER_RIGHT_0 = "/res/player/wookster_blaster_right_0.png";
     public static final String PLAYER_IMAGE_BLASTER_RIGHT_1 = "/res/player/wookster_blaster_right_1.png";
 
-    public static final String PLAYER_IMAGE_DEAD = "/res/player/wookster_dead.png";
+    public static final String PLAYER_IMAGE_FIST_UP_0 = "/res/player/wookster_fist_up_0.png";
+    public static final String PLAYER_IMAGE_FIST_UP_1 = "/res/player/wookster_fist_up_1.png";
+    public static final String PLAYER_IMAGE_FIST_DOWN_0 = "/res/player/wookster_fist_down_0.png";
+    public static final String PLAYER_IMAGE_FIST_DOWN_1 = "/res/player/wookster_fist_down_1.png";
+    public static final String PLAYER_IMAGE_FIST_LEFT_0 = "/res/player/wookster_fist_left_0.png";
+    public static final String PLAYER_IMAGE_FIST_LEFT_1 = "/res/player/wookster_fist_left_1.png";
+    public static final String PLAYER_IMAGE_FIST_RIGHT_0 = "/res/player/wookster_fist_right_0.png";
+    public static final String PLAYER_IMAGE_FIST_RIGHT_1 = "/res/player/wookster_fist_right_1.png";
 
+    public static final String PLAYER_IMAGE_DEAD = "/res/player/wookster_dead.png";
 
     // NPC
     public static final String TROOPER_IMAGE_UP_0 = "/res/npc/trooper_up_0.png";
@@ -127,6 +130,7 @@ public class Constants {
     public static final String WEAPON_PROJECTILE_ARROW = "/res/objects/arrow.png";
     public static final String WEAPON_PROJECTILE_LASER = "/res/objects/laser.png";
 
+    // Maps
     public static final String WORLD_00 = "/res/maps/world00.txt";
 
     // Fonts

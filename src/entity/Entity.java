@@ -137,6 +137,8 @@ public class Entity {
     }
 
     public void speak() {
+        if (this.dialogue == null) { return; }
+        this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
         if (this.dialogueIndex >= this.dialogue.length) {
             this.gamePanel.ui.stopDialogue();
             this.dialogueIndex = 0;

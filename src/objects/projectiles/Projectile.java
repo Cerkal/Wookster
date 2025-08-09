@@ -10,7 +10,6 @@ import entity.Entity;
 import entity.Entity.Direction;
 import main.Constants;
 import main.GamePanel;
-import main.Utils;
 
 public class Projectile {
 
@@ -32,7 +31,7 @@ public class Projectile {
 
     public enum Projectile_Type {
         ARROWS,
-        LASER
+        LASERS
     };
 
     public Projectile(GamePanel gamePanel) {

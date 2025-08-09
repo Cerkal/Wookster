@@ -15,8 +15,8 @@ public class NPCTrooper extends Entity {
         this.direction = Direction.DOWN;
         this.speed = 2;
         this.getPlayerImage();
-        this.setDialogue();
-        this.entityType = Entity_Type.NPC;
+        // this.setDialogue();
+        this.entityType = Entity_Type.ENEMY;
         this.name = "Trooper";
     }
 
@@ -45,15 +45,15 @@ public class NPCTrooper extends Entity {
         }
     }
 
-    public void setDialogue() {
-        String[] lines = {
-            "These are not the droids you are looking for.",
-            "I'm just kidding.",
-            "They're right over there.",
-            "Wait...",
-            "Don't look for them.",
-            "But believe me, they're over there."
-        };
-        this.dialogue = lines;
-    }
+    // public void setDialogue() {
+    //     String[] lines = {
+    //         "These are not the droids you are looking for.",
+    //         "I'm just kidding.",
+    //         "They're right over there.",
+    //         "Wait...",
+    //         "Don't look for them.",
+    //         "But believe me, they're over there."
+    //     };
+    //     this.dialogue = lines;
+    // }
 }

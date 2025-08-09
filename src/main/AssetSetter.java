@@ -9,9 +9,11 @@ import entity.NPCTrooper;
 import objects.PotionObject;
 import objects.SignObject;
 import objects.ArrowsObject;
+import objects.CarryPotionObject;
 import objects.ChestObject;
 import objects.DoorObject;
 import objects.KeyObject;
+import objects.LasersObject;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -38,6 +40,10 @@ public class AssetSetter {
 
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, "No wookies allowed..."));
 
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
+
+        this.gamePanel.objects.add(new LasersObject(this.gamePanel));
         this.gamePanel.objects.add(new ArrowsObject(this.gamePanel));
 
         generateRandomObjects();
@@ -57,7 +63,7 @@ public class AssetSetter {
 
     private void generateRandomObjects() {
         List<SpellType> spellList = Arrays.asList(SpellType.values());
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 3; i++) {
             int index = Utils.generateRandomInt(0, spellList.size() - 1);
             SpellType spellType = spellList.get(index);
             switch (spellType) {

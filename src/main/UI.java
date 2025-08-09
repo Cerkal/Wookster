@@ -17,6 +17,7 @@ public class UI {
     boolean messageDisplay = false;
     long messageStartTime = 0;
     String currentMessage = "";
+    Font customFontSmall;
     Font customFont;
     Font customFontMedium;
     Font customFontLarge;
@@ -37,6 +38,7 @@ public class UI {
 
         // Load custom font
         try {
+            this.customFontSmall = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_SMALL);
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE);
             this.customFontMedium = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_MEDIUM);
             this.customFontLarge = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_LARGE);
@@ -81,7 +83,60 @@ public class UI {
             int y = getYForCenteredText();
             graphics2D.drawString(Constants.GAME_DEATH, x, y);
             this.gamePanel.stopMusic();
-            this.gamePanel.playSoundEffect(Constants.SOUND_ARROW);
+        }
+
+        if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
+            graphics2D.setFont(this.customFontLarge);
+            int x = getXForCenteredText(graphics2D, "INVENTORY", this.customFontLarge);
+            int y = getYForCenteredText();
+
+            graphics2D.setColor(Color.BLACK);
+            int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
+            int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
+            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
+            graphics2D.setColor(Color.WHITE);
+
+            y = y - 150;
+            graphics2D.drawString("INVENTORY", x, y);
+            y += Constants.TILE_SIZE;
+            int originalY = y + 50;
+            
+            List<InventoryItem> items = this.gamePanel.player.getInventory();
+            InventoryItem selectedItem = null;
+            for (int i = 0; i < items.size(); i++) {
+                InventoryItem item = items.get(i);
+                int quantity = items.get(i).count;
+                graphics2D.setFont(this.customFont);
+                y += 50;
+                graphics2D.drawString(item.name + " (" + quantity + ") ", Constants.TILE_SIZE * 3, y);
+                if (this.commandNumber == i) {
+                    selectedItem = item;
+                    graphics2D.drawString(">", Constants.TILE_SIZE * 2, y);
+                }
+            }
+
+            items = this.gamePanel.player.getInventoryNonSelectable();
+            for (int i = 0; i < items.size(); i++) {
+                InventoryItem item = items.get(i);
+                int quantity = items.get(i).count;
+                graphics2D.setFont(this.customFont);
+                y += 50;
+                graphics2D.drawString(item.name + " (" + quantity + ")", Constants.TILE_SIZE * 3, y);
+            }
+
+            // Details
+            if (selectedItem.weapon != null) {
+                graphics2D.drawString("Weapon", Constants.TILE_SIZE * 9, originalY);
+                if (selectedItem.weapon.range) {
+                    originalY += 50;
+                    graphics2D.drawString("Ammo: " + String.valueOf(selectedItem.weapon.ammo), Constants.TILE_SIZE * 9, originalY);
+                }
+            }
+            if (selectedItem.object != null) {
+                graphics2D.drawString(String.valueOf(selectedItem.object.spell.positiveSpell), Constants.TILE_SIZE * 9, originalY);
+            }
+
+            this.gamePanel.stopMusic();
         }
     }
 
@@ -136,7 +191,6 @@ public class UI {
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
         int y = getYForCenteredText();
         graphics2D.drawString(Constants.GAME_TITLE, x, y - 100);
-
         graphics2D.setFont(this.customFontMedium);
 
         int i = 0;
@@ -161,14 +215,11 @@ public class UI {
         for (SpellType spellType : this.gamePanel.player.spells.keySet()) {
             spells.add(spellType.toString());
         }
-        graphics2D.setFont(this.customFont);
+        graphics2D.setFont(this.customFontSmall);
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString(
-            Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " +
-            playerLocation +
-            "Inv: " + this.gamePanel.player.inventory.toString() + " " +
-            "Spells: " + spells.toString(), 10, Constants.SCREEN_HEIGHT - 10
-        );
+        graphics2D.drawString(Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " + playerLocation, 10, Constants.SCREEN_HEIGHT - 50);
+        graphics2D.drawString("Spell: " + spells.toString(), 10, Constants.SCREEN_HEIGHT - 30);
+        graphics2D.drawString("Inv: " + this.gamePanel.player.inventory.toString(), 10, Constants.SCREEN_HEIGHT - 10);
     }
 
     private void drawMessage(Graphics2D graphics2D, String message, boolean slowType) {
@@ -266,6 +317,7 @@ public class UI {
     }
 
     private void drawWeapon(Graphics2D graphics2D) {
+        graphics2D.setFont(this.customFont);
         if (this.gamePanel.player.weapon != null) {
             this.gamePanel.player.weapon.drawWeaponInfo(graphics2D, 85);
         }

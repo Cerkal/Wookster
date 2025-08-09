@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.GamePanel;
+import main.InventoryItem;
 import spells.SuperSpell;
 import tile.TileManager.TileLocation;
 
@@ -26,6 +27,18 @@ public class SuperObject {
     public String soundPrimary;
     public String soundSecondary;
     public SuperSpell spell;
+    public InventoryItem inventoryItem;
+    public Object_Type objectType;
+
+    public enum Object_Type {
+        ARROWS,
+        CHEST,
+        DOOR,
+        KEY,
+        LASERS,
+        POTION,
+        SIGN
+    }
 
     public SuperObject(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -59,7 +72,6 @@ public class SuperObject {
         this.collision = false;
         this.visibility = false;
         playPrimarySound();
-        setSpell();
     }
 
     public void playPrimarySound() {
@@ -78,6 +90,11 @@ public class SuperObject {
         this.gamePanel.ui.stopDialogue();
     }
 
+    public void useObject() {
+        setSpell();
+        this.gamePanel.player.removeInventoryItem(this.inventoryItem);
+    }
+
     protected void setImage(String imagePath) {
         try {
             this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
@@ -91,7 +108,7 @@ public class SuperObject {
             if (this.spell.spellTime > 0) {
                 this.spell.startTime = this.gamePanel.gameTime;
             }
-            this.gamePanel.player.spells.put(spell.getSpellType(), this.spell);
+            this.gamePanel.player.spells.put(spell.spellType, this.spell);
             if (this.spell.message != null) {
                 this.gamePanel.ui.displayDialog(this.spell.message);
             }

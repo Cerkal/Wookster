@@ -2,10 +2,9 @@ package objects;
 
 import main.Constants;
 import main.GamePanel;
+import main.InventoryItem;
 
 public class KeyObject extends SuperObject {
-
-    public final String NAME = Constants.OBJECT_KEY;
 
     public KeyObject(GamePanel gamePanel) {
         super(gamePanel);
@@ -20,12 +19,14 @@ public class KeyObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addInventoryItem(this.NAME);
+        this.gamePanel.player.addInventoryItem(this.inventoryItem);
     }
 
     private void init() {
-        this.name = NAME;
+        this.objectType = Object_Type.KEY;
+        this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_KEY_IMAGE);
         this.soundPrimary = Constants.SOUND_COIN;
+        this.inventoryItem = new InventoryItem(this.name, 1, false, true);
     }
 }

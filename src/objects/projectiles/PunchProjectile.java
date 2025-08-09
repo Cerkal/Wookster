@@ -5,14 +5,22 @@ import main.Constants;
 import main.GamePanel;
 import entity.Entity.Direction;
 
-public class LaserProjectile extends Projectile {
+public class PunchProjectile extends Projectile {
 
-    public LaserProjectile(GamePanel gamePanel, int speed) {
+    public static final int DAMAGE_MODIFIER = 2;
+
+    public PunchProjectile(GamePanel gamePanel, int hold) {
         super(gamePanel);
-        this.speed = speed;
-        this.damage = 20;
-        this.setImage(Constants.WEAPON_PROJECTILE_LASER);
-        startPosition();
+        this.speed = 0;
+        this.damage = getDamageFromHold(hold);
+        this.setImage(Constants.EFFECT_ALERT);
+        this.solidArea.x = Constants.TILE_SIZE/4;
+        this.solidArea.y = Constants.TILE_SIZE/4;
+        this.solidArea.height = Constants.TILE_SIZE/2;
+        this.solidArea.width = Constants.TILE_SIZE/2;
+        this.solidAreaDefaultX = this.solidArea.x;
+        this.solidAreaDefaultY = this.solidArea.y;
+        setPosition();
     }
 
     @Override
@@ -20,7 +28,11 @@ public class LaserProjectile extends Projectile {
         entity.takeDamage(this.damage);
     }
 
-    private void startPosition() {
+    private int getDamageFromHold(int speed) {
+        return speed * DAMAGE_MODIFIER;
+    }
+
+    public void setPosition() {
         this.worldX = this.gamePanel.player.worldX;
         this.worldY = this.gamePanel.player.worldY;
         switch (this.gamePanel.player.direction) {
