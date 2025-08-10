@@ -23,16 +23,16 @@ public class KeyHandler implements KeyListener {
             case GameState.TITLE:
                 if (code == KeyEvent.VK_W) {
                     this.gamePanel.ui.commandNumber--;
+                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     if (this.gamePanel.ui.commandNumber < 0) {
                         this.gamePanel.ui.commandNumber = Constants.GAME_TITLE_MENU.size() - 1;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     }
                 }
                 if (code == KeyEvent.VK_S) {
                     this.gamePanel.ui.commandNumber++;
+                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     if (this.gamePanel.ui.commandNumber >= Constants.GAME_TITLE_MENU.size()) {
                         this.gamePanel.ui.commandNumber = 0;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     }
                 }
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {

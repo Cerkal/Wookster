@@ -97,6 +97,7 @@ public class UI {
     }
 
     public void titleScreen(Graphics2D graphics2D) {
+        graphics2D.setBackground(Color.BLACK);
         graphics2D.setFont(this.customFontLarge);
         graphics2D.setColor(Color.WHITE);
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);

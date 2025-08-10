@@ -111,7 +111,6 @@ public class Projectile {
         transform.rotate(Math.toRadians(angleDegrees), size / 2.0, size / 2.0);
         g2d.setTransform(transform);
         g2d.drawImage(originalImage, 0, 0, null);
-        g2d.dispose();
         return rotatedImage;
     }
 

@@ -3,6 +3,8 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +55,11 @@ public class GamePanel extends JPanel implements Runnable {
     public List<Projectile> projectiles = new ArrayList<>();
     public List<Effect> effects = new ArrayList<>();
 
-    BufferedImage deathScreen;
+    Graphics2D graphics;
+    BufferedImage fullScreen;
+    boolean isFullScreen = false;
+    int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
+    int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
     public GamePanel() {
         this.setPreferredSize(new DimensionUIResource(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
@@ -68,6 +74,12 @@ public class GamePanel extends JPanel implements Runnable {
 
         // MUTE IT!
         this.sound.mute = false;
+
+        if (this.isFullScreen) {
+            this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
+            this.graphics = (Graphics2D) this.fullScreen.getGraphics();
+            setFullScreen();
+        }
     }
 
     public void startGameThread() {
@@ -95,7 +107,12 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (delta >= 1) {
                 update();
-                repaint();
+                if (this.isFullScreen) {
+                    drawToGraphics();
+                    drawToScreen();
+                } else {
+                    repaint();
+                }
                 delta--;
                 drawCount++;
             }
@@ -119,11 +136,37 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void drawToGraphics() {
+        switch (this.gameState) {
+            case GameState.TITLE:
+                titleScreen(this.graphics);
+                break;
+            default:
+                drawGame(this.graphics);
+                break;
+        }
+    }
+
+    public void drawToScreen() {
+        Graphics graphicsBasic = getGraphics();
+        graphicsBasic.drawImage(this.fullScreen, 0, 0, this.fullScreenWidth, this.fullScreenHeight, null);
+        graphicsBasic.dispose();
+    }
+
+    public void setFullScreen() {
+        GraphicsEnvironment graphicsEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice graphicsDevice = graphicsEnv.getDefaultScreenDevice();
+        graphicsDevice.setFullScreenWindow(Main.window);
+        this.fullScreenWidth = Main.window.getWidth();
+        this.fullScreenHeight = Main.window.getHeight();
+    }
+
     public void paintComponent(Graphics graphics) {
+        if (this.isFullScreen) {
+            return;
+        }
         super.paintComponent(graphics);
-
         Graphics2D graphics2D = (Graphics2D) graphics;
-
         switch (this.gameState) {
             case GameState.TITLE:
                 titleScreen(graphics2D);
@@ -131,7 +174,8 @@ public class GamePanel extends JPanel implements Runnable {
             default:
                 drawGame(graphics2D);
                 break;
-        }        
+        }
+        graphics2D.dispose();
     }
 
     public void playMusic(String soundFile) {
@@ -151,51 +195,39 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawGame(Graphics2D graphics2D) {
-        this.tileManager.draw(graphics2D);
-
-        for (Effect effect : effects) {
-            effect.draw(graphics2D);
-        }
-
-        for (SuperObject object : this.objects) {
-            object.draw(graphics2D);
-        }
-
-        // Compare Y Values for drawing
-        entityList.add(this.player);
-        entityList.addAll(this.npcs);
-        
-        Collections.sort(entityList, new Comparator<Entity>() {
-            @Override
-            public int compare(Entity entity1, Entity entity2) {
-                int result = Integer.compare(entity1.worldY, entity2.worldY);
-                return result;
-            }
-        });
-
-        for (Entity entity : this.entityList) {
-            entity.draw(graphics2D);
-        }
-
         try {
-            for (Projectile projectile : this.projectiles) {
-                projectile.draw(graphics2D);
-            }    
-        } catch (Exception e) { }
-
-        entityList.clear();
-
-        this.ui.draw(graphics2D);
-        graphics2D.dispose();
+            this.tileManager.draw(graphics2D);
+            for (Effect effect : effects) {
+                effect.draw(graphics2D);
+            }
+            for (SuperObject object : this.objects) {
+                object.draw(graphics2D);
+            }
+            // Compare Y Values for drawing
+            entityList.add(this.player);
+            entityList.addAll(this.npcs);
+            Collections.sort(entityList, new Comparator<Entity>() {
+                @Override
+                public int compare(Entity entity1, Entity entity2) {
+                    int result = Integer.compare(entity1.worldY, entity2.worldY);
+                    return result;
+                }
+            });
+            for (Entity entity : this.entityList) {
+                entity.draw(graphics2D);
+            }
+            try {
+                for (Projectile projectile : this.projectiles) {
+                    projectile.draw(graphics2D);
+                }    
+            } catch (Exception e) { }
+            entityList.clear();
+            this.ui.draw(graphics2D);
+        } catch (Exception exception) {
+            System.out.println("Error in drawing.");
+        }
     }
 
-    public void getGraphicsSnapshot() {
-        this.deathScreen = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = this.deathScreen.createGraphics();
-        this.paint(g2d);
-        g2d.dispose();
-    }
-    
     public void restartLevel() {
         this.objects.clear();
         this.npcs.clear();
