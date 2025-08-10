@@ -1,6 +1,7 @@
 package entity;
 
 import main.KeyHandler;
+import main.GamePanel.GameState;
 import objects.SuperObject;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
@@ -40,7 +41,6 @@ public class Player extends Entity {
     // Weapons
     public int hold = 0;
     public boolean attacking = false;
-    public Weapon weapon;
     public HashMap<Weapon_Type, Weapon> weapons = new HashMap<>();
     HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
@@ -69,7 +69,11 @@ public class Player extends Entity {
         this.speed = DEFAULT_SPEED;
         this.direction = Direction.DOWN;
         this.entityType = Entity_Type.PLAYER;
-
+        this.health = this.maxHealth;
+        this.invincable = false;
+        this.weapon = null;
+        this.weapons = new HashMap<>();
+        this.isDead = false;
         
         addWeapon(Weapon_Type.BLASTER);
         addWeapon(Weapon_Type.CROSSBOW);
@@ -110,6 +114,7 @@ public class Player extends Entity {
         spellCheck();
         invincableCheck();
         weapon();
+        checkDeath();
     }
 
     public void draw(Graphics2D graphics2D) {
@@ -333,6 +338,12 @@ public class Player extends Entity {
         }
     }
 
+    private void checkDeath() {
+        if (this.isDead) {
+            this.gamePanel.gameState = GameState.DEATH;
+        }
+    }
+
     private void drawSpellEffect(Graphics2D graphics2D) {
         if (this.spells.size() == 0) return;
         Tile sparkle = new Tile();
@@ -355,7 +366,7 @@ public class Player extends Entity {
         int screenY = this.screenY;
         int width = Constants.TILE_SIZE;
         int height = Constants.TILE_SIZE;
-        if (this.weapon.longSprite && this.attacking) {
+        if (this.weapon != null && this.weapon.longSprite && this.attacking) {
             switch (this.direction) {
                 case Direction.UP:
                     screenY -= Constants.TILE_SIZE;

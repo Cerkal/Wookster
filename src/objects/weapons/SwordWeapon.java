@@ -10,7 +10,6 @@ import main.InventoryItem;
 import objects.projectiles.MeleeProjectile;
 import objects.projectiles.PunchProjectile;
 import objects.projectiles.SwordProjectile;
-import objects.projectiles.Projectile.Projectile_Type;
 
 public class SwordWeapon extends Weapon {
 

@@ -43,14 +43,15 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
     public Collision collision = new Collision(this);
+    public AssetSetter assetSetter = new AssetSetter(this);
+    public Sound sound = new Sound();
+    public EventHandler eventHandler = new EventHandler(this);
+
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
     public List<Effect> effects = new ArrayList<>();
-    public AssetSetter assetSetter = new AssetSetter(this);
-    public Sound sound = new Sound();
-    public EventHandler eventHandler = new EventHandler(this);
 
     BufferedImage deathScreen;
 
@@ -63,13 +64,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
-        this.assetSetter.setObject();
-        this.assetSetter.setNPCs();
+        this.assetSetter.setLevel();
 
         // MUTE IT!
         this.sound.mute = false;
-
-        playMusic(Constants.SOUND_TITLE_SCREEN);
     }
 
     public void startGameThread() {
@@ -196,6 +194,17 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2d = this.deathScreen.createGraphics();
         this.paint(g2d);
         g2d.dispose();
+    }
+    
+    public void restartLevel() {
+        this.objects.clear();
+        this.npcs.clear();
+        this.entityList.clear();
+        this.projectiles.clear();
+        this.effects.clear();
+        this.player.setDefaultValues();
+        this.assetSetter.setLevel();
+        this.gameState = GameState.PLAY;
     }
 }
 

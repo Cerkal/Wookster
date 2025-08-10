@@ -9,7 +9,6 @@ import main.GamePanel;
 import main.InventoryItem;
 import objects.projectiles.PunchProjectile;
 import objects.projectiles.MeleeProjectile;
-import objects.projectiles.Projectile.Projectile_Type;
 
 public class FistWeapon extends Weapon {
 

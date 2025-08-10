@@ -112,6 +112,10 @@ public class KeyHandler implements KeyListener {
                     this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                     this.gamePanel.gameState = GameState.PLAY;
                 }
+            case GameState.DEATH:
+                if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+                    this.gamePanel.restartLevel();
+                }
             default:
                 break;
         }

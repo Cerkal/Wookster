@@ -27,7 +27,14 @@ public class AssetSetter {
         this.gamePanel = gamePanel;
     }
 
-    public void setObject() {
+    public void setLevel() {
+        setObjects();
+        setNPCs();
+        this.gamePanel.playMusic(Constants.SOUND_BG_01);
+    }
+
+    public void setObjects() {
+        this.gamePanel.objects.clear();
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 38, 8));
@@ -49,10 +56,11 @@ public class AssetSetter {
         generateRandomObjects();
 
         // Game ender
-        // this.gamePanel.objects.add(new PotionObject(this.gamePanel, 23, 23, new HealthSpell(-100)));
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel, new HealthSpell(-100),  23, 23));
     }
 
     public void setNPCs() {
+        this.gamePanel.npcs.clear();
         this.gamePanel.npcs.add(new NPCDroids(gamePanel, 9, 8));
         this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCMom(gamePanel, 38, 9));

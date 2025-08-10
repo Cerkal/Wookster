@@ -15,6 +15,7 @@ import effects.BloodEffect;
 import effects.Effect;
 import main.Constants;
 import main.GamePanel;
+import objects.weapons.Weapon;
 
 public class Entity {
 
@@ -61,6 +62,7 @@ public class Entity {
     public String[] dialogue;
     public int dialogueIndex = 0;
     public Effect effect;
+    public Weapon weapon;
 
     // Sounds
     protected String damageSound;
@@ -189,6 +191,7 @@ public class Entity {
             this.health = 0;
             this.isDead = true;
             this.movable = false;
+            this.weapon = null;
         }
         this.gamePanel.playSoundEffect(this.damageSound);
         this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
