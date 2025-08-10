@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -72,9 +73,10 @@ public class Player extends Entity {
         this.health = this.maxHealth;
         this.invincable = false;
         this.weapon = null;
-        this.weapons = new HashMap<>();
         this.isDead = false;
-        
+        this.inventory = new HashMap<>();
+        this.weapons = new HashMap<>();
+
         addWeapon(Weapon_Type.BLASTER);
         addWeapon(Weapon_Type.CROSSBOW);
         addWeapon(Weapon_Type.FIST);
@@ -281,26 +283,40 @@ public class Player extends Entity {
         return this.inventory.get(objectType).count;
     }
 
-    public List<InventoryItem> getInventory() {
-        List<InventoryItem> selectableList = new ArrayList<>();
+    public HashMap<String, InventoryItem> getInventory() {
+        HashMap<String, InventoryItem> selectableMap = new HashMap<>();
         for (String key : this.inventory.keySet()) {
             InventoryItem item = this.inventory.get(key);
-            if (item.usable) {
-                selectableList.add(item);
+            if (item.usable || item.visibility) {
+                selectableMap.put(key, item);
             }
         };
-        return selectableList;
+        return selectableMap;
     }
 
-    public List<InventoryItem> getInventoryNonSelectable() {
-        List<InventoryItem> nonSelectableList = new ArrayList<>();
+    public List<String> getInventoryString() {
+        List<String> selectableList = new ArrayList<>();
+        List<String> weaponList = new ArrayList<>();
+        List<String> otherList = new ArrayList<>();
         for (String key : this.inventory.keySet()) {
             InventoryItem item = this.inventory.get(key);
-            if (!item.usable && item.visibility) {
-                nonSelectableList.add(item);
+            if (item.usable || item.visibility) {
+                String name = item.name;
+                if (item.count > 1) {
+                    name += "(" + item.count + ")";
+                }
+                if (item.weapon != null) {
+                    weaponList.add(name);
+                } else {
+                    otherList.add(name);
+                }
             }
         };
-        return nonSelectableList;
+        Collections.sort(weaponList);
+        Collections.sort(otherList);
+        selectableList.addAll(weaponList);
+        selectableList.addAll(otherList);
+        return selectableList;
     }
 
     public void addWeapon(Weapon_Type weaponType) {

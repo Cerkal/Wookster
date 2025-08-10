@@ -3,6 +3,7 @@ package spells;
 import java.util.Objects;
 
 import entity.Player;
+import main.Utils;
 
 public class SuperSpell {
     
@@ -12,12 +13,16 @@ public class SuperSpell {
         SPEED_SPELL
     }
 
+    final int MAX_SPEED = 8;
+    final int MIN_SPEED = 2;
+
     public SpellType spellType;
     public long startTime = 0;
     public int spellTime = 0;
-    public boolean timedSpell = false;
     public boolean positiveSpell = false;
     public String message;
+    public String description;
+    public int speed;
 
     public SuperSpell(SpellType spellType) {
         this.spellType = spellType;
@@ -49,5 +54,9 @@ public class SuperSpell {
         return "Spell{" +
             "spellType='" + this.spellType + '\'' +
         '}';
+    }
+    
+    public int randomSpeed() {
+        return Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
     }
 }

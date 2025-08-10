@@ -27,6 +27,7 @@ public class ArrowProjectile extends Projectile {
     }
 
     private void startPosition() {
+        if (this.gamePanel.player == null) { return; }
         this.worldX = this.gamePanel.player.worldX;
         this.worldY = this.gamePanel.player.worldY;
         switch (this.gamePanel.player.direction) {

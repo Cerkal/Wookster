@@ -66,4 +66,8 @@ public class Weapon {
     public void select() {
         this.gamePanel.player.switchWeapon(this.weaponType);
     }
+
+    public void drawDetails(Graphics2D graphics2D, int x, int y) {
+        graphics2D.drawString(this.weaponType.name(), x, y);
+    }
 }

@@ -92,30 +92,32 @@ public class KeyHandler implements KeyListener {
                 }
                 break;
             case GameState.INVENTORY:
-                if (code == KeyEvent.VK_W) {
-                    this.gamePanel.ui.commandNumber--;
-                    if (this.gamePanel.ui.commandNumber < 0) {
-                        this.gamePanel.ui.commandNumber = this.gamePanel.player.getInventory().size() - 1;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    }
-                }
-                if (code == KeyEvent.VK_S) {
-                    this.gamePanel.ui.commandNumber++;
-                    if (this.gamePanel.ui.commandNumber >= this.gamePanel.player.getInventory().size()) {
-                        this.gamePanel.ui.commandNumber = 0;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    }
-                }
-                if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                    InventoryItem selection = this.gamePanel.player.getInventory().get(this.gamePanel.ui.commandNumber);
-                    selection.select();
-                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    this.gamePanel.gameState = GameState.PLAY;
-                }
+                // if (code == KeyEvent.VK_W) {
+                //     this.gamePanel.ui.commandNumber--;
+                //     if (this.gamePanel.ui.commandNumber < 0) {
+                //         this.gamePanel.ui.commandNumber = this.gamePanel.player.getInventory().size() - 1;
+                //         this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                //     }
+                // }
+                // if (code == KeyEvent.VK_S) {
+                //     this.gamePanel.ui.commandNumber++;
+                //     if (this.gamePanel.ui.commandNumber >= this.gamePanel.player.getInventory().size()) {
+                //         this.gamePanel.ui.commandNumber = 0;
+                //         this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                //     }
+                // }
+                // if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+                //     InventoryItem selection = this.gamePanel.player.getInventory().get(this.gamePanel.ui.commandNumber);
+                //     selection.select();
+                //     this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                //     this.gamePanel.gameState = GameState.PLAY;
+                // }
+                break;
             case GameState.DEATH:
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                     this.gamePanel.restartLevel();
                 }
+                break;
             default:
                 break;
         }

@@ -72,10 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         this.assetSetter.setLevel();
-
-        // MUTE IT!
         this.sound.mute = false;
-
         if (this.isFullScreen) {
             this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
             this.graphics = (Graphics2D) this.fullScreen.getGraphics();
@@ -225,7 +222,8 @@ public class GamePanel extends JPanel implements Runnable {
             entityList.clear();
             this.ui.draw(graphics2D);
         } catch (Exception exception) {
-            System.out.println("Error in drawing.");
+            exception.printStackTrace();
+            // System.out.println("Error in drawing.");
         }
     }
 

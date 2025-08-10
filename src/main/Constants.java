@@ -13,7 +13,7 @@ public class Constants {
     public static final int MILLISECOND = 1000000;
     public static final long NANO_SECOND = 1000000000;
     
-    public static final int MAX_SCREEN_COL = 20;
+    public static final int MAX_SCREEN_COL = 22;
     public static final int MAX_SCREEN_ROW = 12;
     public static final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL;
     public static final int SCREEN_HEIGHT = TILE_SIZE * MAX_SCREEN_ROW;
@@ -22,6 +22,8 @@ public class Constants {
     public static final int MAX_WORLD_ROW = 50;
     public static final int WORLD_WIDTH = TILE_SIZE * MAX_WORLD_COL;
     public static final int WORLD_HEIGHT = TILE_SIZE * MAX_WORLD_ROW;
+
+    public static final int NEW_LINE_SIZE = TILE_SIZE;
 
     // Full Screen
     public static final int FULL_SCREEN_WIDTH = SCREEN_WIDTH;

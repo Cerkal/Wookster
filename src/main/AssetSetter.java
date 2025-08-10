@@ -49,6 +49,8 @@ public class AssetSetter {
 
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell(20)));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
 
         this.gamePanel.objects.add(new LasersObject(this.gamePanel));
         this.gamePanel.objects.add(new ArrowsObject(this.gamePanel));

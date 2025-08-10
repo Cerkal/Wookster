@@ -9,7 +9,9 @@ import javax.imageio.ImageIO;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import spells.SpeedSpell;
 import spells.SuperSpell;
+import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
 
 public class SuperObject {
@@ -93,6 +95,29 @@ public class SuperObject {
     public void useObject() {
         setSpell();
         this.gamePanel.player.removeInventoryItem(this.inventoryItem);
+    }
+
+    public void drawDetails(Graphics2D graphics2D, int x, int y) {
+        graphics2D.drawString(this.objectType.name(), x, y);
+        if (this.spell != null) {
+            y += Constants.NEW_LINE_SIZE;
+            graphics2D.drawString(this.name, x, y);
+            if (this.spell.spellTime > 0) {
+                y += Constants.NEW_LINE_SIZE;
+                graphics2D.drawString("Spell Time: " + String.valueOf(this.spell.spellTime) + "s", x, y);
+            }
+            y += Constants.NEW_LINE_SIZE;
+            graphics2D.drawString(this.spell.description, x, y);
+            y += Constants.NEW_LINE_SIZE;
+            graphics2D.drawString(String.valueOf(this.spell.positiveSpell), x, y);
+
+            if (this.spell.spellType == SpellType.SPEED_SPELL) {
+                SpeedSpell speedSpell = (SpeedSpell) this.spell;
+                y += Constants.NEW_LINE_SIZE;
+                graphics2D.drawString(String.valueOf(speedSpell.speed), x, y);
+            }
+            
+        }
     }
 
     protected void setImage(String imagePath) {
