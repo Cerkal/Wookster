@@ -56,7 +56,7 @@ public class UI {
         drawHealth(graphics2D);
         drawDebug(graphics2D);
         drawWeapon(graphics2D);
-        
+
         if (this.messageDisplay) {
             drawMessage(graphics2D, this.currentMessage, false);
             if (isMessageTimeElapsed()) {
@@ -68,76 +68,9 @@ public class UI {
             drawMessage(graphics2D, this.currentDialogue, true);
         }
 
-        if (this.gamePanel.gameState == GamePanel.GameState.PAUSE) {
-            graphics2D.setFont(this.customFontLarge);
-            graphics2D.setColor(Color.WHITE);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_PAUSED, this.customFontLarge);
-            int y = getYForCenteredText();
-            graphics2D.drawString(Constants.GAME_PAUSED, x, y);
-        }
-
-        if (this.gamePanel.gameState == GamePanel.GameState.DEATH) {
-            graphics2D.setFont(this.customFontLarge);
-            graphics2D.setColor(Color.WHITE);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_DEATH, this.customFontLarge);
-            int y = getYForCenteredText();
-            graphics2D.drawString(Constants.GAME_DEATH, x, y);
-            this.gamePanel.stopMusic();
-        }
-
-        if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
-            graphics2D.setFont(this.customFontLarge);
-            int x = getXForCenteredText(graphics2D, "INVENTORY", this.customFontLarge);
-            int y = getYForCenteredText();
-
-            graphics2D.setColor(Color.BLACK);
-            int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
-            int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
-            graphics2D.setColor(Color.WHITE);
-
-            y = y - 150;
-            graphics2D.drawString("INVENTORY", x, y);
-            y += Constants.TILE_SIZE;
-            int originalY = y + 50;
-            
-            List<InventoryItem> items = this.gamePanel.player.getInventory();
-            InventoryItem selectedItem = null;
-            for (int i = 0; i < items.size(); i++) {
-                InventoryItem item = items.get(i);
-                int quantity = items.get(i).count;
-                graphics2D.setFont(this.customFont);
-                y += 50;
-                graphics2D.drawString(item.name + " (" + quantity + ") ", Constants.TILE_SIZE * 3, y);
-                if (this.commandNumber == i) {
-                    selectedItem = item;
-                    graphics2D.drawString(">", Constants.TILE_SIZE * 2, y);
-                }
-            }
-
-            items = this.gamePanel.player.getInventoryNonSelectable();
-            for (int i = 0; i < items.size(); i++) {
-                InventoryItem item = items.get(i);
-                int quantity = items.get(i).count;
-                graphics2D.setFont(this.customFont);
-                y += 50;
-                graphics2D.drawString(item.name + " (" + quantity + ")", Constants.TILE_SIZE * 3, y);
-            }
-
-            // Details
-            if (selectedItem.weapon != null) {
-                graphics2D.drawString("Weapon", Constants.TILE_SIZE * 9, originalY);
-                if (selectedItem.weapon.range) {
-                    originalY += 50;
-                    graphics2D.drawString("Ammo: " + String.valueOf(selectedItem.weapon.ammo), Constants.TILE_SIZE * 9, originalY);
-                }
-            }
-            if (selectedItem.object != null) {
-                graphics2D.drawString(String.valueOf(selectedItem.object.spell.positiveSpell), Constants.TILE_SIZE * 9, originalY);
-            }
-
-            this.gamePanel.stopMusic();
-        }
+        drawPauseScreen(graphics2D);
+        drawDeathScreen(graphics2D);
+        drawInventory(graphics2D);
     }
 
     public void displayMessage(String message) {
@@ -184,6 +117,82 @@ public class UI {
             i++;
         }
     }
+
+    public void drawPauseScreen(Graphics2D graphics2D) {
+        if (this.gamePanel.gameState == GamePanel.GameState.PAUSE) {
+            graphics2D.setFont(this.customFontLarge);
+            graphics2D.setColor(Color.WHITE);
+            int x = getXForCenteredText(graphics2D, Constants.GAME_PAUSED, this.customFontLarge);
+            int y = getYForCenteredText();
+            graphics2D.drawString(Constants.GAME_PAUSED, x, y);
+        }
+    }
+
+    public void drawDeathScreen(Graphics2D graphics2D) {
+        if (this.gamePanel.gameState == GamePanel.GameState.DEATH) {
+            graphics2D.setFont(this.customFontLarge);
+            graphics2D.setColor(Color.WHITE);
+            int x = getXForCenteredText(graphics2D, Constants.GAME_DEATH, this.customFontLarge);
+            int y = getYForCenteredText();
+            graphics2D.drawString(Constants.GAME_DEATH, x, y);
+            this.gamePanel.stopMusic();
+        }
+    }
+
+    public void drawInventory(Graphics2D graphics2D) {
+        if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
+            graphics2D.setFont(this.customFontLarge);
+            int x = getXForCenteredText(graphics2D, Constants.GAME_INVENTORY, this.customFontLarge);
+            int y = getYForCenteredText();
+
+            graphics2D.setColor(Color.BLACK);
+            int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
+            int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
+            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
+            graphics2D.setColor(Color.WHITE);
+
+            y = y - 150;
+            graphics2D.drawString(Constants.GAME_INVENTORY, x, y);
+            y += Constants.TILE_SIZE;
+            int originalY = y + 50;
+            
+            List<InventoryItem> items = this.gamePanel.player.getInventory();
+            InventoryItem selectedItem = null;
+            for (int i = 0; i < items.size(); i++) {
+                InventoryItem item = items.get(i);
+                int quantity = items.get(i).count;
+                graphics2D.setFont(this.customFont);
+                y += 50;
+                graphics2D.drawString(item.name + " (" + quantity + ") ", Constants.TILE_SIZE * 3, y);
+                if (this.commandNumber == i) {
+                    selectedItem = item;
+                    graphics2D.drawString(">", Constants.TILE_SIZE * 2, y);
+                }
+            }
+
+            items = this.gamePanel.player.getInventoryNonSelectable();
+            for (int i = 0; i < items.size(); i++) {
+                InventoryItem item = items.get(i);
+                int quantity = items.get(i).count;
+                graphics2D.setFont(this.customFont);
+                y += 50;
+                graphics2D.drawString(item.name + " (" + quantity + ")", Constants.TILE_SIZE * 3, y);
+            }
+
+            // Details
+            if (selectedItem.weapon != null) {
+                if (selectedItem.weapon.range) {
+                    graphics2D.drawString("Ammo: " + String.valueOf(selectedItem.weapon.ammo), Constants.TILE_SIZE * 9, originalY);
+                    originalY += 50;
+                }
+                graphics2D.drawString("Max Damage: " + String.valueOf(selectedItem.weapon.maxDamage), Constants.TILE_SIZE * 9, originalY);
+            }
+            if (selectedItem.object != null) {
+                graphics2D.drawString(String.valueOf(selectedItem.object.spell.positiveSpell), Constants.TILE_SIZE * 9, originalY);
+            }
+        }
+    }
+
 
     public void deathScreen(Graphics2D graphics2D) {
         graphics2D.setFont(this.customFontLarge);

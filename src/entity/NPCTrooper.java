@@ -41,7 +41,7 @@ public class NPCTrooper extends Entity {
             this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.TROOPER_IMAGE_DEAD));
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage() + e.getStackTrace());
+            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
         }
     }
 

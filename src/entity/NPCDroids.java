@@ -29,7 +29,7 @@ public class NPCDroids extends Entity {
             )));
             this.imageMap = this.imageMapDefault;
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage() + e.getStackTrace());
+            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
         }
     }
 

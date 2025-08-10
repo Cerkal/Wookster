@@ -7,27 +7,28 @@ import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
-import objects.projectiles.PunchProjectile;
 import objects.projectiles.MeleeProjectile;
+import objects.projectiles.PunchProjectile;
+import objects.projectiles.SwordProjectile;
 import objects.projectiles.Projectile.Projectile_Type;
 
-public class FistWeapon extends Weapon {
+public class SwordWeapon extends Weapon {
 
     // In milliseconds
     static final int FIST_DELAY = 250;
 
-    static final int HOLD_COUNT_MIN = 10;
-    static final int HOLD_COUNT_MAX = 30;
+    static final int HOLD_COUNT_MIN = 20;
+    static final int HOLD_COUNT_MAX = 50;
     static final int SPEED_MODIFIER = 3;
 
     boolean isAttacking;
 
-    public FistWeapon(GamePanel gamePanel) {
+    public SwordWeapon(GamePanel gamePanel) {
         super(gamePanel);
         init();
     }
 
-    public FistWeapon(GamePanel gamePanel, Player player) {
+    public SwordWeapon(GamePanel gamePanel, Player player) {
         super(gamePanel);
         this.player = player;
         init();
@@ -69,10 +70,11 @@ public class FistWeapon extends Weapon {
     }
 
     private void init() {
-        this.weaponType = Weapon_Type.FIST;
+        this.weaponType = Weapon_Type.SWORD;
         this.projectileType = Projectile_Type.ARROWS;
         this.sound = Constants.SOUND_HURT;
         this.range = false;
+        this.longSprite = true;
         this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
         this.ammo = 0;
         if (this.player != null) {
@@ -87,7 +89,7 @@ public class FistWeapon extends Weapon {
             this.playSound();
             this.isAttacking = true;
             int punchSpeed = getSpeed();
-            this.gamePanel.projectiles.add(new PunchProjectile(this.gamePanel, punchSpeed));
+            this.gamePanel.projectiles.add(new SwordProjectile(this.gamePanel, punchSpeed));
         }
     }
 

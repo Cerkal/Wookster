@@ -36,13 +36,14 @@ public class CarryPotionObject extends SuperObject {
                     return "HEALTH POTION";
                 case SPEED_SPELL:
                     return "SPEED POTION";
+                default:
+                    break;
             }
         }
         return this.objectType.name();
     }
 
     private void init() {
-        System.out.printf("(%s, %s)", this.worldX/Constants.TILE_SIZE, this.worldY/Constants.TILE_SIZE);
         this.objectType = Object_Type.POTION;
         this.name = getPotionType();
         this.setImage(Constants.OBJECT_PURPLE_POTION_IMAGE);

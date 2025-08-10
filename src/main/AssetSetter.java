@@ -40,7 +40,7 @@ public class AssetSetter {
 
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, "No wookies allowed..."));
 
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell(20)));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
 
         this.gamePanel.objects.add(new LasersObject(this.gamePanel));

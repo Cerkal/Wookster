@@ -30,8 +30,11 @@ public class GamePanel extends JPanel implements Runnable {
         DEATH
     }
 
-    boolean fpsDebug = false;
     Thread gameThread;
+
+    // Debug
+    public boolean debugFPS = false;
+    public boolean debugCollision = false;
 
     public TileManager tileManager = new TileManager(this);
     public GameState gameState = GameState.TITLE;
@@ -100,7 +103,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             if (timer >= Constants.NANO_SECOND) {
-                if (fpsDebug) {
+                if (debugFPS) {
                     System.out.print("FPS: " + drawCount + " ");
                 }
                 drawCount = 0;

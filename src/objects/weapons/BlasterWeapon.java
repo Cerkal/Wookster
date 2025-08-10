@@ -51,6 +51,7 @@ public class BlasterWeapon extends Weapon {
         this.projectileType = Projectile_Type.LASERS;
         this.sound = Constants.SOUND_LASER;
         this.ammo = INITALIZED_LASERS;
+        this.maxDamage = LaserProjectile.DAMAGE;
         this.range = true;
         if (this.player != null) {
             this.player.addInventoryItem(new InventoryItem(this, 1, true));

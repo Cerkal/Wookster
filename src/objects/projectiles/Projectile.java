@@ -1,5 +1,6 @@
 package objects.projectiles;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -58,6 +59,27 @@ public class Projectile {
         } else {
             this.gamePanel.projectiles.remove(0);
         }
+        drawDebugCollision(graphics2D, screenX, screenY);
+    }
+
+    public void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
+        if (!this.gamePanel.debugCollision) { return; }
+        graphics2D.setColor(Color.RED);
+        graphics2D.drawRect(
+            screenX + solidArea.x,
+            screenY + solidArea.y,
+            solidArea.width,
+            solidArea.height
+        );
+    }
+
+    public void setImage(String image) {
+        try {
+            this.originalImage = ImageIO.read(getClass().getResourceAsStream(image));
+            this.image = this.originalImage;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void moveProjectile() {
@@ -91,15 +113,6 @@ public class Projectile {
         g2d.drawImage(originalImage, 0, 0, null);
         g2d.dispose();
         return rotatedImage;
-    }
-
-    protected void setImage(String image) {
-        try {
-            this.originalImage = ImageIO.read(getClass().getResourceAsStream(image));
-            this.image = this.originalImage;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     protected void collision() {

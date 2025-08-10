@@ -13,6 +13,7 @@ public class Weapon {
     long lastShot = 0;
     GamePanel gamePanel;
     Player player;
+    
     public int hold;
     public Weapon_Type weaponType;
     public Projectile_Type projectileType;
@@ -20,11 +21,14 @@ public class Weapon {
     public InventoryItem inventoryItem;
     public int ammo;
     public boolean range = false;
+    public boolean longSprite = false;
+    public int maxDamage;
 
     public enum Weapon_Type {
         CROSSBOW,
         BLASTER,
-        FIST
+        FIST,
+        SWORD
     }
 
     public Weapon(GamePanel gamePanel) {

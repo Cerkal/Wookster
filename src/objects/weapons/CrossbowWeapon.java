@@ -76,6 +76,7 @@ public class CrossbowWeapon extends Weapon {
         this.projectileType = Projectile_Type.ARROWS;
         this.sound = Constants.SOUND_ARROW;
         this.ammo = INITALIZED_ARROWS;
+        this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
         this.range = true;
         if (this.player != null) {
             this.player.addInventoryItem(new InventoryItem(this, 1, true));

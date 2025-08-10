@@ -98,6 +98,15 @@ public class Constants {
     public static final String PLAYER_IMAGE_FIST_RIGHT_0 = "/res/player/wookster_fist_right_0.png";
     public static final String PLAYER_IMAGE_FIST_RIGHT_1 = "/res/player/wookster_fist_right_1.png";
 
+    public static final String PLAYER_IMAGE_SWORD_UP_0 = "/res/player/wookster_sword_up_0.png";
+    public static final String PLAYER_IMAGE_SWORD_UP_1 = "/res/player/wookster_sword_up_1.png";
+    public static final String PLAYER_IMAGE_SWORD_DOWN_0 = "/res/player/wookster_sword_down_0.png";
+    public static final String PLAYER_IMAGE_SWORD_DOWN_1 = "/res/player/wookster_sword_down_1.png";
+    public static final String PLAYER_IMAGE_SWORD_LEFT_0 = "/res/player/wookster_sword_left_0.png";
+    public static final String PLAYER_IMAGE_SWORD_LEFT_1 = "/res/player/wookster_sword_left_1.png";
+    public static final String PLAYER_IMAGE_SWORD_RIGHT_0 = "/res/player/wookster_sword_right_0.png";
+    public static final String PLAYER_IMAGE_SWORD_RIGHT_1 = "/res/player/wookster_sword_right_1.png";
+
     public static final String PLAYER_IMAGE_DEAD = "/res/player/wookster_dead.png";
 
     // NPC
@@ -124,6 +133,7 @@ public class Constants {
     public static final String EFFECT_BLOOD_2 = "/res/effects/blood_03.png";
 
     public static final String EFFECT_ALERT = "/res/effects/alert.png";
+    public static final String EFFECT_ALERT_LIGHT = "/res/effects/alert_light.png";
     public static final String EFFECT_UKNOWN = "/res/effects/questionmark.png";
 
     // Weapon

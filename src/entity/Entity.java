@@ -20,12 +20,10 @@ public class Entity {
 
     GamePanel gamePanel;
 
-    boolean debugCollision = false;
-
     public static final int SOLID_AREA_X = 10;
-    public static final int SOLID_AREA_Y = 14;
+    public static final int SOLID_AREA_Y = 5;
     public static final int SOLID_AREA_WIDTH = 28;
-    public static final int SOLID_AREA_HEIGHT = 32;
+    public static final int SOLID_AREA_HEIGHT = 42;
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
     public enum Entity_Type { PLAYER, NPC, ENEMY }
@@ -102,7 +100,7 @@ public class Entity {
     }
 
     public void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
-        if (!this.debugCollision) { return; }
+        if (!this.gamePanel.debugCollision) { return; }
         graphics2D.setColor(Color.RED);
         graphics2D.drawRect(
             screenX + solidArea.x,

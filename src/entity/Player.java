@@ -5,6 +5,7 @@ import objects.SuperObject;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
 import objects.weapons.FistWeapon;
+import objects.weapons.SwordWeapon;
 import objects.weapons.Weapon;
 import objects.weapons.Weapon.Weapon_Type;
 import spells.HealthSpell;
@@ -55,8 +56,8 @@ public class Player extends Entity {
         this.keyHandler = keyHandler;
         this.damageSound = Constants.SOUND_HURT;
 
-        screenX = Constants.SCREEN_WIDTH/2 - (Constants.TILE_SIZE/2);
-        screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
+        this.screenX = Constants.SCREEN_WIDTH/2 - (Constants.TILE_SIZE/2);
+        this.screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
 
         setDefaultValues();
         getPlayerImage();
@@ -69,9 +70,11 @@ public class Player extends Entity {
         this.direction = Direction.DOWN;
         this.entityType = Entity_Type.PLAYER;
 
+        
         addWeapon(Weapon_Type.BLASTER);
         addWeapon(Weapon_Type.CROSSBOW);
         addWeapon(Weapon_Type.FIST);
+        addWeapon(Weapon_Type.SWORD);
     }
 
     public void update() {
@@ -112,7 +115,7 @@ public class Player extends Entity {
     public void draw(Graphics2D graphics2D) {
         getCurrentSpriteSet();
         getSpriteByDirection();
-        graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+        drawPlayerSprite(graphics2D);
         drawSpellEffect(graphics2D);
         drawEffect(graphics2D);
         drawDebugCollision(graphics2D, screenX, screenY);
@@ -198,10 +201,30 @@ public class Player extends Entity {
             )));
             imageMapWeapons.put(Weapon_Type.FIST, imageMapFist);
 
+            // Sword
+            HashMap<Direction, List<BufferedImage>> imageMapSword = new HashMap<>();
+            imageMapSword.put(Direction.UP, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_UP_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_UP_1))
+            )));
+            imageMapSword.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_DOWN_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_DOWN_1))
+            )));
+            imageMapSword.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_LEFT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_LEFT_1))
+            )));
+            imageMapSword.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_0)),
+                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_1))
+            )));
+            imageMapWeapons.put(Weapon_Type.SWORD, imageMapSword);
+
             this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage() + e.getStackTrace());
+            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
         }
     }
 
@@ -286,6 +309,9 @@ public class Player extends Entity {
             case Weapon_Type.FIST:
                 this.weapons.put(weaponType, new FistWeapon(gamePanel, this));
                 break;
+            case Weapon_Type.SWORD:
+                this.weapons.put(weaponType, new SwordWeapon(gamePanel, this));
+                break;
             default:
                 break;
         }
@@ -322,6 +348,32 @@ public class Player extends Entity {
             BufferedImage sparkleImage = sparkle.getCurrentImage(this.gamePanel.gameTime);
             graphics2D.drawImage(sparkleImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         }
+    }
+
+    private void drawPlayerSprite(Graphics2D graphics2D) {
+        int screenX = this.screenX;
+        int screenY = this.screenY;
+        int width = Constants.TILE_SIZE;
+        int height = Constants.TILE_SIZE;
+        if (this.weapon.longSprite && this.attacking) {
+            switch (this.direction) {
+                case Direction.UP:
+                    screenY -= Constants.TILE_SIZE;
+                    height *= 2;
+                    break;
+                case Direction.DOWN:
+                    height *= 2;
+                    break;
+                case Direction.RIGHT:
+                    width *= 2;
+                    break;
+                case Direction.LEFT:
+                    screenX -= Constants.TILE_SIZE;
+                    width *= 2;
+                    break;
+            }
+        }
+        graphics2D.drawImage(this.image, screenX, screenY, width, height, null);
     }
 
     private void getCurrentSpriteSet() {
