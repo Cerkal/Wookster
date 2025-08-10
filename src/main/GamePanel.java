@@ -48,6 +48,7 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
     public EventHandler eventHandler = new EventHandler(this);
+    public Config config = new Config(this);
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();

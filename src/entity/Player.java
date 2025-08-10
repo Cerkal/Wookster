@@ -341,6 +341,7 @@ public class Player extends Entity {
     private void checkDeath() {
         if (this.isDead) {
             this.gamePanel.gameState = GameState.DEATH;
+            this.gamePanel.config.saveConfig();
         }
     }
 
