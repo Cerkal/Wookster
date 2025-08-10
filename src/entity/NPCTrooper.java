@@ -16,6 +16,7 @@ public class NPCTrooper extends Entity {
         this.speed = 2;
         this.getPlayerImage();
         // this.setDialogue();
+        this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = Entity_Type.ENEMY;
         this.name = "Trooper";
     }

@@ -16,6 +16,7 @@ public class NPCMom extends Entity {
         this.speed = 2;
         this.getPlayerImage();
         this.setDialogue();
+        this.damageSound = Constants.SOUND_HURT;
         this.entityType = Entity_Type.NPC;
         this.name = "Mom";
     }

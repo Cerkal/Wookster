@@ -189,6 +189,7 @@ public class Constants {
     public static final String TILE_ROAD_11 = "/res/tile/road11.png";
     public static final String TILE_ROAD_12 = "/res/tile/road12.png";
 
+    // Sounds
     public static final String SOUND_BG_01 = "/res/sounds/backgroundmusic.wav";
     public static final String SOUND_COIN = "/res/sounds/coin.wav";
     public static final String SOUND_POWER_UP = "/res/sounds/powerup.wav";
@@ -203,6 +204,10 @@ public class Constants {
     public static final String SOUND_LEVELUP = "/res/sounds/levelup.wav";
     public static final String SOUND_ARROW = "/res/sounds/arrow.wav";
     public static final String SOUND_LASER = "/res/sounds/laser.wav";
+    public static final String SOUND_PUNCH = "/res/sounds/punch.wav";
+    public static final String SOUND_SWORD = "/res/sounds/sword.wav";
+    public static final String SOUND_TROOPER_HURT = "/res/sounds/trooperhurt.wav";
+    public static final String SOUND_DEFLATE = "/res/sounds/deflate.wav";
     public static final String SOUND_DEATH = "/res/sounds/youbemorecareful.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
@@ -221,7 +226,11 @@ public class Constants {
             SOUND_LEVELUP,
             SOUND_ARROW,
             SOUND_LASER,
-            SOUND_DEATH
+            SOUND_DEATH,
+            SOUND_SWORD,
+            SOUND_PUNCH,
+            SOUND_TROOPER_HURT,
+            SOUND_DEFLATE
         )
     );
 

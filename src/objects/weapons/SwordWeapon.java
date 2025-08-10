@@ -71,8 +71,7 @@ public class SwordWeapon extends Weapon {
 
     private void init() {
         this.weaponType = Weapon_Type.SWORD;
-        this.projectileType = Projectile_Type.ARROWS;
-        this.sound = Constants.SOUND_HURT;
+        this.sound = Constants.SOUND_SWORD;
         this.range = false;
         this.longSprite = true;
         this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;

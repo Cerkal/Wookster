@@ -148,7 +148,7 @@ public class UI {
             graphics2D.setColor(Color.BLACK);
             int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
             int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
+            graphics2D.fillRoundRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height, 15, 15);
             graphics2D.setColor(Color.WHITE);
 
             y = y - 150;

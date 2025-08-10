@@ -43,7 +43,9 @@ public class Weapon {
     }
 
     public void removeAmmo() {
-        this.gamePanel.player.removeInventoryItem(this.projectileType.name());
+        if (this.projectileType != null) {
+            this.gamePanel.player.removeInventoryItem(this.projectileType.name());
+        }
     }
 
     public void playSound() {

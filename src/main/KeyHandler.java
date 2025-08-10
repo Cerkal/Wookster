@@ -4,10 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import main.GamePanel.GameState;
-import objects.weapons.BlasterWeapon;
-import objects.weapons.CrossbowWeapon;
-import objects.weapons.Weapon;
-import objects.weapons.Weapon.Weapon_Type;
 
 public class KeyHandler implements KeyListener {
 
