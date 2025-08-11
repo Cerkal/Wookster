@@ -76,6 +76,7 @@ public class Player extends Entity {
         this.isDead = false;
         this.inventory = new HashMap<>();
         this.weapons = new HashMap<>();
+        this.spells.clear();
 
         addWeapon(Weapon_Type.BLASTER);
         addWeapon(Weapon_Type.CROSSBOW);

@@ -122,7 +122,6 @@ public class Entity {
         this.gamePanel.collision.checkTile(this);
         this.gamePanel.collision.entityCollision(this);
         checkPlayerCollision();
-        this.gamePanel.collision.objectCollision(this, false);
     }
 
     public void checkPlayerCollision() {

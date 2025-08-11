@@ -31,7 +31,7 @@ public class AssetSetter {
     public void setLevel() {
         setObjects();
         setNPCs();
-        this.gamePanel.playMusic(Constants.SOUND_BG_01);
+        this.gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
     }
 
     public void setObjects() {
@@ -87,6 +87,8 @@ public class AssetSetter {
                     break;
                 case SpellType.SPEED_SPELL:
                     this.gamePanel.objects.add(new PotionObject(this.gamePanel, new SpeedSpell()));
+                    break;
+                default:
                     break;
             }
         }

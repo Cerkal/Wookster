@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import main.GamePanel.GameState;
 import main.Selector.SelectionResult;
 import spells.SuperSpell.SpellType;
@@ -175,6 +173,7 @@ public class UI {
             SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 5, Constants.NEW_LINE_SIZE, inventory);
             if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
                 InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                System.out.println(selectedItem.getSelectedName());
                 inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5);
             }
             if (selectedItem != null && selectedItem.selected) {

@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -103,14 +104,14 @@ public class SuperObject {
     }
 
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
+        try {
+            BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(this.objectIcons.get(this.objectType)));
+            this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        graphics2D.drawString(this.name, x, y);
         if (this.spell != null) {
-            try {
-                BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(this.objectIcons.get(this.objectType)));
-                this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, icon);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            graphics2D.drawString(this.name, x, y);
             if (this.spell.spellTime > 0) {
                 y += Constants.NEW_LINE_SIZE;
                 graphics2D.drawString("Spell Time: " + String.valueOf(this.spell.spellTime) + "s", x, y);
@@ -129,7 +130,7 @@ public class SuperObject {
                 if (this.spell.spellType == SpellType.SPEED_SPELL) {
                     SpeedSpell speedSpell = (SpeedSpell) this.spell;
                     y += Constants.NEW_LINE_SIZE;
-                    int speedDiff = Math.abs(this.gamePanel.player.DEFAULT_SPEED - speedSpell.speed);
+                    int speedDiff = Math.abs(Player.DEFAULT_SPEED - speedSpell.speed);
                     graphics2D.drawString(description + " player's speed by " + String.valueOf(speedDiff), x, y);
                 }
                 if (this.spell.spellType == SpellType.HEALTH_SPELL) {

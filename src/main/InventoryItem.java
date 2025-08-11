@@ -15,7 +15,6 @@ public class InventoryItem {
     public int count;
     public boolean usable;
     public boolean visibility;
-    public boolean unique = false;
 
     public InventoryItem(String name, int count, boolean usable, boolean visibility) {
         this.name = name;
@@ -36,18 +35,16 @@ public class InventoryItem {
         this.count = count;
         this.usable = usable;
         this.name = object.name;
-        this.unique = true;
     }
 
     public InventoryItem(InventoryItem other) {
-        this.weapon = other.weapon; // shallow copy, adjust if deep copy is needed
-        this.object = other.object; // shallow copy
-        this.projectile = other.projectile; // shallow copy
+        this.weapon = other.weapon;
+        this.object = other.object;
+        this.projectile = other.projectile;
         this.name = other.name;
         this.count = other.count;
         this.usable = other.usable;
         this.visibility = other.visibility;
-        this.unique = other.unique;
     }
 
     public InventoryItem copy() {

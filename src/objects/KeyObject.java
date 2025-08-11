@@ -27,6 +27,6 @@ public class KeyObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_KEY_IMAGE);
         this.soundPrimary = Constants.SOUND_COIN;
-        this.inventoryItem = new InventoryItem(this.name, 1, false, true);
+        this.inventoryItem = new InventoryItem(this, 1, true);
     }
 }
