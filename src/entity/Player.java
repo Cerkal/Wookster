@@ -338,16 +338,16 @@ public class Player extends Entity {
 
     public void addWeapon(Weapon_Type weaponType) {
         switch (weaponType) {
-            case Weapon_Type.BLASTER:
+            case BLASTER:
                 this.weapons.put(weaponType, new BlasterWeapon(gamePanel, this));
                 break;
-            case Weapon_Type.CROSSBOW:
+            case CROSSBOW:
                 this.weapons.put(weaponType, new CrossbowWeapon(gamePanel, this));
                 break;
-            case Weapon_Type.FIST:
+            case FIST:
                 this.weapons.put(weaponType, new FistWeapon(gamePanel, this));
                 break;
-            case Weapon_Type.SWORD:
+            case SWORD:
                 this.weapons.put(weaponType, new SwordWeapon(gamePanel, this));
                 break;
             default:
@@ -402,17 +402,17 @@ public class Player extends Entity {
         int height = Constants.TILE_SIZE;
         if (this.weapon != null && this.weapon.longSprite && this.attacking) {
             switch (this.direction) {
-                case Direction.UP:
+                case UP:
                     screenY -= Constants.TILE_SIZE;
                     height *= 2;
                     break;
-                case Direction.DOWN:
+                case DOWN:
                     height *= 2;
                     break;
-                case Direction.RIGHT:
+                case RIGHT:
                     width *= 2;
                     break;
-                case Direction.LEFT:
+                case LEFT:
                     screenX -= Constants.TILE_SIZE;
                     width *= 2;
                     break;

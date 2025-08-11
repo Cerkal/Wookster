@@ -29,22 +29,22 @@ public class Collision {
         int tileNum2 = 0;
 
         switch (entity.direction) {
-            case Direction.UP:
+            case UP:
                 entityTopRow = (entityBoundaryTop - entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityTopRow];
                 break;
-            case Direction.DOWN:
+            case DOWN:
                 entityBottomRow = (entityBoundaryBottom + entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityBottomRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityBottomRow];
                 break;
-            case Direction.LEFT:
+            case LEFT:
                 entityLeftCol = (entityBoundaryLeft - entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityLeftCol][entityBottomRow];
                 break;
-            case Direction.RIGHT:
+            case RIGHT:
                 entityRightCol = (entityBoundaryRight + entity.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[entityRightCol][entityTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityBottomRow];
@@ -70,15 +70,15 @@ public class Collision {
             object.solidArea.y = object.worldY + object.solidArea.y;
 
             switch (entity.direction) {
-                case Direction.UP:
+                case UP:
                     entity.solidArea.y -= entity.speed;
                     break;
-                case Direction.DOWN:
+                case DOWN:
                     entity.solidArea.y += entity.speed;
                     break;
-                case Direction.LEFT:
+                case LEFT:
                     break;
-                case Direction.RIGHT:
+                case RIGHT:
                     entity.solidArea.x += entity.speed;
                     break;
             }
@@ -119,16 +119,16 @@ public class Collision {
         target.solidArea.y = target.worldY + target.solidArea.y;
 
         switch (entity.direction) {
-            case Direction.UP:
+            case UP:
                 entity.solidArea.y -= entity.speed;
                 break;
-            case Direction.DOWN:
+            case DOWN:
                 entity.solidArea.y += entity.speed;
                 break;
-            case Direction.LEFT:
+            case LEFT:
                 entity.solidArea.x -= entity.speed;
                 break;
-            case Direction.RIGHT:
+            case RIGHT:
                 entity.solidArea.x += entity.speed;
                 break;
         }
@@ -193,22 +193,22 @@ public class Collision {
         int tileNum2 = 0;
 
         switch (projectile.direction) {
-            case Direction.UP:
+            case UP:
                 projectileTopRow = (projectileBoundaryTop - projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
                 break;
-            case Direction.DOWN:
+            case DOWN:
                 projectileBottomRow = (projectileBoundaryBottom + projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
                 break;
-            case Direction.LEFT:
+            case LEFT:
                 projectileLeftCol = (projectileBoundaryLeft - projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
                 break;
-            case Direction.RIGHT:
+            case RIGHT:
                 projectileRightCol = (projectileBoundaryRight + projectile.speed)/Constants.TILE_SIZE;
                 tileNum1 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
                 tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];

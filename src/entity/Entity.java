@@ -151,13 +151,13 @@ public class Entity {
 
     public Direction getOppositeDirection(Direction direction) {
         switch (direction) {
-            case Direction.UP:
+            case UP:
                 return Direction.DOWN;
-            case Direction.DOWN:
+            case DOWN:
                 return Direction.UP;
-            case Direction.LEFT:
+            case LEFT:
                 return Direction.RIGHT;
-            case Direction.RIGHT:
+            case RIGHT:
                 return Direction.LEFT;
         }
         return null;
@@ -221,16 +221,16 @@ public class Entity {
     protected void moveEntiy() {
         if (!this.collisionOn) {
             switch (this.direction) {
-                case Direction.UP:
+                case UP:
                     this.worldY -= speed;
                     break;
-                case Direction.DOWN:
+                case DOWN:
                     this.worldY += speed;
                     break;
-                case Direction.LEFT:
+                case LEFT:
                     this.worldX -= speed;
                     break;
-                case Direction.RIGHT:
+                case RIGHT:
                     this.worldX += speed;
                     break;
             }
