@@ -19,6 +19,7 @@ public class KeySpell extends SuperSpell {
     public KeySpell() {
         super(SpellType.KEY_SPELL);
         this.brokeDirection = randomDirection();
+        this.descriptionText.add("Breaks move key in certain direction.");
     }
 
     private static Direction randomDirection() {

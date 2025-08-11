@@ -44,9 +44,14 @@ public class SpeedSpell extends SuperSpell {
         if (this.speed > Player.DEFAULT_SPEED) {
             this.positiveSpell = true;
         }
+        this.descriptionText.add("Changes player's speed.");
     }
 
     private int randomSpeed() {
-        return Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
+        int speed = Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
+        if (speed == Player.DEFAULT_SPEED) {
+            speed += 2;
+        }
+        return speed;
     }
 }

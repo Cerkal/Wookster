@@ -1,5 +1,7 @@
 package spells;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import entity.Player;
@@ -9,15 +11,17 @@ public class SuperSpell {
     public enum SpellType {
         KEY_SPELL,
         HEALTH_SPELL,
-        SPEED_SPELL
+        SPEED_SPELL,
+        CLARITY_SPELL
     }
 
     public SpellType spellType;
     public long startTime = 0;
     public int spellTime = 0;
-    public boolean timedSpell = false;
     public boolean positiveSpell = false;
     public String message;
+    // public String description;
+    public List<String> descriptionText = new ArrayList<>();
 
     public SuperSpell(SpellType spellType) {
         this.spellType = spellType;

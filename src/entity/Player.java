@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class Player extends Entity {
     HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    public HashMap<String, InventoryItem> inventory = new HashMap<>();
+    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
     
@@ -72,9 +73,10 @@ public class Player extends Entity {
         this.health = this.maxHealth;
         this.invincable = false;
         this.weapon = null;
-        this.weapons = new HashMap<>();
         this.isDead = false;
-        
+        this.inventory = new HashMap<>();
+        this.weapons = new HashMap<>();
+
         addWeapon(Weapon_Type.BLASTER);
         addWeapon(Weapon_Type.CROSSBOW);
         addWeapon(Weapon_Type.FIST);
@@ -247,61 +249,94 @@ public class Player extends Entity {
         } else {
             this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
         }
-        if (this.inventory.containsKey(item.name)) {
-            this.inventory.get(item.name).count += item.count;
-        } else {
-            this.inventory.put(item.name, item);
-        }
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
     }
 
     public void removeInventoryItem(InventoryItem item) {
         if (this.inventory.containsKey(item.name)) {
-            int quantity = this.inventory.get(item.name).count;
-            if (quantity == 1) {
-                this.inventory.remove(item.name);
+            List<InventoryItem> list = this.inventory.get(item.name);
+            if (item.count > 1) {
+                item.count--;
             } else {
-                this.inventory.get(item.name).count--;
+                list.remove(item);
+            }
+            if (list.isEmpty()) {
+                this.inventory.remove(item.name);
             }
         }
     }
 
     public void removeInventoryItem(String name) {
         if (this.inventory.containsKey(name)) {
-            int quantity = this.inventory.get(name).count;
-            if (quantity == 1) {
-                this.inventory.remove(name);
+            List<InventoryItem> list = this.inventory.get(name);
+            InventoryItem first = list.get(0);
+            if (first.count > 1) {
+                first.count--;
             } else {
-                this.inventory.get(name).count--;
+                list.remove(0);
+            }
+            if (list.isEmpty()) {
+                this.inventory.remove(name);
             }
         }
     }
 
     public int getInventoryItem(String objectType) {
-        if (this.inventory.get(objectType) == null) return 0;
-        return this.inventory.get(objectType).count;
+        if (!this.inventory.containsKey(objectType)) { return 0; }
+        int total = 0;
+        for (InventoryItem item : this.inventory.get(objectType)) {
+            total += item.count;
+        }
+        return total;
     }
 
-    public List<InventoryItem> getInventory() {
-        List<InventoryItem> selectableList = new ArrayList<>();
+    public HashMap<String, InventoryItem> getInventory() {
+        HashMap<String, InventoryItem> selectableMap = new HashMap<>();
         for (String key : this.inventory.keySet()) {
-            InventoryItem item = this.inventory.get(key);
-            if (item.usable) {
-                selectableList.add(item);
+            List<InventoryItem> items = this.inventory.get(key);
+            int totalCount = 0;
+            for (InventoryItem item : items) {
+                totalCount += item.count;
             }
-        };
+            InventoryItem firstCopy = items.get(0).copy();
+            firstCopy.count = totalCount;
+            if (firstCopy.usable || firstCopy.visibility) {
+                selectableMap.put(key, firstCopy);
+            }
+        }
+        return selectableMap;
+    }
+
+    public List<String> getInventoryString() {
+        List<String> weaponList = new ArrayList<>();
+        List<String> otherList = new ArrayList<>();
+        for (String key : this.inventory.keySet()) {
+            List<InventoryItem> items = this.inventory.get(key);
+            int totalCount = 0;
+            for (InventoryItem item : items) {
+                totalCount += item.count;
+            }
+            InventoryItem first = items.get(0);
+            if (first.usable || first.visibility) {
+                String name = first.name;
+                if (totalCount > 1) {
+                    name += " (" + totalCount + ")";
+                }
+                if (first.weapon != null) {
+                    weaponList.add(name);
+                } else {
+                    otherList.add(name);
+                }
+            }
+        }
+        Collections.sort(weaponList);
+        Collections.sort(otherList);
+        List<String> selectableList = new ArrayList<>();
+        selectableList.addAll(weaponList);
+        selectableList.addAll(otherList);
         return selectableList;
     }
 
-    public List<InventoryItem> getInventoryNonSelectable() {
-        List<InventoryItem> nonSelectableList = new ArrayList<>();
-        for (String key : this.inventory.keySet()) {
-            InventoryItem item = this.inventory.get(key);
-            if (!item.usable && item.visibility) {
-                nonSelectableList.add(item);
-            }
-        };
-        return nonSelectableList;
-    }
 
     public void addWeapon(Weapon_Type weaponType) {
         switch (weaponType) {
@@ -341,6 +376,7 @@ public class Player extends Entity {
     private void checkDeath() {
         if (this.isDead) {
             this.gamePanel.gameState = GameState.DEATH;
+            this.gamePanel.config.saveConfig();
         }
     }
 

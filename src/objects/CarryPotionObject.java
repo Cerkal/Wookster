@@ -36,6 +36,8 @@ public class CarryPotionObject extends SuperObject {
                     return "HEALTH POTION";
                 case SPEED_SPELL:
                     return "SPEED POTION";
+                case CLARITY_SPELL:
+                    return "CLARITY POTION";
                 default:
                     break;
             }

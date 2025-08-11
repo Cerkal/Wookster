@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import main.GamePanel.GameState;
+import spells.SuperSpell.SpellType;
 
 public class KeyHandler implements KeyListener {
 
@@ -92,30 +93,20 @@ public class KeyHandler implements KeyListener {
                 }
                 break;
             case GameState.INVENTORY:
-                if (code == KeyEvent.VK_W) {
-                    this.gamePanel.ui.commandNumber--;
-                    if (this.gamePanel.ui.commandNumber < 0) {
-                        this.gamePanel.ui.commandNumber = this.gamePanel.player.getInventory().size() - 1;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    }
-                }
-                if (code == KeyEvent.VK_S) {
-                    this.gamePanel.ui.commandNumber++;
-                    if (this.gamePanel.ui.commandNumber >= this.gamePanel.player.getInventory().size()) {
-                        this.gamePanel.ui.commandNumber = 0;
-                        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    }
-                }
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                    InventoryItem selection = this.gamePanel.player.getInventory().get(this.gamePanel.ui.commandNumber);
-                    selection.select();
-                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                    if (this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL)) {
+                        this.gamePanel.player.spells.get(SpellType.CLARITY_SPELL).removeSpell(this.gamePanel.player);
+                    }
+                }
+                if (code == KeyEvent.VK_I) {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
+                break;
             case GameState.DEATH:
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                     this.gamePanel.restartLevel();
                 }
+                break;
             default:
                 break;
         }

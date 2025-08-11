@@ -9,11 +9,12 @@ public class Main {
     public static void main(String[] args) {
         window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
+        window.setResizable(true);
         window.setTitle(Constants.GAME_TITLE);
 
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
+        gamePanel.config.loadConfig();
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
