@@ -1,14 +1,17 @@
 package objects;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import spells.HealthSpell;
 import spells.SpeedSpell;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
@@ -41,6 +44,8 @@ public class SuperObject {
         POTION,
         SIGN
     }
+
+    public HashMap<Object_Type, String> objectIcons = Constants.OBJECT_ICONS;
 
     public SuperObject(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -98,25 +103,42 @@ public class SuperObject {
     }
 
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
-        graphics2D.drawString(this.objectType.name(), x, y);
         if (this.spell != null) {
-            y += Constants.NEW_LINE_SIZE;
+            try {
+                BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(this.objectIcons.get(this.objectType)));
+                this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, icon);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             graphics2D.drawString(this.name, x, y);
             if (this.spell.spellTime > 0) {
                 y += Constants.NEW_LINE_SIZE;
                 graphics2D.drawString("Spell Time: " + String.valueOf(this.spell.spellTime) + "s", x, y);
             }
-            y += Constants.NEW_LINE_SIZE;
-            graphics2D.drawString(this.spell.description, x, y);
-            y += Constants.NEW_LINE_SIZE;
-            graphics2D.drawString(String.valueOf(this.spell.positiveSpell), x, y);
-
-            if (this.spell.spellType == SpellType.SPEED_SPELL) {
-                SpeedSpell speedSpell = (SpeedSpell) this.spell;
+            for (String description : this.spell.descriptionText) {
                 y += Constants.NEW_LINE_SIZE;
-                graphics2D.drawString(String.valueOf(speedSpell.speed), x, y);
+                graphics2D.drawString(description, x, y);
             }
-            
+
+            if (this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL)) {
+                graphics2D.setColor(Color.YELLOW);
+                String description = "Increases";
+                if (!this.spell.positiveSpell) {
+                    description = "Decreases";
+                }
+                if (this.spell.spellType == SpellType.SPEED_SPELL) {
+                    SpeedSpell speedSpell = (SpeedSpell) this.spell;
+                    y += Constants.NEW_LINE_SIZE;
+                    int speedDiff = Math.abs(this.gamePanel.player.DEFAULT_SPEED - speedSpell.speed);
+                    graphics2D.drawString(description + " player's speed by " + String.valueOf(speedDiff), x, y);
+                }
+                if (this.spell.spellType == SpellType.HEALTH_SPELL) {
+                    HealthSpell speedSpell = (HealthSpell) this.spell;
+                    y += Constants.NEW_LINE_SIZE;
+                    graphics2D.drawString(description + " player's health by " + String.valueOf(speedSpell.healthAmount), x, y);
+                }
+                graphics2D.setColor(Color.WHITE);
+            }
         }
     }
 

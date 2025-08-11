@@ -39,6 +39,21 @@ public class InventoryItem {
         this.unique = true;
     }
 
+    public InventoryItem(InventoryItem other) {
+        this.weapon = other.weapon; // shallow copy, adjust if deep copy is needed
+        this.object = other.object; // shallow copy
+        this.projectile = other.projectile; // shallow copy
+        this.name = other.name;
+        this.count = other.count;
+        this.usable = other.usable;
+        this.visibility = other.visibility;
+        this.unique = other.unique;
+    }
+
+    public InventoryItem copy() {
+        return new InventoryItem(this);
+    }
+
     public void updateCount(int count) {
         this.count = count;
     }
@@ -57,12 +72,12 @@ public class InventoryItem {
         return String.valueOf(this.count);
     }
 
-    public void drawInfo(Graphics2D graphics2D) {
+    public void drawInfo(Graphics2D graphics2D, int x, int y) {
         if (this.weapon != null) {
-            this.weapon.drawDetails(graphics2D, 400, 300);
+            this.weapon.drawDetails(graphics2D, x, y);
         }
         if (this.object != null) {
-            this.object.drawDetails(graphics2D, 400, 300);
+            this.object.drawDetails(graphics2D, x, y);
         }
     }
 }

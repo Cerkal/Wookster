@@ -32,7 +32,7 @@ public class HealthSpell extends SuperSpell {
         } else {
             this.message = Constants.MESSAGE_POTION_BAD;
         }
-        this.description = "Modify player's health.";
+        this.descriptionText.add("Modify player's health.");
     }
 
     private void randomHealth() {

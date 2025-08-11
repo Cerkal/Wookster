@@ -1,8 +1,12 @@
 package spells;
 
 import entity.Player;
+import main.Utils;
 
 public class SpeedSpell extends SuperSpell {
+
+    final int MAX_SPEED = 8;
+    final int MIN_SPEED = 2;
  
     public int speed = Player.DEFAULT_SPEED;
     public SpellType spellType;
@@ -40,6 +44,14 @@ public class SpeedSpell extends SuperSpell {
         if (this.speed > Player.DEFAULT_SPEED) {
             this.positiveSpell = true;
         }
-        this.description = "Changes player's speed.";
+        this.descriptionText.add("Changes player's speed.");
+    }
+
+    private int randomSpeed() {
+        int speed = Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
+        if (speed == Player.DEFAULT_SPEED) {
+            speed += 2;
+        }
+        return speed;
     }
 }

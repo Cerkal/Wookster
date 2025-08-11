@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.GamePanel.GameState;
+
 public class Selector implements KeyListener {
 
     GamePanel gamePanel;
@@ -69,9 +71,8 @@ public class Selector implements KeyListener {
             List<String> tempList = new ArrayList<>();
             for (String tempItem : selectorItems) {
                 tempList.add(tempItem);
-
                 if (tempList.size() >= this.pageSize) {
-                    tempListLong.add(new ArrayList<>(tempList)); // add a copy
+                    tempListLong.add(new ArrayList<>(tempList));
                     tempList.clear();
                 }
             }
@@ -109,35 +110,32 @@ public class Selector implements KeyListener {
     }
 
     public void setTitleCursor(Graphics2D graphics2D, int x, int y) {
-        graphics2D.setColor(Color.RED);
         graphics2D.drawString(Constants.GAME_TITLE_SELECTOR, x, y);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (this.gamePanel.gameState == GameState.PLAY) { return; }
         int code = e.getKeyCode();
         if (selectorItems == null || selectorItems.isEmpty()) { return; }
         if (code == KeyEvent.VK_W) {
             this.commandNumber--;
+            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             if (this.commandNumber < 0) {
                 this.commandNumber = this.originalSelectorItems.size() - 1;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             }
         }
         if (code == KeyEvent.VK_S) {
             this.commandNumber++;
+            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             if (this.commandNumber >= this.originalSelectorItems.size()) {
                 this.commandNumber = 0;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             }
         }
         if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
             this.selectedItem = this.originalSelectorItems.get(this.commandNumber);
             this.markedSelectedIndex = this.commandNumber;
-
-            // Set result as selected
             this.result.selected = true;
-
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
         }
     }
