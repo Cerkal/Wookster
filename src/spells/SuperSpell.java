@@ -20,7 +20,6 @@ public class SuperSpell {
     public int spellTime = 0;
     public boolean positiveSpell = false;
     public String message;
-    // public String description;
     public List<String> descriptionText = new ArrayList<>();
 
     public SuperSpell(SpellType spellType) {

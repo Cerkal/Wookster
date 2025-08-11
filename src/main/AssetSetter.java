@@ -8,9 +8,12 @@ import entity.NPCMom;
 import entity.NPCTrooper;
 import objects.PotionObject;
 import objects.SignObject;
+import objects.SwordObject;
 import objects.ArrowsObject;
+import objects.BlasterObject;
 import objects.CarryPotionObject;
 import objects.ChestObject;
+import objects.CrossbowObject;
 import objects.DoorObject;
 import objects.KeyObject;
 import objects.LasersObject;
@@ -31,7 +34,6 @@ public class AssetSetter {
     public void setLevel() {
         setObjects();
         setNPCs();
-        this.gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
     }
 
     public void setObjects() {
@@ -56,6 +58,10 @@ public class AssetSetter {
 
         this.gamePanel.objects.add(new LasersObject(this.gamePanel));
         this.gamePanel.objects.add(new ArrowsObject(this.gamePanel));
+
+        this.gamePanel.objects.add(new BlasterObject(this.gamePanel));
+        this.gamePanel.objects.add(new CrossbowObject(this.gamePanel));
+        this.gamePanel.objects.add(new SwordObject(this.gamePanel));
 
         generateRandomObjects();
 

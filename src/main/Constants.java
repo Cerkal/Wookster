@@ -69,6 +69,9 @@ public class Constants {
     public static final String OBJECT_SIGN_IMAGE = "/res/objects/sign.png";
     public static final String OBJECT_AMMO_ARROWS_IMAGE = "/res/objects/arrows.png";
     public static final String OBJECT_AMMO_LASERS_IMAGE = "/res/objects/lasers.png";
+    public static final String OBJECT_WEAPON_BLASTER = "/res/objects/weapon_blaster.png";
+    public static final String OBJECT_WEAPON_CROSSBOW = "/res/objects/weapon_bow.png";
+    public static final String OBJECT_WEAPON_SWORD = "/res/objects/weapon_sword.png";
 
     // Hero
     public static final String PLAYER_IMAGE_UP_0 = "/res/player/wookster_up_0.png";

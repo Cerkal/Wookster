@@ -13,6 +13,8 @@ public class Main {
         window.setTitle(Constants.GAME_TITLE);
 
         GamePanel gamePanel = new GamePanel();
+        gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
+
         window.add(gamePanel);
         gamePanel.config.loadConfig();
         window.pack();

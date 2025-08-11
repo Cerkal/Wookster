@@ -43,7 +43,10 @@ public class SuperObject {
         KEY,
         LASERS,
         POTION,
-        SIGN
+        SIGN,
+        BLASER,
+        CROSSBOW,
+        SWORD
     }
 
     public HashMap<Object_Type, String> objectIcons = Constants.OBJECT_ICONS;

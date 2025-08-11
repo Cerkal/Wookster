@@ -109,7 +109,6 @@ public class UI {
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
         int y = getYForCenteredText();
         graphics2D.drawString(Constants.GAME_TITLE, x, y - 100);
-
         graphics2D.setFont(this.customFontMedium);
 
         int i = 0;
@@ -173,7 +172,6 @@ public class UI {
             SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 5, Constants.NEW_LINE_SIZE, inventory);
             if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
                 InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                System.out.println(selectedItem.getSelectedName());
                 inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5);
             }
             if (selectedItem != null && selectedItem.selected) {
@@ -297,7 +295,7 @@ public class UI {
 
     private void setTitleCursor(Graphics2D graphics2D, int y) {
         graphics2D.setColor(Color.RED);
-        int x = 6 * Constants.TILE_SIZE;
+        int x = 8 * Constants.TILE_SIZE;
         graphics2D.drawString(Constants.GAME_TITLE_SELECTOR, x-Constants.TILE_SIZE/2, y);
     }
 

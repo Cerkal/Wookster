@@ -78,10 +78,7 @@ public class Player extends Entity {
         this.weapons = new HashMap<>();
         this.spells.clear();
 
-        addWeapon(Weapon_Type.BLASTER);
-        addWeapon(Weapon_Type.CROSSBOW);
         addWeapon(Weapon_Type.FIST);
-        addWeapon(Weapon_Type.SWORD);
     }
 
     public void update() {
