@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Entity.Direction;
+import spells.HealthSpell;
+import spells.KeySpell;
+import spells.SpeedSpell;
+import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
 
 public class EventHandler {
@@ -40,10 +44,9 @@ public class EventHandler {
                 row++;
             }
         }
-        setRandomDamageTile();
     }
 
-    private void setRandomDamageTile() {
+    public void setRandomDamageTile() {
         for (int i = 0; i < 10; i++) {
             TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
             randomDamage.add(tileLocation);
@@ -64,19 +67,48 @@ public class EventHandler {
             ){
                 int index = Utils.generateRandomInt(0, Constants.RNADOM_HURT_DIALOGUE.size() - 1);
                 String message = Constants.RNADOM_HURT_DIALOGUE.get(index);
-                damageWithMessage(randomDamageTile.worldX, randomDamageTile.worldY, message);
+                message(randomDamageTile.worldX, randomDamageTile.worldY, message);
             }
         }
     }
 
-    private void damageWithMessage(int col, int row, String message) {
+    private void message(int col, int row, String message) {
         this.gamePanel.player.entityInDialogue = null;
         this.gamePanel.ui.displayDialog(message);
-        this.gamePanel.player.takeDamage(10);
         if (this.eventRectangle[col][row].retriggerable == false) {
             this.eventRectangle[col][row].eventFinished = true;
         }
         this.canTouchAgain = false;
+        int random = Utils.generateRandomInt(0, 1);
+        System.out.println(random);
+        if (random == 0) {
+            damagePlayer();
+        } else {
+            spellPlayer();
+        }
+    }
+
+    private void damagePlayer() {
+        this.gamePanel.player.takeDamage(10);
+    }
+
+    private void spellPlayer() {
+        int random = Utils.generateRandomInt(0, 2);
+        switch (random) {
+            case 0:
+                HealthSpell healthSpell = new HealthSpell();
+                healthSpell.randomHealthDamage();
+                this.gamePanel.player.spells.put(SpellType.HEALTH_SPELL, healthSpell);
+                break;
+            case 1:
+                SpeedSpell speedSpell = new SpeedSpell();
+                speedSpell.randomSpeedSlow();
+                this.gamePanel.player.spells.put(SpellType.SPEED_SPELL, speedSpell);
+                break;
+            default:
+                this.gamePanel.player.spells.put(SpellType.KEY_SPELL, new KeySpell());
+                break;
+        }
     }
 
     public boolean checkCollision(int col, int row, Direction direction) {

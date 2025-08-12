@@ -1,11 +1,13 @@
 package objects;
 
+import levels.Level00;
 import main.Constants;
 import main.GamePanel;
 
 public class JermeyObject extends SuperObject {
 
     private long lastPlayTime;
+    private static final String START = "start";
 
     public JermeyObject(GamePanel gamePanel, int worldX, int worldY, String sound) {
         super(gamePanel, worldX, worldY);
@@ -25,7 +27,7 @@ public class JermeyObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
 
-        long currentTime = gamePanel.gameTime;
+        long currentTime = this.gamePanel.gameTime;
         long elapsed = currentTime - lastPlayTime;
 
         if (elapsed > Constants.NANO_SECOND * 2.5) {
@@ -33,21 +35,23 @@ public class JermeyObject extends SuperObject {
             lastPlayTime = currentTime;
         }
 
-        if (!this.soundPrimary.contains("start") && !this.gamePanel.jermeyTest.containsKey(this.soundPrimary)) {
-            this.gamePanel.jermeyTest.put(this.soundPrimary, this.gamePanel.jermeyTest.size());
+        if (this.gamePanel.levelManager.currentLevelIndex != 0) { return; }
+        Level00 level00 = (Level00) this.gamePanel.levelManager.getCurrentLevel();
+        if (!this.soundPrimary.contains(START) && !level00.jermeyCount.containsKey(this.soundPrimary)) {
+            level00.jermeyCount.put(this.soundPrimary, level00.jermeyCount.size());
         }
-        
-        if (this.soundPrimary.contains("start")) {
+    
+        if (this.soundPrimary.contains(START)) {
             if (
-                this.gamePanel.jermeyTest.size() == 2 &&
-                this.gamePanel.jermeyTest.get("/res/sounds/jermey_02.wav") != null &&
-                this.gamePanel.jermeyTest.get("/res/sounds/jermey_02.wav") == 0 &&
-                this.gamePanel.jermeyTest.get("/res/sounds/jermey_03.wav") != null &&
-                this.gamePanel.jermeyTest.get("/res/sounds/jermey_03.wav") == 1
+                level00.jermeyCount.size() == 2 &&
+                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_02) != null &&
+                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_02) == 0 &&
+                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_03) != null &&
+                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_03) == 1
             ){
                 this.removeObject();
             } else {
-                this.gamePanel.jermeyTest.clear();
+                level00.jermeyCount.clear();
             }
         }
     }

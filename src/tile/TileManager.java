@@ -29,8 +29,13 @@ public class TileManager {
         tile = new Tile[50];
         mapTileNum = new int[Constants.MAX_WORLD_COL][Constants.MAX_WORLD_ROW];
         gameTileImage();
-        loadMap(Constants.WORLD_00);
     }
+
+    public void setMap(String mapPath) {
+        walkableTiles.clear();
+        loadMap(mapPath);
+    }
+
 
     public void gameTileImage() {
 

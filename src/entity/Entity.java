@@ -121,6 +121,7 @@ public class Entity {
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);
         this.gamePanel.collision.entityCollision(this);
+        this.gamePanel.collision.objectCollision(this, false);
         checkPlayerCollision();
     }
 
@@ -194,6 +195,7 @@ public class Entity {
         }
         this.gamePanel.playSoundEffect(this.damageSound);
         this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
+        System.out.println(this.gamePanel.player.worldX);
         this.effect = new AlertEffect(this.gamePanel, this);
         System.out.println(this.entityType + ": " + getCurrentHealth());
     }

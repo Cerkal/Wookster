@@ -1,5 +1,7 @@
 package objects;
 
+import java.awt.Graphics2D;
+
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -28,5 +30,12 @@ public class KeyObject extends SuperObject {
         this.setImage(Constants.OBJECT_KEY_IMAGE);
         this.soundPrimary = Constants.SOUND_COIN;
         this.inventoryItem = new InventoryItem(this, 1, true);
+    }
+
+    @Override
+    public void drawDetails(Graphics2D graphics2D, int x, int y) {
+        super.drawDetails(graphics2D, x, y);
+        y += Constants.NEW_LINE_SIZE;
+        graphics2D.drawString("Count: " + String.valueOf(this.gamePanel.player.getInventoryItem(this.objectType.name())), x, y);
     }
 }
