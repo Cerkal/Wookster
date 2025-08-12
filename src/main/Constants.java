@@ -143,6 +143,7 @@ public class Constants {
     public static final String EFFECT_BLOOD_0 = "/res/effects/blood_01.png";
     public static final String EFFECT_BLOOD_1 = "/res/effects/blood_02.png";
     public static final String EFFECT_BLOOD_2 = "/res/effects/blood_03.png";
+    public static final String EFFECT_POOP = "/res/effects/poop.png";
 
     public static final String EFFECT_ALERT = "/res/effects/alert.png";
     public static final String EFFECT_ALERT_LIGHT = "/res/effects/alert_light.png";
@@ -165,6 +166,16 @@ public class Constants {
     public static final String TILE_WALL = "/res/tile/wall.png";
     public static final String TILE_TREE = "/res/tile/tree.png";
     public static final String TILE_TREE_FALL = "/res/tile/tree_fall.png";
+
+    // Level 00
+    public static final String LEVEL_00_SIGN = "No wookies allowed...";
+    public static final String LEVEL_00_JERMEY_SIGN = "Jeremy's house.";
+    public static final String LEVEL_00_JERMEY_SOUND_START = "/res/sounds/jermey_start.wav";
+    public static final String LEVEL_00_JERMEY_SOUND_00 = "/res/sounds/jermey_00.wav";
+    public static final String LEVEL_00_JERMEY_SOUND_01 = "/res/sounds/jermey_01.wav";
+    public static final String LEVEL_00_JERMEY_SOUND_02 = "/res/sounds/jermey_02.wav";
+    public static final String LEVEL_00_JERMEY_SOUND_03 = "/res/sounds/jermey_03.wav";
+    public static final String LEVEL_00_JERMEY_SOUND_04 = "/res/sounds/jermey_04.wav";
     
     // Water tiles
     public static final String TILE_WATER_00 = "/res/tile/water00.png";

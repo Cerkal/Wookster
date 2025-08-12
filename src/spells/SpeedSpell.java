@@ -13,7 +13,7 @@ public class SpeedSpell extends SuperSpell {
 
     public SpeedSpell() {
         super(SpellType.SPEED_SPELL);
-        this.speed = randomSpeed();
+        randomSpeed();
         this.spellTime = 10;
         init();
     }
@@ -45,6 +45,13 @@ public class SpeedSpell extends SuperSpell {
             this.positiveSpell = true;
         }
         this.descriptionText.add("Changes player's speed.");
+    }
+    
+    public void randomSpeedSlow() {
+        this.speed = Utils.generateRandomInt(this.MIN_SPEED, Player.DEFAULT_SPEED);
+        if (speed == Player.DEFAULT_SPEED) {
+            this.speed -= 2;
+        }
     }
 
     private int randomSpeed() {

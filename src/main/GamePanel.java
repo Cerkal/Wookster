@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -18,6 +17,7 @@ import javax.swing.plaf.DimensionUIResource;
 import effects.Effect;
 import entity.Entity;
 import entity.Player;
+import levels.Level00;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import tile.TileManager;
@@ -48,17 +48,15 @@ public class GamePanel extends JPanel implements Runnable {
     public Collision collision = new Collision(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
-    public EventHandler eventHandler = new EventHandler(this);
     public Config config = new Config(this);
+    public LevelManager levelManager = new LevelManager(this);
+    public EventHandler eventHandler;
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
     public List<Effect> effects = new ArrayList<>();
-
-    // JERMEY TEST
-    public HashMap<String, Integer> jermeyTest = new HashMap<>();
 
     Graphics2D graphics;
     BufferedImage fullScreen;
@@ -74,8 +72,19 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
+    // public void setupGame() {
+    //     this.assetSetter.setLevel();
+    //     this.sound.mute = false;
+    //     if (this.isFullScreen) {
+    //         this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
+    //         this.graphics = (Graphics2D) this.fullScreen.getGraphics();
+    //         setFullScreen();
+    //     }
+    // }
+
     public void setupGame() {
-        this.assetSetter.setLevel();
+        levelManager.addLevel(new Level00(this));
+        levelManager.loadLevel(0);
         this.sound.mute = false;
         if (this.isFullScreen) {
             this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
@@ -135,8 +144,10 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entity npc : this.npcs) {
                 npc.update();
             }
+            levelManager.update();
         }
     }
+
 
     public void drawToGraphics() {
         switch (this.gameState) {
@@ -205,31 +216,28 @@ public class GamePanel extends JPanel implements Runnable {
             for (SuperObject object : this.objects) {
                 object.draw(graphics2D);
             }
-            // Compare Y Values for drawing
+
             entityList.add(this.player);
             entityList.addAll(this.npcs);
-            Collections.sort(entityList, new Comparator<Entity>() {
-                @Override
-                public int compare(Entity entity1, Entity entity2) {
-                    int result = Integer.compare(entity1.worldY, entity2.worldY);
-                    return result;
-                }
-            });
+            Collections.sort(entityList, Comparator.comparingInt(e -> e.worldY));
             for (Entity entity : this.entityList) {
                 entity.draw(graphics2D);
             }
-            try {
-                for (Projectile projectile : this.projectiles) {
-                    projectile.draw(graphics2D);
-                }    
-            } catch (Exception e) { }
             entityList.clear();
+
+            for (Projectile projectile : this.projectiles) {
+                projectile.draw(graphics2D);
+            }
+
+            // Draw level-specific UI or puzzle state
+            levelManager.draw(graphics2D);
+
             this.ui.draw(graphics2D);
         } catch (Exception exception) {
             exception.printStackTrace();
-            // System.out.println("Error in drawing.");
         }
     }
+
 
     public void restartLevel() {
         this.objects.clear();

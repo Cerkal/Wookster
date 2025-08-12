@@ -35,6 +35,10 @@ public class HealthSpell extends SuperSpell {
         this.descriptionText.add("Modify player's health.");
     }
 
+    public void randomHealthDamage() {
+        this.healthAmount = Utils.generateRandomInt(-30, 0);
+    }
+
     private void randomHealth() {
         this.healthAmount = Utils.generateRandomInt(-30, 30);
     }
