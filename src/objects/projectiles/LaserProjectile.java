@@ -3,7 +3,6 @@ package objects.projectiles;
 import entity.Entity;
 import main.Constants;
 import main.GamePanel;
-import entity.Entity.Direction;
 
 public class LaserProjectile extends Projectile {
 

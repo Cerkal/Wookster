@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -55,6 +56,9 @@ public class GamePanel extends JPanel implements Runnable {
     public ArrayList<Entity> entityList = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
     public List<Effect> effects = new ArrayList<>();
+
+    // JERMEY TEST
+    public HashMap<String, Integer> jermeyTest = new HashMap<>();
 
     Graphics2D graphics;
     BufferedImage fullScreen;

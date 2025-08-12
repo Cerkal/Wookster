@@ -164,6 +164,7 @@ public class Constants {
     public static final String TILE_EARTH = "/res/tile/earth.png";
     public static final String TILE_WALL = "/res/tile/wall.png";
     public static final String TILE_TREE = "/res/tile/tree.png";
+    public static final String TILE_TREE_FALL = "/res/tile/tree_fall.png";
     
     // Water tiles
     public static final String TILE_WATER_00 = "/res/tile/water00.png";
@@ -203,6 +204,7 @@ public class Constants {
 
     // Sounds
     public static final String SOUND_BG_01 = "/res/sounds/backgroundmusic.wav";
+    public static final String SOUND_BG_02 = "/res/sounds/bgsounds1.wav";
     public static final String SOUND_COIN = "/res/sounds/coin.wav";
     public static final String SOUND_POWER_UP = "/res/sounds/powerup.wav";
     public static final String SOUND_UNLOCK = "/res/sounds/unlock.wav";

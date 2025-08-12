@@ -3,7 +3,6 @@ package objects.projectiles;
 import entity.Entity;
 import main.Constants;
 import main.GamePanel;
-import entity.Entity.Direction;
 
 public class ArrowProjectile extends Projectile {
 
@@ -31,16 +30,16 @@ public class ArrowProjectile extends Projectile {
         this.worldX = this.gamePanel.player.worldX;
         this.worldY = this.gamePanel.player.worldY;
         switch (this.gamePanel.player.direction) {
-            case Direction.UP:
+            case UP:
                 this.worldY -= Constants.TILE_SIZE/2 + 5;
                 break;
-            case Direction.DOWN:
+            case DOWN:
                 this.worldY += Constants.TILE_SIZE/2;
                 break;
-            case Direction.LEFT:
+            case LEFT:
                 this.worldX -= Constants.TILE_SIZE/2;
                 break;
-            case Direction.RIGHT:
+            case RIGHT:
                 this.worldX += Constants.TILE_SIZE/2;
                 break;
             default:

@@ -1,6 +1,8 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import entity.NPCDroids;
@@ -15,6 +17,7 @@ import objects.CarryPotionObject;
 import objects.ChestObject;
 import objects.CrossbowObject;
 import objects.DoorObject;
+import objects.JermeyObject;
 import objects.KeyObject;
 import objects.LasersObject;
 import spells.ClaritySpell;
@@ -41,13 +44,40 @@ public class AssetSetter {
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 38, 8));
+        this.gamePanel.objects.add(new KeyObject(this.gamePanel, 30, 29));
 
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 10, 12));
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 8, 27));
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
+        
+        List<List<Integer>> jeremyList = new ArrayList<>();
+        jeremyList.add(Arrays.asList(27, 37));
+        jeremyList.add(Arrays.asList(28, 37));
+        jeremyList.add(Arrays.asList(29, 37));
+        jeremyList.add(Arrays.asList(32, 37));
+        jeremyList.add(Arrays.asList(33, 37));
+        List<String> jeremySounds = new ArrayList<>(
+            Arrays.asList(
+                "/res/sounds/jermey_00.wav",
+                "/res/sounds/jermey_01.wav",
+                "/res/sounds/jermey_02.wav",
+                "/res/sounds/jermey_03.wav",
+                "/res/sounds/jermey_04.wav"
+            )
+        );
+        Collections.shuffle(jeremyList);
+        for (int i = 0; i < jeremySounds.size() && i < jeremyList.size(); i++) {
+            List<Integer> coords = jeremyList.get(i);
+            int x = coords.get(0);
+            int y = coords.get(1);
+            String sound = jeremySounds.get(i);
+            this.gamePanel.objects.add(new JermeyObject(this.gamePanel, x, y, sound));
+        }
+
+        this.gamePanel.objects.add(new SignObject(this.gamePanel, 31, 37, "Jeremy's house."));
+        this.gamePanel.objects.add(new JermeyObject(this.gamePanel, 30, 36, "/res/sounds/jermey_start.wav", true));
 
         this.gamePanel.objects.add(new ChestObject(this.gamePanel, 10, 8));
-
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, "No wookies allowed..."));
 
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));

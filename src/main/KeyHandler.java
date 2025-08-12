@@ -43,7 +43,7 @@ public class KeyHandler implements KeyListener {
                         case Constants.GAME_TITLE_SCREEN_NEW_GAME:
                             this.gamePanel.gameState = GameState.PLAY;
                             this.gamePanel.stopMusic();
-                            this.gamePanel.playMusic(Constants.SOUND_BG_01);
+                            // this.gamePanel.playMusic(Constants.SOUND_BG_01);
                             break;
                         case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
                             break;
