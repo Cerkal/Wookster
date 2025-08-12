@@ -1,6 +1,5 @@
 package objects;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -8,14 +7,10 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
-import spells.HealthSpell;
-import spells.SpeedSpell;
 import spells.SuperSpell;
-import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
 
 public class SuperObject {
@@ -115,36 +110,6 @@ public class SuperObject {
             e.printStackTrace();
         }
         graphics2D.drawString(this.name, x, y);
-        if (this.spell != null) {
-            if (this.spell.spellTime > 0) {
-                y += Constants.NEW_LINE_SIZE;
-                graphics2D.drawString("Spell Time: " + String.valueOf(this.spell.spellTime) + "s", x, y);
-            }
-            for (String description : this.spell.descriptionText) {
-                y += Constants.NEW_LINE_SIZE;
-                graphics2D.drawString(description, x, y);
-            }
-
-            if (this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL)) {
-                graphics2D.setColor(Color.YELLOW);
-                String description = "Increases";
-                if (!this.spell.positiveSpell) {
-                    description = "Decreases";
-                }
-                if (this.spell.spellType == SpellType.SPEED_SPELL) {
-                    SpeedSpell speedSpell = (SpeedSpell) this.spell;
-                    y += Constants.NEW_LINE_SIZE;
-                    int speedDiff = Math.abs(Player.DEFAULT_SPEED - speedSpell.speed);
-                    graphics2D.drawString(description + " player's speed by " + String.valueOf(speedDiff), x, y);
-                }
-                if (this.spell.spellType == SpellType.HEALTH_SPELL) {
-                    HealthSpell speedSpell = (HealthSpell) this.spell;
-                    y += Constants.NEW_LINE_SIZE;
-                    graphics2D.drawString(description + " player's health by " + String.valueOf(speedSpell.healthAmount), x, y);
-                }
-                graphics2D.setColor(Color.WHITE);
-            }
-        }
     }
 
     protected void setImage(String imagePath) {

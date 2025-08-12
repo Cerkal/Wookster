@@ -22,10 +22,17 @@ public abstract class Level {
         this.gamePanel.eventHandler = new EventHandler(this.gamePanel);
     }
 
-    public abstract void init();
+    public void init() {
+        loadMap();
+    }
+
     public abstract void update();
     public abstract void draw(Graphics2D graphics2d);
     public abstract void reset();
+
+    public void loadMap() {
+        this.gamePanel.tileManager.setMap(mapPath);
+    }
 
     protected void generateRandomObjects() {
         List<SpellType> spellList = Arrays.asList(SpellType.values());

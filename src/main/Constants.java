@@ -155,6 +155,7 @@ public class Constants {
 
     // Maps
     public static final String WORLD_00 = "/res/maps/world00.txt";
+    public static final String WORLD_01 = "/res/maps/world01.txt";
 
     // Fonts
     public static final String FONT_DOS = "/res/fonts/dos.ttf";

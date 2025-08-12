@@ -18,6 +18,7 @@ import effects.Effect;
 import entity.Entity;
 import entity.Player;
 import levels.Level00;
+import levels.Level01;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import tile.TileManager;
@@ -72,18 +73,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    // public void setupGame() {
-    //     this.assetSetter.setLevel();
-    //     this.sound.mute = false;
-    //     if (this.isFullScreen) {
-    //         this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
-    //         this.graphics = (Graphics2D) this.fullScreen.getGraphics();
-    //         setFullScreen();
-    //     }
-    // }
-
     public void setupGame() {
         levelManager.addLevel(new Level00(this));
+        levelManager.addLevel(new Level01(this));
         levelManager.loadLevel(0);
         this.sound.mute = false;
         if (this.isFullScreen) {

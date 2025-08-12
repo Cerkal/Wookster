@@ -12,23 +12,19 @@ import entity.NPCTrooper;
 import main.Constants;
 import main.GamePanel;
 import main.Level;
-import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.JermeyObject;
 import objects.KeyObject;
 import objects.SignObject;
 import objects.SwordObject;
-import spells.ClaritySpell;
-import spells.HealthSpell;
-import spells.SpeedSpell;
 
-public class Level00 extends Level {
+public class Level01 extends Level {
 
     public HashMap<String, Integer> jermeyCount = new HashMap<>();
 
-    public Level00(GamePanel gamePanel) {
+    public Level01(GamePanel gamePanel) {
         super(gamePanel);
-        this.mapPath = Constants.WORLD_00;
+        this.mapPath = Constants.WORLD_01;
     }
 
     public void init() {
@@ -46,10 +42,6 @@ public class Level00 extends Level {
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 8, 27));
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, Constants.LEVEL_00_SIGN));
-
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
 
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
