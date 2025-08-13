@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'main.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // e.g., implementation 'com.google.guava:guava:32.1.2-jre'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
