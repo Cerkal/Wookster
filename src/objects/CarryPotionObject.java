@@ -94,7 +94,7 @@ public class CarryPotionObject extends SuperObject {
                 if (this.spell.spellType == SpellType.HEALTH_SPELL) {
                     HealthSpell speedSpell = (HealthSpell) this.spell;
                     y += Constants.NEW_LINE_SIZE;
-                    graphics2D.drawString(description + " player's health by " + String.valueOf(speedSpell.healthAmount), x, y);
+                    graphics2D.drawString(description + " player's health by " + String.valueOf((int) Math.abs(speedSpell.healthAmount)), x, y);
                 }
                 graphics2D.setColor(Color.WHITE);
             }

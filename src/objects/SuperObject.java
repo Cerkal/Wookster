@@ -42,7 +42,8 @@ public class SuperObject {
         BLASER,
         CROSSBOW,
         SWORD,
-        JERMEY
+        JERMEY,
+        MAP
     }
 
     public HashMap<Object_Type, String> objectIcons = Constants.OBJECT_ICONS;
@@ -120,12 +121,9 @@ public class SuperObject {
         }
     }
 
-    protected void setSpell() {
+    public void setSpell() {
         if (this.spell != null) {
-            if (this.spell.spellTime > 0) {
-                this.spell.startTime = this.gamePanel.gameTime;
-            }
-            this.gamePanel.player.spells.put(spell.spellType, this.spell);
+            this.spell.setSpell(this.gamePanel);
             if (this.spell.message != null) {
                 this.gamePanel.ui.displayDialog(this.spell.message);
             }

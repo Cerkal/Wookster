@@ -157,28 +157,34 @@ public class UI {
             graphics2D.fillRoundRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height, 15, 15);
             graphics2D.setColor(Color.WHITE);
 
-            y = y - 150;
-            graphics2D.drawString(Constants.GAME_INVENTORY, x, y);
+            y = y - 160;
+            graphics2D.drawString(Constants.GAME_INVENTORY, Constants.TILE_SIZE * 2, y);
             y += Constants.TILE_SIZE;
 
             // Selector
-            HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
-            List<String> inventory = this.gamePanel.player.getInventoryString();
-            for (int i = 0; i < inventory.size() - 1; i++) {
-                if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                    selector.markedSelected(i);
+            try {
+                HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
+                List<String> inventory = this.gamePanel.player.getInventoryString();
+                for (int i = 0; i < inventory.size() - 1; i++) {
+                    if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
+                        selector.markedSelected(i);
+                    }
                 }
-            }
-            SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 5, Constants.NEW_LINE_SIZE, inventory);
-            if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
-                InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5);
-            }
-            if (selectedItem != null && selectedItem.selected) {
-                InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                inventoryItem.select();
-                this.gamePanel.gameState = GameState.PLAY;
-                selector.clear();
+                SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
+                
+                if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
+                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
+                }
+                if (selectedItem != null && selectedItem.selected) {
+                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    inventoryItem.select();
+                    this.gamePanel.gameState = GameState.PLAY;
+                    selector.clear();
+                }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                this.selector = new Selector(this.gamePanel);
             }
         }
     }

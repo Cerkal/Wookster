@@ -1,4 +1,3 @@
-// PuzzleLevel.java
 package levels;
 
 import java.awt.Graphics2D;
@@ -50,6 +49,10 @@ public class Level00 extends Level {
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
+
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell(), 23, 25));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell(),  23, 26));
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell(),  23, 27));
 
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));

@@ -27,7 +27,7 @@ public class Constants {
     public static final int WORLD_WIDTH = TILE_SIZE * MAX_WORLD_COL;
     public static final int WORLD_HEIGHT = TILE_SIZE * MAX_WORLD_ROW;
 
-    public static final int NEW_LINE_SIZE = TILE_SIZE;
+    public static final int NEW_LINE_SIZE = TILE_SIZE - 5;
 
     // Full Screen
     public static final int FULL_SCREEN_WIDTH = SCREEN_WIDTH;
@@ -154,8 +154,9 @@ public class Constants {
     public static final String WEAPON_PROJECTILE_LASER = "/res/objects/laser.png";
 
     // Maps
-    public static final String WORLD_00 = "/res/maps/world00.txt";
-    public static final String WORLD_01 = "/res/maps/world01.txt";
+    public static final String WORLD_BUILDER = "/res/maps/world_builder.txt";
+    public static final String WORLD_00 = "/res/maps/world_00.txt";
+    public static final String WORLD_01 = "/res/maps/world_01.txt";
 
     // Fonts
     public static final String FONT_DOS = "/res/fonts/dos.ttf";

@@ -27,6 +27,5 @@ public class CrossbowObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_WEAPON_CROSSBOW);
         this.soundPrimary = Constants.SOUND_CURSOR;
-        System.out.println("(" + this.worldX / Constants.TILE_SIZE + ", " + this.worldY / Constants.TILE_SIZE + ")");
     }
 }

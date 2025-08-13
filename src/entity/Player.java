@@ -2,6 +2,7 @@ package entity;
 
 import main.KeyHandler;
 import main.GamePanel.GameState;
+import objects.GameMap;
 import objects.SuperObject;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
@@ -79,6 +80,8 @@ public class Player extends Entity {
         this.spells.clear();
 
         addWeapon(Weapon_Type.FIST);
+        GameMap gameMap = new GameMap(this.gamePanel);
+        addInventoryItem(gameMap.inventoryItem);
     }
 
     public void update() {

@@ -33,6 +33,9 @@ public class KeyObject extends SuperObject {
     }
 
     @Override
+    public void useObject() {}
+
+    @Override
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
         super.drawDetails(graphics2D, x, y);
         y += Constants.NEW_LINE_SIZE;

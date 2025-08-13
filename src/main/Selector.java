@@ -20,8 +20,8 @@ public class Selector implements KeyListener {
     List<String> originalSelectorItems = new ArrayList<>();
     List<List<String>> selectorItemsLong = new ArrayList<>();
 
-    int commandNumber = 0;
-    int pageSize = 5;
+    public int commandNumber = 0;
+    int pageSize = 6;
     int pageNumber = 0;
     String selectedItem;
     int markedSelectedIndex;
@@ -65,29 +65,40 @@ public class Selector implements KeyListener {
 
     public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter, List<String> selectorItems) {
         if (selectorItems == null) { return null; }
+
         this.originalSelectorItems = selectorItems;
-        if (selectorItemsLong == null || selectorItemsLong.isEmpty()) {
-            List<List<String>> tempListLong = new ArrayList<>();
-            List<String> tempList = new ArrayList<>();
-            for (String tempItem : selectorItems) {
-                tempList.add(tempItem);
-                if (tempList.size() >= this.pageSize) {
-                    tempListLong.add(new ArrayList<>(tempList));
-                    tempList.clear();
-                }
+
+        if (selectorItemsLong == null || selectorItemsLong.isEmpty() || !selectorItemsLong.get(0).equals(selectorItems)) {
+            selectorItemsLong = new ArrayList<>();
+            for (int i = 0; i < selectorItems.size(); i += pageSize) {
+                selectorItemsLong.add(new ArrayList<>(
+                    selectorItems.subList(i, Math.min(i + pageSize, selectorItems.size()))
+                ));
             }
-            if (!tempList.isEmpty()) {
-                tempListLong.add(new ArrayList<>(tempList));
-            }
-            this.selectorItemsLong = tempListLong;
         }
-        this.pageNumber = (commandNumber) / pageSize;
-        this.selectorItems = selectorItemsLong.get(this.pageNumber);
-        this.result.selectedName = this.originalSelectorItems.get(this.commandNumber);
-        this.result.selectedIndex = this.commandNumber;
+
+        try {
+            if (commandNumber < 0) { commandNumber = 0; }
+            if (commandNumber >= originalSelectorItems.size()) {
+                commandNumber = originalSelectorItems.size() - 1;
+            }
+            this.pageNumber = commandNumber / pageSize;
+            if (pageNumber >= selectorItemsLong.size()) {
+                pageNumber = selectorItemsLong.size() - 1;
+            }
+            this.selectorItems = selectorItemsLong.get(pageNumber);
+            this.result.selectedName = originalSelectorItems.get(commandNumber);
+            this.result.selectedIndex = commandNumber;
+        } catch (Exception e) {
+            System.err.println("Error in selector:");
+            e.printStackTrace();
+            return this.result;
+        }
+
         draw(graphics2D, x, y, delimiter);
         return this.result;
     }
+
 
     public void draw(Graphics2D graphics2D, int x, int y, int delimiter) {
         graphics2D.setFont(this.customFont);

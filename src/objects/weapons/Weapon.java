@@ -28,6 +28,7 @@ public class Weapon {
     public boolean range = false;
     public boolean longSprite = false;
     public int maxDamage;
+    public BufferedImage icon;
 
     public HashMap<Weapon_Type, String> iconImages = Constants.WEAPON_ICONS;
 
@@ -72,12 +73,10 @@ public class Weapon {
     }
 
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
-        try {
-            BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(this.iconImages.get(this.weaponType)));
-            this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, icon);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (this.icon == null) {
+            setWeaponIcon();
         }
+        this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, this.icon);
         graphics2D.drawString(this.weaponType.name(), x, y);
         if (this.range) {
             y += Constants.NEW_LINE_SIZE;
@@ -85,6 +84,14 @@ public class Weapon {
         }
         y += Constants.NEW_LINE_SIZE;
         graphics2D.drawString("Max Damage: " + String.valueOf(this.maxDamage), x, y);
+    }
+
+    protected void setWeaponIcon() {
+        try {
+            this.icon = ImageIO.read(getClass().getResourceAsStream(this.iconImages.get(this.weaponType)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

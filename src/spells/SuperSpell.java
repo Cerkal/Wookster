@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import entity.Player;
+import main.GamePanel;
 
 public class SuperSpell {
     
@@ -52,5 +53,12 @@ public class SuperSpell {
         return "Spell{" +
             "spellType='" + this.spellType + '\'' +
         '}';
+    }
+
+    public void setSpell(GamePanel gamePanel) {
+        if (this.spellTime > 0) {
+            this.startTime = gamePanel.gameTime;
+        }
+        gamePanel.player.spells.put(this.spellType, this);
     }
 }

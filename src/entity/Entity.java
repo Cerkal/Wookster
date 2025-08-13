@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -83,6 +84,10 @@ public class Entity {
         this.worldX = worldX * Constants.TILE_SIZE;
         this.worldY = worldY * Constants.TILE_SIZE;
         this.isMoving = true;
+    }
+
+    public Point getLocation() {
+        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
     }
 
     public void draw(Graphics2D graphics2D) {
@@ -195,7 +200,6 @@ public class Entity {
         }
         this.gamePanel.playSoundEffect(this.damageSound);
         this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
-        System.out.println(this.gamePanel.player.worldX);
         this.effect = new AlertEffect(this.gamePanel, this);
         System.out.println(this.entityType + ": " + getCurrentHealth());
     }

@@ -7,7 +7,6 @@ import entity.Entity.Direction;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
-import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
 
 public class EventHandler {
@@ -80,7 +79,6 @@ public class EventHandler {
         }
         this.canTouchAgain = false;
         int random = Utils.generateRandomInt(0, 1);
-        System.out.println(random);
         if (random == 0) {
             damagePlayer();
         } else {
@@ -98,15 +96,16 @@ public class EventHandler {
             case 0:
                 HealthSpell healthSpell = new HealthSpell();
                 healthSpell.randomHealthDamage();
-                this.gamePanel.player.spells.put(SpellType.HEALTH_SPELL, healthSpell);
+                healthSpell.setSpell(this.gamePanel);
                 break;
             case 1:
                 SpeedSpell speedSpell = new SpeedSpell();
                 speedSpell.randomSpeedSlow();
-                this.gamePanel.player.spells.put(SpellType.SPEED_SPELL, speedSpell);
+                speedSpell.setSpell(this.gamePanel);
                 break;
             default:
-                this.gamePanel.player.spells.put(SpellType.KEY_SPELL, new KeySpell());
+                KeySpell keySpell = new KeySpell();
+                keySpell.setSpell(this.gamePanel);
                 break;
         }
     }

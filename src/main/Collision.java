@@ -4,6 +4,7 @@ import entity.Entity;
 import entity.Entity.Entity_Type;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
+import tile.Tile;
 
 public class Collision {
 
@@ -49,6 +50,12 @@ public class Collision {
                 tileNum2 = gamePanel.tileManager.mapTileNum[entityRightCol][entityBottomRow];
                 break;
         }
+
+        if (this.gamePanel.debugMap) {
+            Tile currentTile = this.gamePanel.tileManager.getTile(this.gamePanel.player.getLocation());
+            currentTile.tileHighlight = true;
+        }
+
         if (
             gamePanel.tileManager.tile[tileNum1].collision == true ||
             gamePanel.tileManager.tile[tileNum2].collision == true

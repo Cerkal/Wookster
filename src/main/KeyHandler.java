@@ -1,10 +1,13 @@
 package main;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import main.GamePanel.GameState;
 import spells.SuperSpell.SpellType;
+import tile.Tile;
+import tile.TileLoader;
 
 public class KeyHandler implements KeyListener {
 
@@ -75,7 +78,22 @@ public class KeyHandler implements KeyListener {
                     this.enterPressed = true;
                 }
                 if (code == KeyEvent.VK_I) {
+                    this.gamePanel.ui.selector.commandNumber = 0;
                     this.gamePanel.gameState = GameState.INVENTORY;
+                }
+
+                // Debug controls
+                if (this.gamePanel.debugMap) {
+                    if (code == KeyEvent.VK_L) {
+                        this.gamePanel.tileManager.loadMap(this.gamePanel.levelManager.getCurrentLevel().mapPath);
+                        System.out.println("Loaded map.");
+                    }
+                    if (code == KeyEvent.VK_SPACE) {
+                        Point location = this.gamePanel.player.getLocation();
+                        Tile currentTile = this.gamePanel.tileManager.getTile(location);
+                        Tile replaceTile = TileLoader.getTile(currentTile.indexNumber+1);
+                        this.gamePanel.tileManager.tileMap.put(location, replaceTile);
+                    }
                 }
                 break;
             case GameState.PAUSE:

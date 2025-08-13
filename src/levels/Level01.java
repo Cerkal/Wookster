@@ -1,4 +1,3 @@
-// PuzzleLevel.java
 package levels;
 
 import java.awt.Graphics2D;
