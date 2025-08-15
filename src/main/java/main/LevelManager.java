@@ -4,9 +4,14 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import levels.LevelBase;
+import levels.LevelBase.LevelWrapper;
+import objects.SuperObject;
+import objects.SuperObject.SuperObjectWrapper;
+
 public class LevelManager {
     private GamePanel gamePanel;
-    private List<Level> levels = new ArrayList<>();
+    private List<LevelBase> levels = new ArrayList<>();
     
     public int currentLevelIndex = 0;
 
@@ -14,7 +19,7 @@ public class LevelManager {
         this.gamePanel = gamePanel;
     }
 
-    public void addLevel(Level level) {
+    public void addLevel(LevelBase level) {
         levels.add(level);
     }
 
@@ -31,7 +36,7 @@ public class LevelManager {
         }
     }
 
-    public Level getCurrentLevel() {
+    public LevelBase getCurrentLevel() {
         return levels.get(currentLevelIndex);
     }
 
@@ -41,5 +46,17 @@ public class LevelManager {
 
     public void draw(Graphics2D g2) {
         getCurrentLevel().draw(g2);
+    }
+
+    public LevelWrapper getLevelWrapper() {
+        List<SuperObjectWrapper> objectWrapper = new ArrayList<>();
+        for (SuperObject object : this.gamePanel.objects) {
+            if (!object.isSpecial) { objectWrapper.add(object.getSuperObjectWrapper()); }
+        }
+        LevelWrapper levelWrapper = new LevelWrapper();
+        levelWrapper.levelName = this.getCurrentLevel().getLevelName();
+        levelWrapper.levelIndex = this.currentLevelIndex;
+        levelWrapper.objects = objectWrapper;
+        return levelWrapper;
     }
 }

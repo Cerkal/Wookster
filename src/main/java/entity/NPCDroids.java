@@ -16,7 +16,7 @@ public class NPCDroids extends Entity {
         this.speed = 2;
         this.getPlayerImage();
         this.setDialogue();
-        this.entityType = Entity_Type.NPC;
+        this.entityType = EntityType.NPC;
         this.name = "Droids";
         this.movable = false;
     }

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import objects.SuperObject.Object_Type;
-import objects.weapons.Weapon.Weapon_Type;
+import objects.SuperObject.ObjectType;
+import objects.weapons.Weapon.WeaponType;
 
 public class Constants {
 
@@ -48,17 +48,22 @@ public class Constants {
     public static final String GAME_PAUSED = "Game Paused";
     public static final String GAME_DEATH = "Dead";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
+    public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
     public static final List<String> GAME_TITLE_MENU = new ArrayList<>(
         List.of(
             GAME_TITLE_SCREEN_NEW_GAME,
+            GAME_TITLE_SCREEN_SAVE_GAME,
             GAME_TITLE_SCREEN_LOAD_GAME,
             GAME_TITLE_SCREEN_QUIT_GAME
         )
     );
     public static final String GAME_INVENTORY = "Inventory";
+
+    // Files
+    public static final String SAVE_FILE = "save.json";
 
     // Objects
     public static final String OBJECT_DOOR_IMAGE = "/objects/door.png";
@@ -266,19 +271,19 @@ public class Constants {
     public static final String WEAPON_CROSSBOW_ICON = "/objects/weapon_bow_inverted.png";
     public static final String WEAPON_FIST_ICON = "/objects/weapon_fist_inverted.png";
     public static final String WEAPON_SWORD_ICON = "/objects/weapon_sword_inverted.png";
-    public static final HashMap<Weapon_Type, String> WEAPON_ICONS = new HashMap<>() {{
-        put(Weapon_Type.BLASTER, WEAPON_BLASER_ICON);
-        put(Weapon_Type.CROSSBOW, WEAPON_CROSSBOW_ICON);
-        put(Weapon_Type.FIST, WEAPON_FIST_ICON);
-        put(Weapon_Type.SWORD, WEAPON_SWORD_ICON);
+    public static final HashMap<WeaponType, String> WEAPON_ICONS = new HashMap<>() {{
+        put(WeaponType.BLASTER, WEAPON_BLASER_ICON);
+        put(WeaponType.CROSSBOW, WEAPON_CROSSBOW_ICON);
+        put(WeaponType.FIST, WEAPON_FIST_ICON);
+        put(WeaponType.SWORD, WEAPON_SWORD_ICON);
     }};
 
     // Object Icons
     public static final String OBJECT_POTION_ICON = "/objects/object_potion_inverted.png";
     public static final String OBJECT_KEY_ICON = "/objects/object_key_inverted.png";
-    public static final HashMap<Object_Type, String> OBJECT_ICONS = new HashMap<>() {{
-        put(Object_Type.POTION, OBJECT_POTION_ICON);
-        put(Object_Type.KEY, OBJECT_KEY_ICON);
+    public static final HashMap<ObjectType, String> OBJECT_ICONS = new HashMap<>() {{
+        put(ObjectType.POTION, OBJECT_POTION_ICON);
+        put(ObjectType.KEY, OBJECT_KEY_ICON);
     }};
 
     public static final String MESSGE_INVENTORY_ADDED = " added to inventory";

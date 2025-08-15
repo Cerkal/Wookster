@@ -2,7 +2,7 @@ package objects;
 
 import main.Constants;
 import main.GamePanel;
-import objects.weapons.Weapon.Weapon_Type;
+import objects.weapons.Weapon.WeaponType;
 
 public class CrossbowObject extends SuperObject {
 
@@ -19,11 +19,11 @@ public class CrossbowObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addWeapon(Weapon_Type.CROSSBOW);
+        this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
     }
 
     private void init() {
-        this.objectType = Object_Type.CROSSBOW;
+        this.objectType = ObjectType.CROSSBOW;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_WEAPON_CROSSBOW);
         this.soundPrimary = Constants.SOUND_CURSOR;

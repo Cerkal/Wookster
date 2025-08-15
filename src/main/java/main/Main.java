@@ -14,9 +14,9 @@ public class Main {
 
         GamePanel gamePanel = new GamePanel();
         gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
+        gamePanel.config.loadConfig();
 
         window.add(gamePanel);
-        gamePanel.config.loadConfig();
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);

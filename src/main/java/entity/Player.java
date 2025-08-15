@@ -2,6 +2,7 @@ package entity;
 
 import main.KeyHandler;
 import main.GamePanel.GameState;
+import main.InventoryItem.InventoryItemWrapper;
 import objects.GameMap;
 import objects.SuperObject;
 import objects.weapons.BlasterWeapon;
@@ -9,7 +10,7 @@ import objects.weapons.CrossbowWeapon;
 import objects.weapons.FistWeapon;
 import objects.weapons.SwordWeapon;
 import objects.weapons.Weapon;
-import objects.weapons.Weapon.Weapon_Type;
+import objects.weapons.Weapon.WeaponType;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -34,6 +35,17 @@ import main.InventoryItem;
 
 public class Player extends Entity {
 
+    public static class PlayerWrapper {
+        public int worldX;
+        public int worldY;
+        public int speed;
+        public Direction direction;
+        public int maxHealth;
+        public WeaponType weapon;
+        public HashMap<String, InventoryItemWrapper> inventory;
+        public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
+    }
+
     KeyHandler keyHandler;
 
     public final int screenX;
@@ -41,16 +53,15 @@ public class Player extends Entity {
     public static final int DEFAULT_SPEED = 4;
 
     // Weapons
-    public int hold = 0;
     public boolean attacking = false;
-    public HashMap<Weapon_Type, Weapon> weapons = new HashMap<>();
-    HashMap<Weapon_Type, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
+    public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
+    HashMap<WeaponType, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
-    
+
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
         super(gamePanel);
@@ -70,7 +81,7 @@ public class Player extends Entity {
         this.worldY = Constants.TILE_SIZE * 21;
         this.speed = DEFAULT_SPEED;
         this.direction = Direction.DOWN;
-        this.entityType = Entity_Type.PLAYER;
+        this.entityType = EntityType.PLAYER;
         this.health = this.maxHealth;
         this.invincable = false;
         this.weapon = null;
@@ -79,24 +90,23 @@ public class Player extends Entity {
         this.weapons = new HashMap<>();
         this.spells.clear();
 
-        addWeapon(Weapon_Type.FIST);
+        addWeapon(WeaponType.FIST);
+        addWeapon(WeaponType.CROSSBOW);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
     }
 
     public void update() {
         this.isMoving = false;
-        if (
-            (
-                (
-                    this.keyHandler.upPressed ||
-                    this.keyHandler.downPressed ||
-                    this.keyHandler.leftPressed ||
-                    this.keyHandler.rightPressed ||
-                    this.keyHandler.enterPressed
-                ) && !this.isDead
+        if (((
+                this.keyHandler.upPressed ||
+                this.keyHandler.downPressed ||
+                this.keyHandler.leftPressed ||
+                this.keyHandler.rightPressed ||
+                this.keyHandler.enterPressed
             )
-        ){
+            && !this.isDead
+        )){
             this.isMoving = true;
 
             if (this.keyHandler.upPressed) {
@@ -167,7 +177,7 @@ public class Player extends Entity {
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0)),
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1))
             )));
-            imageMapWeapons.put(Weapon_Type.CROSSBOW, imageMapCrossBow);
+            imageMapWeapons.put(WeaponType.CROSSBOW, imageMapCrossBow);
 
             // Blaster
             HashMap<Direction, List<BufferedImage>> imageMapBlaster = new HashMap<>();
@@ -187,7 +197,7 @@ public class Player extends Entity {
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_0)),
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_1))
             )));
-            imageMapWeapons.put(Weapon_Type.BLASTER, imageMapBlaster);
+            imageMapWeapons.put(WeaponType.BLASTER, imageMapBlaster);
 
             // Fist
             HashMap<Direction, List<BufferedImage>> imageMapFist = new HashMap<>();
@@ -207,7 +217,7 @@ public class Player extends Entity {
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_0)),
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_1))
             )));
-            imageMapWeapons.put(Weapon_Type.FIST, imageMapFist);
+            imageMapWeapons.put(WeaponType.FIST, imageMapFist);
 
             // Sword
             HashMap<Direction, List<BufferedImage>> imageMapSword = new HashMap<>();
@@ -227,7 +237,7 @@ public class Player extends Entity {
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_0)),
                 ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_1))
             )));
-            imageMapWeapons.put(Weapon_Type.SWORD, imageMapSword);
+            imageMapWeapons.put(WeaponType.SWORD, imageMapSword);
 
             this.imageMap = this.imageMapDefault;
             this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
@@ -308,6 +318,19 @@ public class Player extends Entity {
         return selectableMap;
     }
 
+    public PlayerWrapper getPlayerSaveState() {
+        PlayerWrapper playerWrapper = new PlayerWrapper();
+        playerWrapper.worldX = getRawX();
+        playerWrapper.worldY = getRawY();
+        playerWrapper.speed = this.speed;
+        playerWrapper.direction = this.direction;
+        playerWrapper.maxHealth = this.maxHealth;
+        playerWrapper.weapon = this.weapon.weaponType;
+        playerWrapper.inventory = getInventoryItemsForSave();
+        playerWrapper.spells = this.spells;
+        return playerWrapper;
+    }
+
     public List<String> getInventoryString() {
         List<String> weaponList = new ArrayList<>();
         List<String> otherList = new ArrayList<>();
@@ -338,8 +361,27 @@ public class Player extends Entity {
         return selectableList;
     }
 
+    public HashMap<String, InventoryItemWrapper> getInventoryItemsForSave() {
+        HashMap<String, InventoryItemWrapper> inventoryMap = new HashMap<>();
+        for (String key : this.inventory.keySet()) {
+            List<InventoryItem> items = this.inventory.get(key);
+            int totalCount = 0;
+            for (InventoryItem item : items) {
+                totalCount += item.count;
+                if (item.count == 1) {
+                    inventoryMap.put(key, item.getInventoryWrapper());
+                    continue;
+                }
+            }
+            InventoryItem first = items.get(0);
+            InventoryItemWrapper firstWrapper = first.getInventoryWrapper();
+            firstWrapper.count = totalCount;
+            inventoryMap.put(key, firstWrapper);
+        }
+        return inventoryMap;
+    }
 
-    public void addWeapon(Weapon_Type weaponType) {
+    public void addWeapon(WeaponType weaponType) {
         switch (weaponType) {
             case BLASTER:
                 this.weapons.put(weaponType, new BlasterWeapon(gamePanel, this));
@@ -359,7 +401,7 @@ public class Player extends Entity {
         switchWeapon(weaponType);
     }
 
-    public void switchWeapon(Weapon_Type weaponType) {
+    public void switchWeapon(WeaponType weaponType) {
         if (!this.weapons.containsKey(weaponType)) { return; }
         this.weapon = this.weapons.get(weaponType);
     }
@@ -368,7 +410,7 @@ public class Player extends Entity {
         if (this.weapon == null) { return; }
         if (
             this.collisionEntity == null ||
-            (this.collisionEntity != null && this.collisionEntity.entityType == Entity_Type.ENEMY)
+            (this.collisionEntity != null && this.collisionEntity.entityType == EntityType.ENEMY)
         ){
             this.weapon.shoot();
         }
@@ -455,7 +497,7 @@ public class Player extends Entity {
         this.collisionEntity = this.gamePanel.collision.entityCollision(this);
         if (this.collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                if (this.collisionEntity.entityType == Entity_Type.NPC) {
+                if (this.collisionEntity.entityType == EntityType.NPC) {
                     this.collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
                 }
@@ -525,5 +567,10 @@ public class Player extends Entity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public class Test {
+        public int count = 0;
+        public String name = "Test";
     }
 }

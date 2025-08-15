@@ -18,7 +18,6 @@ import effects.Effect;
 import entity.Entity;
 import entity.Player;
 import levels.Level00;
-import levels.Level01;
 import levels.LevelBuilder;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
@@ -244,13 +243,15 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void loadLevels() {
+        // Map debugger
         if (debugMapBuilder) {
             levelManager.addLevel(new LevelBuilder(this));
             levelManager.loadLevel(0);
             return;
         }
+        
+        // Levels
         levelManager.addLevel(new Level00(this));
-        levelManager.addLevel(new Level01(this));
         levelManager.loadLevel(0);
     }
 }

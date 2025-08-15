@@ -28,7 +28,7 @@ public class Entity {
     public static final int SOLID_AREA_HEIGHT = 42;
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
-    public enum Entity_Type { PLAYER, NPC, ENEMY }
+    public enum EntityType { PLAYER, NPC, ENEMY }
     List<Direction> availableDirections = new ArrayList<>(EnumSet.allOf(Direction.class));
 
     // Location
@@ -56,7 +56,7 @@ public class Entity {
     public boolean isDead;
 
     // Entity Values
-    public Entity_Type entityType;
+    public EntityType entityType;
     public String name = "";
     public int maxHealth = 100;
     public int health = 100;
@@ -222,6 +222,14 @@ public class Entity {
     public int getCurrentHealth() {
         if (this.maxHealth == 0) return 0;
         return (int) ((this.health * 100.0) / this.maxHealth);
+    }
+
+    public int getRawX() {
+        return this.worldX / Constants.TILE_SIZE;
+    }
+
+    public int getRawY() {
+        return this.worldY / Constants.TILE_SIZE;
     }
 
     protected void moveEntiy() {

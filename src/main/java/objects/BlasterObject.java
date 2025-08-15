@@ -2,7 +2,7 @@ package objects;
 
 import main.Constants;
 import main.GamePanel;
-import objects.weapons.Weapon.Weapon_Type;
+import objects.weapons.Weapon.WeaponType;
 
 public class BlasterObject extends SuperObject {
 
@@ -19,11 +19,11 @@ public class BlasterObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addWeapon(Weapon_Type.BLASTER);
+        this.gamePanel.player.addWeapon(WeaponType.BLASTER);
     }
 
     private void init() {
-        this.objectType = Object_Type.BLASER;
+        this.objectType = ObjectType.BLASER;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_WEAPON_BLASTER);
         this.soundPrimary = Constants.SOUND_CURSOR;

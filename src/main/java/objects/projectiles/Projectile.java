@@ -30,7 +30,7 @@ public class Projectile {
     public int speed = 14;
     public int damage = 10;
 
-    public enum Projectile_Type {
+    public enum ProjectileType {
         ARROWS,
         LASERS
     };

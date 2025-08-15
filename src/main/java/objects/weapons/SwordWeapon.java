@@ -69,7 +69,7 @@ public class SwordWeapon extends Weapon {
     }
 
     private void init() {
-        this.weaponType = Weapon_Type.SWORD;
+        this.weaponType = WeaponType.SWORD;
         this.sound = Constants.SOUND_SWORD;
         this.range = false;
         this.longSprite = true;

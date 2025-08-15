@@ -8,7 +8,7 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import objects.projectiles.ArrowProjectile;
-import objects.projectiles.Projectile.Projectile_Type;
+import objects.projectiles.Projectile.ProjectileType;
 
 public class CrossbowWeapon extends Weapon {
 
@@ -72,8 +72,8 @@ public class CrossbowWeapon extends Weapon {
     }
 
     private void init() {
-        this.weaponType = Weapon_Type.CROSSBOW;
-        this.projectileType = Projectile_Type.ARROWS;
+        this.weaponType = WeaponType.CROSSBOW;
+        this.projectileType = ProjectileType.ARROWS;
         this.sound = Constants.SOUND_ARROW;
         this.ammo = INITALIZED_ARROWS;
         this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;

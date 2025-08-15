@@ -14,8 +14,6 @@ public class KeySpell extends SuperSpell {
     public EnumSet<Direction> brokenSet = EnumSet.noneOf(Direction.class);
     public static EnumSet<Direction> directions = EnumSet.allOf(Direction.class);
     
-    public SpellType spellType;
-
     public KeySpell() {
         super(SpellType.KEY_SPELL);
         this.brokeDirection = randomDirection();

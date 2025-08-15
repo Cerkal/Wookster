@@ -10,9 +10,14 @@ import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
-import objects.projectiles.Projectile.Projectile_Type;
+import objects.projectiles.Projectile.ProjectileType;
 
 public class Weapon {
+
+    public static class InventoryWeaponWrapper {
+        public WeaponType weaponType;
+        public ProjectileType projectileType;
+    }
 
     int speed = 10;
     long lastShot = 0;
@@ -20,8 +25,8 @@ public class Weapon {
     Player player;
     
     public int hold;
-    public Weapon_Type weaponType;
-    public Projectile_Type projectileType;
+    public WeaponType weaponType;
+    public ProjectileType projectileType;
     public String sound;
     public InventoryItem inventoryItem;
     public int ammo;
@@ -30,9 +35,9 @@ public class Weapon {
     public int maxDamage;
     public BufferedImage icon;
 
-    public HashMap<Weapon_Type, String> iconImages = Constants.WEAPON_ICONS;
+    public HashMap<WeaponType, String> iconImages = Constants.WEAPON_ICONS;
 
-    public enum Weapon_Type {
+    public enum WeaponType {
         CROSSBOW,
         BLASTER,
         FIST,
@@ -84,6 +89,13 @@ public class Weapon {
         }
         y += Constants.NEW_LINE_SIZE;
         graphics2D.drawString("Max Damage: " + String.valueOf(this.maxDamage), x, y);
+    }
+
+    public InventoryWeaponWrapper getInventoryWeaponWrapper() {
+        InventoryWeaponWrapper inventoryWeaponWrapper = new InventoryWeaponWrapper();
+        inventoryWeaponWrapper.projectileType = this.projectileType;
+        inventoryWeaponWrapper.weaponType = this.weaponType;
+        return inventoryWeaponWrapper;
     }
 
     protected void setWeaponIcon() {

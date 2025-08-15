@@ -21,7 +21,7 @@ public class GameMap extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.MAP;
+        this.objectType = ObjectType.MAP;
         this.name = this.objectType.name();
         this.inventoryItem = new InventoryItem(this, 1, true);
     }

@@ -8,7 +8,7 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import objects.projectiles.LaserProjectile;
-import objects.projectiles.Projectile.Projectile_Type;
+import objects.projectiles.Projectile.ProjectileType;
 
 public class BlasterWeapon extends Weapon {
 
@@ -47,8 +47,8 @@ public class BlasterWeapon extends Weapon {
     }
 
     private void init() {
-        this.weaponType = Weapon_Type.BLASTER;
-        this.projectileType = Projectile_Type.LASERS;
+        this.weaponType = WeaponType.BLASTER;
+        this.projectileType = ProjectileType.LASERS;
         this.sound = Constants.SOUND_LASER;
         this.ammo = INITALIZED_LASERS;
         this.maxDamage = LaserProjectile.DAMAGE;

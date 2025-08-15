@@ -9,7 +9,6 @@ public class SpeedSpell extends SuperSpell {
     final int MIN_SPEED = 2;
  
     public int speed = Player.DEFAULT_SPEED;
-    public SpellType spellType;
 
     public SpeedSpell() {
         super(SpellType.SPEED_SPELL);

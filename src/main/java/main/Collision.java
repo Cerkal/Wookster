@@ -1,7 +1,7 @@
 package main;
 
 import entity.Entity;
-import entity.Entity.Entity_Type;
+import entity.Entity.EntityType;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import tile.Tile;
@@ -229,7 +229,7 @@ public class Collision {
     }
 
     private void changeDirection(Entity entity) {
-        if (entity.entityType != Entity_Type.PLAYER) {
+        if (entity.entityType != EntityType.PLAYER) {
             entity.setAction();
         }
     }

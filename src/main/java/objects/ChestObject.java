@@ -16,7 +16,7 @@ public class ChestObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.CHEST;
+        this.objectType = ObjectType.CHEST;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_CHEST_IMAGE);
         this.collision = true;

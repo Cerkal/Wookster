@@ -12,7 +12,7 @@ public class DoorObject extends SuperObject {
 
     public void activateObject() {
         super.activateObject();
-        String key = Object_Type.KEY.name();
+        String key = ObjectType.KEY.name();
         if (this.gamePanel.player.getInventoryItem(key) > 0) {
             this.removeObject();
             this.gamePanel.player.removeInventoryItem(key);
@@ -22,7 +22,7 @@ public class DoorObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.DOOR;
+        this.objectType = ObjectType.DOOR;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_DOOR_IMAGE);
         this.collision = true;

@@ -4,9 +4,8 @@ import java.awt.Graphics2D;
 
 import main.Constants;
 import main.GamePanel;
-import main.Level;
 
-public class LevelBuilder extends Level {
+public class LevelBuilder extends LevelBase {
 
     public LevelBuilder(GamePanel gamePanel) {
         super(gamePanel);
@@ -16,6 +15,9 @@ public class LevelBuilder extends Level {
     public void init() {
         super.init();
     }
+
+    @Override
+    public void setObjects() {}
 
     @Override
     public void update() {}

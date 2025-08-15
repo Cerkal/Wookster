@@ -68,7 +68,7 @@ public class FistWeapon extends Weapon {
     }
 
     private void init() {
-        this.weaponType = Weapon_Type.FIST;
+        this.weaponType = WeaponType.FIST;
         this.sound = Constants.SOUND_PUNCH;
         this.range = false;
         this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;

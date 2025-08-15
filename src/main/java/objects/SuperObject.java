@@ -15,6 +15,16 @@ import tile.TileManager.TileLocation;
 
 public class SuperObject {
 
+    public class SuperObjectWrapper {
+        public String name;
+        public int worldX;
+        public int worldY;
+        public ObjectType objectType;
+        public SuperSpell spell;
+        public String message;
+        public boolean carriable;
+    }
+
     GamePanel gamePanel;
 
     public BufferedImage image;
@@ -29,24 +39,45 @@ public class SuperObject {
     public String soundSecondary;
     public SuperSpell spell;
     public InventoryItem inventoryItem;
-    public Object_Type objectType;
+    public ObjectType objectType;
+    public boolean isSpecial;
+    public String message;
+    public boolean carriable;
 
-    public enum Object_Type {
-        ARROWS,
-        CHEST,
-        DOOR,
-        KEY,
-        LASERS,
-        POTION,
-        SIGN,
-        BLASER,
-        CROSSBOW,
-        SWORD,
-        JERMEY,
-        MAP
+    public enum ObjectType {
+        ARROWS((gp, obj) -> new ArrowsObject(gp, obj.worldX, obj.worldY)),
+        CHEST((gp, obj) -> new ChestObject(gp, obj.worldX, obj.worldY)),
+        DOOR((gp, obj) -> new DoorObject(gp, obj.worldX, obj.worldY)),
+        KEY((gp, obj) -> new KeyObject(gp, obj.worldX, obj.worldY)),
+        LASERS((gp, obj) -> new LasersObject(gp, obj.worldX, obj.worldY)),
+        SIGN((gp, obj) -> new SignObject(gp, obj.worldX, obj.worldY, obj.message)),
+        BLASER((gp, obj) -> new BlasterObject(gp, obj.worldX, obj.worldY)),
+        CROSSBOW((gp, obj) -> new CrossbowObject(gp, obj.worldX, obj.worldY)),
+        SWORD((gp, obj) -> new SwordObject(gp, obj.worldX, obj.worldY)),
+        JERMEY((gp, obj) -> new JermeyObject(gp, obj.worldX, obj.worldY, null)),
+        MAP((gp, obj) -> new GameMap(gp)),
+        POTION((gp, obj) -> obj.carriable
+            ? new CarryPotionObject(gp, obj.spell, obj.worldX, obj.worldY)
+            : new PotionObject(gp, obj.spell, obj.worldX, obj.worldY));
+
+        @FunctionalInterface
+        public interface ObjectCreator {
+            SuperObject create(GamePanel gp, SuperObjectWrapper obj);
+        }
+
+        private final ObjectCreator creator;
+
+        ObjectType(ObjectCreator creator) {
+            this.creator = creator;
+        }
+
+        public SuperObject create(GamePanel gp, SuperObjectWrapper source) {
+            return creator.create(gp, source);
+        }
     }
 
-    public HashMap<Object_Type, String> objectIcons = Constants.OBJECT_ICONS;
+
+    public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
 
     public SuperObject(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -77,8 +108,7 @@ public class SuperObject {
     }
 
     public void removeObject() {
-        this.collision = false;
-        this.visibility = false;
+        this.gamePanel.objects.remove(this);
         playPrimarySound();
     }
 
@@ -128,5 +158,23 @@ public class SuperObject {
                 this.gamePanel.ui.displayDialog(this.spell.message);
             }
         }
+    }
+
+    public SuperObjectWrapper getSuperObjectWrapper() {
+        SuperObjectWrapper objectWrapper = new SuperObjectWrapper();
+        objectWrapper.name = this.name;
+        objectWrapper.objectType = this.objectType;
+        objectWrapper.worldX = getRawX();
+        objectWrapper.worldY = getRawY();
+        objectWrapper.spell = this.spell;
+        return objectWrapper;
+    }
+
+    public int getRawX() {
+        return this.worldX / Constants.TILE_SIZE;
+    }
+
+    public int getRawY() {
+        return this.worldY / Constants.TILE_SIZE;
     }
 }

@@ -2,7 +2,7 @@ package objects;
 
 import main.Constants;
 import main.GamePanel;
-import objects.weapons.Weapon.Weapon_Type;
+import objects.weapons.Weapon.WeaponType;
 
 public class SwordObject extends SuperObject {
 
@@ -19,11 +19,11 @@ public class SwordObject extends SuperObject {
     public void activateObject() {
         super.activateObject();
         this.removeObject();
-        this.gamePanel.player.addWeapon(Weapon_Type.SWORD);
+        this.gamePanel.player.addWeapon(WeaponType.SWORD);
     }
 
     private void init() {
-        this.objectType = Object_Type.SWORD;
+        this.objectType = ObjectType.SWORD;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_WEAPON_SWORD);
         this.soundPrimary = Constants.SOUND_CURSOR;

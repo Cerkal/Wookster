@@ -25,35 +25,7 @@ public class KeyHandler implements KeyListener {
 
         switch (this.gamePanel.gameState) {
             case GameState.TITLE:
-                if (code == KeyEvent.VK_W) {
-                    this.gamePanel.ui.commandNumber--;
-                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    if (this.gamePanel.ui.commandNumber < 0) {
-                        this.gamePanel.ui.commandNumber = Constants.GAME_TITLE_MENU.size() - 1;
-                    }
-                }
-                if (code == KeyEvent.VK_S) {
-                    this.gamePanel.ui.commandNumber++;
-                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    if (this.gamePanel.ui.commandNumber >= Constants.GAME_TITLE_MENU.size()) {
-                        this.gamePanel.ui.commandNumber = 0;
-                    }
-                }
-                if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                    String selection = Constants.GAME_TITLE_MENU.get(this.gamePanel.ui.commandNumber);
-                    this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-                    switch (selection) {
-                        case Constants.GAME_TITLE_SCREEN_NEW_GAME:
-                            this.gamePanel.gameState = GameState.PLAY;
-                            this.gamePanel.stopMusic();
-                            // this.gamePanel.playMusic(Constants.SOUND_BG_01);
-                            break;
-                        case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
-                            break;
-                        case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
-                            break;
-                    }
-                }
+                gameTileKeys(code);
                 break;
             case GameState.PLAY:
                 if (code == KeyEvent.VK_W) {
@@ -97,6 +69,7 @@ public class KeyHandler implements KeyListener {
                 }
                 break;
             case GameState.PAUSE:
+                gameTileKeys(code);
                 if (code == KeyEvent.VK_ESCAPE) {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
@@ -155,6 +128,42 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
+    }
+
+    private void gameTileKeys(int code) {
+        if (code == KeyEvent.VK_W) {
+            this.gamePanel.ui.commandNumber--;
+            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+            if (this.gamePanel.ui.commandNumber < 0) {
+                this.gamePanel.ui.commandNumber = Constants.GAME_TITLE_MENU.size() - 1;
+            }
+        }
+        if (code == KeyEvent.VK_S) {
+            this.gamePanel.ui.commandNumber++;
+            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+            if (this.gamePanel.ui.commandNumber >= Constants.GAME_TITLE_MENU.size()) {
+                this.gamePanel.ui.commandNumber = 0;
+            }
+        }
+        if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+            String selection = Constants.GAME_TITLE_MENU.get(this.gamePanel.ui.commandNumber);
+            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+            switch (selection) {
+                case Constants.GAME_TITLE_SCREEN_NEW_GAME:
+                    this.gamePanel.gameState = GameState.PLAY;
+                    this.gamePanel.stopMusic();
+                    // this.gamePanel.playMusic(Constants.SOUND_BG_01);
+                    break;
+                case Constants.GAME_TITLE_SCREEN_SAVE_GAME:
+                    this.gamePanel.config.saveConfig();
+                    System.out.println("Saved game.");
+                    break;
+                case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
+                    break;
+                case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
+                    break;
+            }
+        }
     }
 
 }

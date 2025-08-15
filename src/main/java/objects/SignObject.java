@@ -5,13 +5,10 @@ import main.GamePanel;
 
 public class SignObject extends SuperObject {
 
-    
-    String message;
-
     public SignObject(GamePanel gamePanel, int worldX, int worldY, String message) {
         super(gamePanel, worldX, worldY);
         this.message = message;
-        this.objectType = Object_Type.SIGN;
+        this.objectType = ObjectType.SIGN;
         init();
     }
 

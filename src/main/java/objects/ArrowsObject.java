@@ -27,7 +27,7 @@ public class ArrowsObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.ARROWS;
+        this.objectType = ObjectType.ARROWS;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_AMMO_ARROWS_IMAGE);
         this.collision = true;

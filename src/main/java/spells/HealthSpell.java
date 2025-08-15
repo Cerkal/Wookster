@@ -5,7 +5,6 @@ import main.Utils;
 
 public class HealthSpell extends SuperSpell {
 
-    public SpellType spellType;
     public double healthAmount;
 
     public HealthSpell() {

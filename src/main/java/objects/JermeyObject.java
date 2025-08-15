@@ -13,9 +13,10 @@ public class JermeyObject extends SuperObject {
         super(gamePanel, worldX, worldY);
         this.soundPrimary = sound;
         this.lastPlayTime = 0;
-        this.objectType = Object_Type.JERMEY;
+        this.objectType = ObjectType.JERMEY;
         this.name = this.objectType.name();
         this.setImage(Constants.TILE_TREE_FALL);
+        this.isSpecial = true;
     }
 
     public JermeyObject(GamePanel gamePanel, int worldX, int worldY, String sound, boolean isDoor) {

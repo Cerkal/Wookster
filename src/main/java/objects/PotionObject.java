@@ -29,7 +29,7 @@ public class PotionObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.POTION;
+        this.objectType = ObjectType.POTION;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_GREEN_POTION_IMAGE);
         this.soundPrimary = Constants.SOUND_LOCK;

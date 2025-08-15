@@ -27,7 +27,7 @@ public class LasersObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.LASERS;
+        this.objectType = ObjectType.LASERS;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_AMMO_LASERS_IMAGE);
         this.collision = true;

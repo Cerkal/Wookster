@@ -10,7 +10,6 @@ import java.util.List;
 import entity.NPCTrooper;
 import main.Constants;
 import main.GamePanel;
-import main.Level;
 import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.JermeyObject;
@@ -21,7 +20,7 @@ import spells.ClaritySpell;
 import spells.HealthSpell;
 import spells.SpeedSpell;
 
-public class Level00 extends Level {
+public class Level00 extends LevelBase {
 
     public HashMap<String, Integer> jermeyCount = new HashMap<>();
 
@@ -34,7 +33,14 @@ public class Level00 extends Level {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile();
         this.generateRandomObjects();
+        this.setStaticObjects();
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
+    }
 
+    @Override
+    public void setObjects() {
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 38, 8));
@@ -53,12 +59,9 @@ public class Level00 extends Level {
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell(), 23, 25));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell(),  23, 26));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell(),  23, 27));
+    }
 
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
-
-        // JERMEY PUZZEL
+    public void setStaticObjects() {
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 31, 37, Constants.LEVEL_00_JERMEY_SIGN));
         this.gamePanel.objects.add(new JermeyObject(this.gamePanel, 30, 36, Constants.LEVEL_00_JERMEY_SOUND_START, true));
         List<List<Integer>> jeremyList = new ArrayList<>();

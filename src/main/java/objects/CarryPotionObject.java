@@ -53,7 +53,7 @@ public class CarryPotionObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.POTION;
+        this.objectType = ObjectType.POTION;
         this.name = getPotionType();
         this.setImage(Constants.OBJECT_PURPLE_POTION_IMAGE);
         this.soundPrimary = Constants.SOUND_LOCK;

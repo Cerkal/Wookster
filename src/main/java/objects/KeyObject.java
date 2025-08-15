@@ -25,7 +25,7 @@ public class KeyObject extends SuperObject {
     }
 
     private void init() {
-        this.objectType = Object_Type.KEY;
+        this.objectType = ObjectType.KEY;
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_KEY_IMAGE);
         this.soundPrimary = Constants.SOUND_COIN;

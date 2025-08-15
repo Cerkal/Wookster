@@ -126,11 +126,7 @@ public class UI {
 
     public void drawPauseScreen(Graphics2D graphics2D) {
         if (this.gamePanel.gameState == GamePanel.GameState.PAUSE) {
-            graphics2D.setFont(this.customFontLarge);
-            graphics2D.setColor(Color.WHITE);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_PAUSED, this.customFontLarge);
-            int y = getYForCenteredText();
-            graphics2D.drawString(Constants.GAME_PAUSED, x, y);
+            titleScreen(graphics2D);
         }
     }
 

@@ -5,8 +5,15 @@ import java.awt.Graphics2D;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import objects.weapons.Weapon;
+import spells.SuperSpell;
 
 public class InventoryItem {
+
+    public static class InventoryItemWrapper {
+        public String itemName;
+        public int count;
+        public SuperSpell spell;
+    }
 
     public Weapon weapon;
     public SuperObject object;
@@ -76,5 +83,15 @@ public class InventoryItem {
         if (this.object != null) {
             this.object.drawDetails(graphics2D, x, y);
         }
+    }
+
+    public InventoryItemWrapper getInventoryWrapper() {
+        InventoryItemWrapper inventoryItemWrapper = new InventoryItemWrapper();
+        inventoryItemWrapper.count = this.count;
+        inventoryItemWrapper.itemName = this.name;
+        if (this.object != null) {
+            inventoryItemWrapper.spell = this.object.spell;
+        }
+        return inventoryItemWrapper;
     }
 }
