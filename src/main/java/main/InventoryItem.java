@@ -3,8 +3,10 @@ package main;
 import java.awt.Graphics2D;
 
 import objects.SuperObject;
+import objects.SuperObject.SuperObjectWrapper;
 import objects.projectiles.Projectile;
 import objects.weapons.Weapon;
+import objects.weapons.Weapon.InventoryWeaponWrapper;
 import spells.SuperSpell;
 
 public class InventoryItem {
@@ -13,6 +15,10 @@ public class InventoryItem {
         public String itemName;
         public int count;
         public SuperSpell spell;
+        public SuperObjectWrapper object;
+        public InventoryWeaponWrapper weapon;
+        public boolean usable;
+        public boolean visibility;
     }
 
     public Weapon weapon;
@@ -89,8 +95,13 @@ public class InventoryItem {
         InventoryItemWrapper inventoryItemWrapper = new InventoryItemWrapper();
         inventoryItemWrapper.count = this.count;
         inventoryItemWrapper.itemName = this.name;
+        inventoryItemWrapper.usable = this.usable;
+        inventoryItemWrapper.visibility = this.visibility;
         if (this.object != null) {
-            inventoryItemWrapper.spell = this.object.spell;
+            inventoryItemWrapper.object = this.object.getSuperObjectWrapper();
+        }
+        if (this.weapon != null) {
+            inventoryItemWrapper.weapon = this.weapon.getInventoryWeaponWrapper();
         }
         return inventoryItemWrapper;
     }

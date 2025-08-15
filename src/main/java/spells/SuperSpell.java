@@ -1,20 +1,15 @@
 package spells;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import entity.Player;
+import main.Constants;
 import main.GamePanel;
 
 public class SuperSpell {
-    
-    public enum SpellType {
-        KEY_SPELL,
-        HEALTH_SPELL,
-        SPEED_SPELL,
-        CLARITY_SPELL
-    }
 
     public SpellType spellType;
     public long startTime = 0;
@@ -22,6 +17,8 @@ public class SuperSpell {
     public boolean positiveSpell = false;
     public String message;
     public List<String> descriptionText = new ArrayList<>();
+    public double healthAmount;
+    public int speed = Player.DEFAULT_SPEED;
 
     public SuperSpell(SpellType spellType) {
         this.spellType = spellType;
@@ -60,5 +57,43 @@ public class SuperSpell {
             this.startTime = gamePanel.gameTime;
         }
         gamePanel.player.spells.put(this.spellType, this);
+    }
+
+    public int drawDescription(Graphics2D graphics2D, int x, int y, boolean clarity) {
+        if (this.spellTime > 0) {
+            y += Constants.NEW_LINE_SIZE;
+            graphics2D.drawString("Spell Time: " + String.valueOf(this.spellTime) + "s", x, y);
+        }
+        for (String description : this.descriptionText) {
+            y += Constants.NEW_LINE_SIZE;
+            graphics2D.drawString(description, x, y);
+        }
+        y += Constants.NEW_LINE_SIZE;
+        return y;
+    }
+
+    public enum SpellType {
+        KEY_SPELL      (spell -> new KeySpell()),
+        HEALTH_SPELL   (spell -> new HealthSpell(spell.healthAmount)),
+        SPEED_SPELL    (spell -> new SpeedSpell(spell.speed, spell.spellTime)),
+        CLARITY_SPELL  (spell -> new ClaritySpell());
+
+        @FunctionalInterface
+        public interface ObjectCreator {
+            SuperSpell create(SuperSpell spell);
+        }
+
+        private final ObjectCreator creator;
+
+        SpellType(ObjectCreator creator) {
+            this.creator = creator;
+        }
+
+        public static SuperSpell create(SuperSpell template) {
+            if (template == null || template.spellType == null) {
+                throw new IllegalArgumentException("Template or its spellType cannot be null");
+            }
+            return template.spellType.creator.create(template);
+        }
     }
 }

@@ -151,6 +151,8 @@ public class KeyHandler implements KeyListener {
             switch (selection) {
                 case Constants.GAME_TITLE_SCREEN_NEW_GAME:
                     this.gamePanel.gameState = GameState.PLAY;
+                    this.gamePanel.config.dataWrapper = new DataWrapper();
+                    this.gamePanel.restartLevel();
                     this.gamePanel.stopMusic();
                     // this.gamePanel.playMusic(Constants.SOUND_BG_01);
                     break;
@@ -159,8 +161,12 @@ public class KeyHandler implements KeyListener {
                     System.out.println("Saved game.");
                     break;
                 case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
+                    this.gamePanel.config.loadConfig();
+                    this.gamePanel.restartLevel();
+                    System.out.println("Loaded game.");
                     break;
                 case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
+                    System.exit(0);
                     break;
             }
         }

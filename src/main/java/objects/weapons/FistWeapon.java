@@ -3,7 +3,6 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -21,14 +20,10 @@ public class FistWeapon extends Weapon {
 
     boolean isAttacking;
 
+    PunchProjectile punch;
+
     public FistWeapon(GamePanel gamePanel) {
         super(gamePanel);
-        init();
-    }
-
-    public FistWeapon(GamePanel gamePanel, Player player) {
-        super(gamePanel);
-        this.player = player;
         init();
     }
 
@@ -73,8 +68,8 @@ public class FistWeapon extends Weapon {
         this.range = false;
         this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
         this.ammo = 0;
-        if (this.player != null) {
-            this.player.addInventoryItem(new InventoryItem(this, 1, true));
+        if (this.gamePanel.player != null) {
+            this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
         }
     }
 
@@ -85,7 +80,8 @@ public class FistWeapon extends Weapon {
             this.playSound();
             this.isAttacking = true;
             int punchSpeed = getSpeed();
-            this.gamePanel.projectiles.add(new PunchProjectile(this.gamePanel, punchSpeed));
+            this.punch = new PunchProjectile(this.gamePanel, punchSpeed);
+            this.gamePanel.projectileManager.projectiles.add(this.punch);
         }
     }
 
@@ -96,10 +92,10 @@ public class FistWeapon extends Weapon {
                 if (time > FIST_DELAY/2) {
                     this.gamePanel.player.attacking = false;
                     this.isAttacking = false;
-                    this.gamePanel.projectiles.remove(0);
+                    this.gamePanel.projectileManager.toRemove.add(this.punch);
                 } else {
                     this.gamePanel.player.attacking = true;
-                    PunchProjectile punch = (PunchProjectile) this.gamePanel.projectiles.get(0);
+                    PunchProjectile punch = (PunchProjectile) this.gamePanel.projectileManager.projectiles.get(0);
                     punch.setPosition();
                 }
             } catch (Exception e) {

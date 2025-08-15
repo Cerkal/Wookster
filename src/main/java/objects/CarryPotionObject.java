@@ -1,14 +1,10 @@
 package objects;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
-import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
-import spells.HealthSpell;
-import spells.SpeedSpell;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
@@ -38,15 +34,10 @@ public class CarryPotionObject extends SuperObject {
 
     public String getPotionType() {
         if (this.spell != null) {
-            switch (this.spell.spellType) {
-                case HEALTH_SPELL:
-                    return "HEALTH POTION";
-                case SPEED_SPELL:
-                    return "SPEED POTION";
-                case CLARITY_SPELL:
-                    return "CLARITY POTION";
-                default:
-                    break;
+            try {
+                return ObjectType.POTION.name() + " " + this.spell.spellType.name().split("_")[0];
+            } catch (Exception e) {
+                System.err.println("Potion name error splitting _");
             }
         }
         return this.objectType.name();
@@ -70,34 +61,8 @@ public class CarryPotionObject extends SuperObject {
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
         super.drawDetails(graphics2D, x, y);
         if (this.spell != null) {
-            if (this.spell.spellTime > 0) {
-                y += Constants.NEW_LINE_SIZE;
-                graphics2D.drawString("Spell Time: " + String.valueOf(this.spell.spellTime) + "s", x, y);
-            }
-            for (String description : this.spell.descriptionText) {
-                y += Constants.NEW_LINE_SIZE;
-                graphics2D.drawString(description, x, y);
-            }
-
-            if (this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL)) {
-                graphics2D.setColor(Color.YELLOW);
-                String description = "Increases";
-                if (!this.spell.positiveSpell) {
-                    description = "Decreases";
-                }
-                if (this.spell.spellType == SpellType.SPEED_SPELL) {
-                    SpeedSpell speedSpell = (SpeedSpell) this.spell;
-                    y += Constants.NEW_LINE_SIZE;
-                    int speedDiff = Math.abs(Player.DEFAULT_SPEED - speedSpell.speed);
-                    graphics2D.drawString(description + " player's speed by " + String.valueOf(speedDiff), x, y);
-                }
-                if (this.spell.spellType == SpellType.HEALTH_SPELL) {
-                    HealthSpell speedSpell = (HealthSpell) this.spell;
-                    y += Constants.NEW_LINE_SIZE;
-                    graphics2D.drawString(description + " player's health by " + String.valueOf((int) Math.abs(speedSpell.healthAmount)), x, y);
-                }
-                graphics2D.setColor(Color.WHITE);
-            }
+            boolean clarity = this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL);
+            this.spell.drawDescription(graphics2D, x, y, clarity);
         }
     }
 }

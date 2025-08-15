@@ -3,7 +3,6 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -23,12 +22,6 @@ public class CrossbowWeapon extends Weapon {
 
     public CrossbowWeapon(GamePanel gamePanel) {
         super(gamePanel);
-        init();
-    }
-
-    public CrossbowWeapon(GamePanel gamePanel, Player player) {
-        super(gamePanel);
-        this.player = player;
         init();
     }
 
@@ -78,9 +71,15 @@ public class CrossbowWeapon extends Weapon {
         this.ammo = INITALIZED_ARROWS;
         this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
         this.range = true;
-        if (this.player != null) {
-            this.player.addInventoryItem(new InventoryItem(this, 1, true));
-            this.player.addInventoryItem(new InventoryItem(this.projectileType.name(), INITALIZED_ARROWS, false, false));
+        if (this.gamePanel.player != null) {
+            this.gamePanel.player.addInventoryItem(
+                new InventoryItem(this, 1, true)
+            );
+            if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
+                this.gamePanel.player.addInventoryItem(
+                    new InventoryItem(this.projectileType.name(), INITALIZED_ARROWS, false, false)
+                );
+            }
         }
     }
 
@@ -91,7 +90,7 @@ public class CrossbowWeapon extends Weapon {
                 this.lastShot = this.gamePanel.gameTime;
                 this.removeAmmo();
                 this.playSound();
-                this.gamePanel.projectiles.add(new ArrowProjectile(this.gamePanel, this.speed));
+                this.gamePanel.projectileManager.projectiles.add(new ArrowProjectile(this.gamePanel, this.speed));
             }
         }
     }

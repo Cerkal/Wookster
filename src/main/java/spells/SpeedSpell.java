@@ -1,5 +1,8 @@
 package spells;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import entity.Player;
 import main.Utils;
 
@@ -8,8 +11,6 @@ public class SpeedSpell extends SuperSpell {
     final int MAX_SPEED = 8;
     final int MIN_SPEED = 2;
  
-    public int speed = Player.DEFAULT_SPEED;
-
     public SpeedSpell() {
         super(SpellType.SPEED_SPELL);
         randomSpeed();
@@ -59,5 +60,18 @@ public class SpeedSpell extends SuperSpell {
             speed += 2;
         }
         return speed;
+    }
+
+    public int drawDescription(Graphics2D graphics2D, int x, int y, boolean clarity) {
+        y = super.drawDescription(graphics2D, x, y, clarity);
+        if (!clarity) return y;
+        graphics2D.setColor(Color.YELLOW);
+        int speedDiff = Math.abs(Player.DEFAULT_SPEED - this.speed);
+        graphics2D.drawString(
+            (positiveSpell ? "Increases" : "Decreases") +
+            " player's speed by " + speedDiff, x, y
+        );
+        graphics2D.setColor(Color.WHITE);
+        return y;
     }
 }

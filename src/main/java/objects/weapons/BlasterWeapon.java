@@ -3,7 +3,6 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -20,12 +19,6 @@ public class BlasterWeapon extends Weapon {
 
     public BlasterWeapon(GamePanel gamePanel) {
         super(gamePanel);
-        init();
-    }
-
-    public BlasterWeapon(GamePanel gamePanel, Player player) {
-        super(gamePanel);
-        this.player = player;
         init();
     }
 
@@ -53,9 +46,13 @@ public class BlasterWeapon extends Weapon {
         this.ammo = INITALIZED_LASERS;
         this.maxDamage = LaserProjectile.DAMAGE;
         this.range = true;
-        if (this.player != null) {
-            this.player.addInventoryItem(new InventoryItem(this, 1, true));
-            this.player.addInventoryItem(new InventoryItem(this.projectileType.name(), INITALIZED_LASERS, false, false));
+        if (this.gamePanel.player != null) {
+            this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
+            if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
+                this.gamePanel.player.addInventoryItem(new InventoryItem(
+                    this.projectileType.name(), INITALIZED_LASERS, false, false)
+                );
+            }
         }
     }
 
@@ -64,7 +61,7 @@ public class BlasterWeapon extends Weapon {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
-            this.gamePanel.projectiles.add(new LaserProjectile(this.gamePanel, BLASTER_SPEED));
+            this.gamePanel.projectileManager.projectiles.add(new LaserProjectile(this.gamePanel, BLASTER_SPEED));
         }
     }
 }

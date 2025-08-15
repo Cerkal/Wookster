@@ -21,6 +21,7 @@ import levels.Level00;
 import levels.LevelBuilder;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
+import objects.projectiles.ProjectileManager;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -50,7 +51,6 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
     public Collision collision = new Collision(this);
-    public AssetSetter assetSetter = new AssetSetter(this);
     public Sound sound = new Sound();
     public Config config = new Config(this);
     public LevelManager levelManager = new LevelManager(this);
@@ -59,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable {
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
-    public List<Projectile> projectiles = new ArrayList<>();
+    public ProjectileManager projectileManager = new ProjectileManager();
     public List<Effect> effects = new ArrayList<>();
 
     Graphics2D graphics;
@@ -141,7 +141,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-
     public void drawToGraphics() {
         switch (this.gameState) {
             case GameState.TITLE:
@@ -218,11 +217,11 @@ public class GamePanel extends JPanel implements Runnable {
             }
             entityList.clear();
 
-            for (Projectile projectile : this.projectiles) {
+            for (Projectile projectile : this.projectileManager.projectiles) {
                 projectile.draw(graphics2D);
             }
+            this.projectileManager.removeProjectiles();
 
-            // Draw level-specific UI or puzzle state
             levelManager.draw(graphics2D);
 
             this.ui.draw(graphics2D);
@@ -235,11 +234,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.objects.clear();
         this.npcs.clear();
         this.entityList.clear();
-        this.projectiles.clear();
+        this.projectileManager.projectiles.clear();
         this.effects.clear();
         this.player.setDefaultValues();
-        this.assetSetter.setLevel();
         this.gameState = GameState.PLAY;
+        loadLevels();
     }
 
     private void loadLevels() {

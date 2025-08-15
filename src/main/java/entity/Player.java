@@ -5,10 +5,6 @@ import main.GamePanel.GameState;
 import main.InventoryItem.InventoryItemWrapper;
 import objects.GameMap;
 import objects.SuperObject;
-import objects.weapons.BlasterWeapon;
-import objects.weapons.CrossbowWeapon;
-import objects.weapons.FistWeapon;
-import objects.weapons.SwordWeapon;
 import objects.weapons.Weapon;
 import objects.weapons.Weapon.WeaponType;
 import spells.HealthSpell;
@@ -91,7 +87,6 @@ public class Player extends Entity {
         this.spells.clear();
 
         addWeapon(WeaponType.FIST);
-        addWeapon(WeaponType.CROSSBOW);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
     }
@@ -382,22 +377,8 @@ public class Player extends Entity {
     }
 
     public void addWeapon(WeaponType weaponType) {
-        switch (weaponType) {
-            case BLASTER:
-                this.weapons.put(weaponType, new BlasterWeapon(gamePanel, this));
-                break;
-            case CROSSBOW:
-                this.weapons.put(weaponType, new CrossbowWeapon(gamePanel, this));
-                break;
-            case FIST:
-                this.weapons.put(weaponType, new FistWeapon(gamePanel, this));
-                break;
-            case SWORD:
-                this.weapons.put(weaponType, new SwordWeapon(gamePanel, this));
-                break;
-            default:
-                break;
-        }
+        Weapon weapon = Weapon.WeaponType.create(gamePanel, weaponType);
+        this.weapons.put(weaponType, weapon);
         switchWeapon(weaponType);
     }
 

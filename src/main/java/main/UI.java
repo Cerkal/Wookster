@@ -179,7 +179,7 @@ public class UI {
                     selector.clear();
                 }
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                e.printStackTrace();
                 this.selector = new Selector(this.gamePanel);
             }
         }

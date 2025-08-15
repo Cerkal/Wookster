@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import entity.Player.PlayerWrapper;
 import levels.LevelBase.LevelWrapper;
+import main.InventoryItem.InventoryItemWrapper;
 
 public class DataWrapper {
 
@@ -28,6 +29,10 @@ public class DataWrapper {
             return this.levels.get(levelIndex);
         }
         return null;
+    }
+
+    public List<InventoryItemWrapper> getSavedInventoryItems() {
+        return new ArrayList<>(this.player.inventory.values());
     }
 
     public String getDataForSave(GamePanel gamePanel) {

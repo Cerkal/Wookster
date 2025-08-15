@@ -57,7 +57,7 @@ public class Projectile {
         ) {
             graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
         } else {
-            this.gamePanel.projectiles.remove(0);
+            this.gamePanel.projectileManager.toRemove.add(this);
         }
         drawDebugCollision(graphics2D, screenX, screenY);
     }

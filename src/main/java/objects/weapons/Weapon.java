@@ -37,13 +37,6 @@ public class Weapon {
 
     public HashMap<WeaponType, String> iconImages = Constants.WEAPON_ICONS;
 
-    public enum WeaponType {
-        CROSSBOW,
-        BLASTER,
-        FIST,
-        SWORD
-    }
-
     public Weapon(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.player = gamePanel.player;
@@ -106,4 +99,25 @@ public class Weapon {
         }
     }
 
+    public enum WeaponType {
+        CROSSBOW(gamePanel -> new CrossbowWeapon(gamePanel)),
+        BLASTER(gamePanel -> new BlasterWeapon(gamePanel)),
+        FIST(gamePanel -> new FistWeapon(gamePanel)),
+        SWORD(gamePanel -> new SwordWeapon(gamePanel));
+
+        @FunctionalInterface
+        public static interface ObjectCreator {
+            Weapon create(GamePanel gamePanel);
+        }
+
+        private final ObjectCreator creator;
+
+        WeaponType(ObjectCreator creator) {
+            this.creator = creator;
+        }
+
+        public static Weapon create(GamePanel gamePanel, WeaponType weaponType) {
+            return weaponType.creator.create(gamePanel);
+        }
+    }
 }

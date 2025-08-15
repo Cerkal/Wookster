@@ -11,6 +11,7 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import spells.SuperSpell;
+import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
 
 public class SuperObject {
@@ -43,39 +44,6 @@ public class SuperObject {
     public boolean isSpecial;
     public String message;
     public boolean carriable;
-
-    public enum ObjectType {
-        ARROWS((gp, obj) -> new ArrowsObject(gp, obj.worldX, obj.worldY)),
-        CHEST((gp, obj) -> new ChestObject(gp, obj.worldX, obj.worldY)),
-        DOOR((gp, obj) -> new DoorObject(gp, obj.worldX, obj.worldY)),
-        KEY((gp, obj) -> new KeyObject(gp, obj.worldX, obj.worldY)),
-        LASERS((gp, obj) -> new LasersObject(gp, obj.worldX, obj.worldY)),
-        SIGN((gp, obj) -> new SignObject(gp, obj.worldX, obj.worldY, obj.message)),
-        BLASER((gp, obj) -> new BlasterObject(gp, obj.worldX, obj.worldY)),
-        CROSSBOW((gp, obj) -> new CrossbowObject(gp, obj.worldX, obj.worldY)),
-        SWORD((gp, obj) -> new SwordObject(gp, obj.worldX, obj.worldY)),
-        JERMEY((gp, obj) -> new JermeyObject(gp, obj.worldX, obj.worldY, null)),
-        MAP((gp, obj) -> new GameMap(gp)),
-        POTION((gp, obj) -> obj.carriable
-            ? new CarryPotionObject(gp, obj.spell, obj.worldX, obj.worldY)
-            : new PotionObject(gp, obj.spell, obj.worldX, obj.worldY));
-
-        @FunctionalInterface
-        public interface ObjectCreator {
-            SuperObject create(GamePanel gp, SuperObjectWrapper obj);
-        }
-
-        private final ObjectCreator creator;
-
-        ObjectType(ObjectCreator creator) {
-            this.creator = creator;
-        }
-
-        public SuperObject create(GamePanel gp, SuperObjectWrapper source) {
-            return creator.create(gp, source);
-        }
-    }
-
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
 
@@ -167,6 +135,7 @@ public class SuperObject {
         objectWrapper.worldX = getRawX();
         objectWrapper.worldY = getRawY();
         objectWrapper.spell = this.spell;
+        objectWrapper.carriable = (this.inventoryItem != null);
         return objectWrapper;
     }
 
@@ -176,5 +145,37 @@ public class SuperObject {
 
     public int getRawY() {
         return this.worldY / Constants.TILE_SIZE;
+    }
+
+    public enum ObjectType {
+        ARROWS      ((gamePanel, object) -> new ArrowsObject(gamePanel, object.worldX, object.worldY)),
+        CHEST       ((gamePanel, object) -> new ChestObject(gamePanel, object.worldX, object.worldY)),
+        DOOR        ((gamePanel, object) -> new DoorObject(gamePanel, object.worldX, object.worldY)),
+        KEY         ((gamePanel, object) -> new KeyObject(gamePanel, object.worldX, object.worldY)),
+        LASERS      ((gamePanel, object) -> new LasersObject(gamePanel, object.worldX, object.worldY)),
+        SIGN        ((gamePanel, object) -> new SignObject(gamePanel, object.worldX, object.worldY, object.message)),
+        BLASER      ((gamePanel, object) -> new BlasterObject(gamePanel, object.worldX, object.worldY)),
+        CROSSBOW    ((gamePanel, object) -> new CrossbowObject(gamePanel, object.worldX, object.worldY)),
+        SWORD       ((gamePanel, object) -> new SwordObject(gamePanel, object.worldX, object.worldY)),
+        JERMEY      ((gamePanel, object) -> new JermeyObject(gamePanel, object.worldX, object.worldY, null)),
+        MAP         ((gamePanel, object) -> new GameMap(gamePanel)),
+        POTION      ((gamePanel, object) -> object.carriable
+                        ? new CarryPotionObject(gamePanel, SpellType.create(object.spell), object.worldX, object.worldY)
+                        : new PotionObject(gamePanel, SpellType.create(object.spell), object.worldX, object.worldY));
+
+        @FunctionalInterface
+        public static interface ObjectCreator {
+            SuperObject create(GamePanel gamePanel, SuperObjectWrapper object);
+        }
+
+        private final ObjectCreator creator;
+
+        ObjectType(ObjectCreator creator) {
+            this.creator = creator;
+        }
+
+        public static SuperObject create(GamePanel gamePanel, SuperObjectWrapper source) {
+            return source.objectType.creator.create(gamePanel, source);
+        }
     }
 }

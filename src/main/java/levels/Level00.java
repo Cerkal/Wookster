@@ -32,7 +32,6 @@ public class Level00 extends LevelBase {
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile();
-        this.generateRandomObjects();
         this.setStaticObjects();
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
@@ -41,6 +40,8 @@ public class Level00 extends LevelBase {
 
     @Override
     public void setObjects() {
+        this.generateRandomObjects();
+
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 38, 8));
