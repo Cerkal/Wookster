@@ -1,0 +1,51 @@
+package main;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
+
+import entity.Player.PlayerWrapper;
+import levels.LevelBase.LevelWrapper;
+import main.InventoryItem.InventoryItemWrapper;
+
+public class DataWrapper {
+
+    PlayerWrapper player;
+    String currentLevel;
+    int currentLevelIndex;
+    List<LevelWrapper> levels = new ArrayList<>();
+
+    public PlayerWrapper getSavedPlayerData() {
+        return this.player;
+    }
+
+    public List<LevelWrapper> getAllSavedLevelData() {
+        return this.levels;
+    }
+
+    public LevelWrapper getSavedLevelData(int levelIndex) {
+        if ((this.levels.size() - 1) >= levelIndex) {
+            return this.levels.get(levelIndex);
+        }
+        return null;
+    }
+
+    public List<InventoryItemWrapper> getSavedInventoryItems() {
+        return new ArrayList<>(this.player.inventory.values());
+    }
+
+    public String getDataForSave(GamePanel gamePanel) {
+        this.player = gamePanel.player.getPlayerSaveState();
+        LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
+        try {
+            this.levels.set(levelWrapper.levelIndex, levelWrapper);
+        } catch (IndexOutOfBoundsException e) {
+            this.levels.add(levelWrapper);
+        }
+        this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;
+    }
+}

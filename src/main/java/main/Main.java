@@ -1,0 +1,27 @@
+package main;
+
+import javax.swing.JFrame;
+
+public class Main {
+
+    public static JFrame window;
+
+    public static void main(String[] args) {
+        window = new JFrame();
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(true);
+        window.setTitle(Constants.GAME_TITLE);
+
+        GamePanel gamePanel = new GamePanel();
+        gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
+        gamePanel.config.loadConfig();
+
+        window.add(gamePanel);
+        window.pack();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
+
+        gamePanel.setupGame();
+        gamePanel.startGameThread();
+    }
+}
