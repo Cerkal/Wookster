@@ -163,16 +163,46 @@ public class Constants {
     public static final String WORLD_00 = "/maps/world_00.txt";
     public static final String WORLD_01 = "/maps/world_01.txt";
 
+    // Backrounds
+    public static final String DEFAULT_BACKGROUND = "/backgrounds/output_image_test.png";
+
     // Fonts
     public static final String FONT_DOS = "/fonts/dos.ttf";
 
     // World tiles
+    public static final String TILE_CLEAR = "/tile/clear.png";
     public static final String TILE_GRASS_00 = "/tile/grass00.png";
     public static final String TILE_GRASS_01 = "/tile/grass01.png";
     public static final String TILE_EARTH = "/tile/earth.png";
     public static final String TILE_WALL = "/tile/wall.png";
     public static final String TILE_TREE = "/tile/tree.png";
     public static final String TILE_TREE_FALL = "/tile/tree_fall.png";
+
+    // Bridge
+    public static final String TILE_BRIDGE_00 = "/tile/bridge00.png";
+    public static final String TILE_BRIDGE_01 = "/tile/bridge01.png";
+    // Join
+    public static final String TILE_BRIDGE_JOIN_00 = "/tile/bridge_join_00.png";
+    public static final String TILE_BRIDGE_JOIN_01 = "/tile/bridge_join_01.png";
+    public static final String TILE_BRIDGE_JOIN_02 = "/tile/bridge_join_02.png";
+    public static final String TILE_BRIDGE_JOIN_03 = "/tile/bridge_join_03.png";
+    // Right
+    public static final String TILE_BRIDGE_SIDE_00 = "/tile/bridge_side_00.png";
+    public static final String TILE_BRIDGE_SIDE_01 = "/tile/bridge_side_01.png";
+    public static final String TILE_BRIDGE_SIDE_02 = "/tile/bridge_side_02.png";
+
+    // Tree Large
+    public static final String TILE_TREE_LARGE_00 = "/tile/tree_large_00.png";
+    public static final String TILE_TREE_LARGE_01 = "/tile/tree_large_01.png";
+    public static final String TILE_TREE_LARGE_02 = "/tile/tree_large_02.png";
+    public static final String TILE_TREE_LARGE_03 = "/tile/tree_large_03.png";
+    // Tree Side
+    public static final String TILE_TREE_LARGE_SIDE_00 = "/tile/tree_large_side_00.png";
+    public static final String TILE_TREE_LARGE_SIDE_01 = "/tile/tree_large_side_01.png";
+    public static final String TILE_TREE_LARGE_SIDE_02 = "/tile/tree_large_side_02.png";
+    public static final String TILE_TREE_LARGE_SIDE_03 = "/tile/tree_large_side_03.png";
+    // Tree Branch
+    public static final String TILE_TREE_LARGE_SIDE_01_BRANCH = "/tile/tree_large_side_01_branch.png";
 
     // Level 00
     public static final String LEVEL_00_SIGN = "No wookies allowed...";
@@ -200,7 +230,7 @@ public class Constants {
     public static final String TILE_WATER_12 = "/tile/water12.png";
     public static final String TILE_WATER_13 = "/tile/water13.png";
     
-    // Anaimted water tiles
+    // Animated water tiles
     public static final String TILE_WATER_A01 = "/tile/water01_a01.png";
     public static final String TILE_WATER_A02 = "/tile/water01_a02.png";
     public static final String TILE_WATER_A03 = "/tile/water01_a03.png";

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import entity.NPCTrooper;
+import entity.Entity.Direction;
 import main.Constants;
 import main.GamePanel;
 import objects.CarryPotionObject;
@@ -34,8 +35,9 @@ public class Level00 extends LevelBase {
         this.gamePanel.eventHandler.setRandomDamageTile();
         this.setStaticObjects();
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
+        this.gamePanel.npcs.get(0).direction = Direction.DOWN;
+        // this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
+        // this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
     }
 
     @Override

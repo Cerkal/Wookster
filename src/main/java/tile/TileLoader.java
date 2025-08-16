@@ -8,11 +8,13 @@ import main.Constants;
 public class TileLoader {
 
     public static Tile[] getTiles() {
-        Tile[] tiles = new Tile[50];
+        Tile[] tiles = new Tile[70];
 
         for (int i = 0; i < 10; i++) {
             tiles[i] = new Tile("Unknown", Constants.EFFECT_UKNOWN);
         }
+
+        tiles[0] = new Tile("Clear", Constants.TILE_CLEAR);
 
         tiles[10] = new Tile(
             "Grass",
@@ -62,6 +64,20 @@ public class TileLoader {
         tiles[40] = new Tile("Wall", Constants.TILE_WALL);
         tiles[41] = new Tile("Tree", Constants.TILE_TREE);
         tiles[42] = new Tile("Tree", Constants.TILE_TREE_FALL);
+
+        // Bridge
+        tiles[43] = new Tile("Bridge", Constants.TILE_BRIDGE_00);
+        tiles[44] = new Tile("Bridge", Constants.TILE_BRIDGE_01);
+        // Joiner
+        tiles[45] = new Tile("Bridge", Constants.TILE_BRIDGE_JOIN_00);
+        tiles[46] = new Tile("Bridge", Constants.TILE_BRIDGE_JOIN_01);
+        tiles[47] = new Tile("Bridge", Constants.TILE_BRIDGE_JOIN_02);
+        tiles[48] = new Tile("Bridge", Constants.TILE_BRIDGE_JOIN_03);
+        // Side
+        tiles[49] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_00, true, false);
+        tiles[50] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_01);
+        tiles[51] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_02);
+        // Middle
 
         for (int i = 0; i < tiles.length; i++) {
             if (tiles[i] != null) {

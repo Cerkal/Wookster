@@ -18,6 +18,7 @@ import effects.Effect;
 import entity.Entity;
 import entity.Player;
 import levels.Level00;
+import levels.Level01;
 import levels.LevelBuilder;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
@@ -42,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean debugMap = false;
     public boolean debugMapBuilder = false;
     public boolean debugFPS = false;
-    public boolean debugCollision = false;
+    public boolean debugCollision = true;
 
     public TileManager tileManager = new TileManager(this);
     public GameState gameState = GameState.TITLE;
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Config config = new Config(this);
     public LevelManager levelManager = new LevelManager(this);
     public EventHandler eventHandler;
+    public BufferedImage background;
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
@@ -77,6 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
+        restartLevel();
         loadLevels();
         this.sound.mute = false;
         if (this.isFullScreen) {
@@ -238,7 +241,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.effects.clear();
         this.player.setDefaultValues();
         this.gameState = GameState.PLAY;
-        loadLevels();
     }
 
     private void loadLevels() {
@@ -251,6 +253,7 @@ public class GamePanel extends JPanel implements Runnable {
         
         // Levels
         levelManager.addLevel(new Level00(this));
+        levelManager.addLevel(new Level01(this));
         levelManager.loadLevel(0);
     }
 }

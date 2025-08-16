@@ -14,7 +14,7 @@ public class BlasterWeapon extends Weapon {
     // In milliseconds
     static final int BLASTER_DELAY = 250;
     static final int MAX_AMMO = 150;
-    static final int BLASTER_SPEED = 20;
+    public static final int BLASTER_SPEED = 20;
     static final int INITALIZED_LASERS = 50;
 
     public BlasterWeapon(GamePanel gamePanel) {
@@ -61,7 +61,7 @@ public class BlasterWeapon extends Weapon {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
-            this.gamePanel.projectileManager.projectiles.add(new LaserProjectile(this.gamePanel, BLASTER_SPEED));
+            this.gamePanel.projectileManager.projectiles.add(new LaserProjectile(this.gamePanel));
         }
     }
 }

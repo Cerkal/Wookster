@@ -19,6 +19,7 @@ public class NPCTrooper extends Entity {
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
+        this.willChase = true;
     }
 
     public void getPlayerImage() {

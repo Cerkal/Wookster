@@ -3,9 +3,8 @@ package tile;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 import java.util.Map;
 import java.util.Scanner;
 
@@ -24,8 +23,9 @@ public class TileManager {
 
     public Tile[] tile;
     public int[][] mapTileNum;
-    public Set<Integer> walkableTileIndex = new HashSet<>();
-    public List<TileLocation> walkableTiles = new ArrayList<>();
+    public List<TileLocation> availableTiles = new ArrayList<>();
+    public boolean[][] walkableTiles = new boolean[50][50];
+    public BufferedImage background;
 
     public final Map<Point, Tile> tileMap = new HashMap<>();
 
@@ -36,7 +36,7 @@ public class TileManager {
     }
 
     public void setMap(String mapPath) {
-        walkableTiles.clear();
+        availableTiles.clear();
         tileMap.clear();
         loadMap(mapPath);
     }
@@ -66,8 +66,9 @@ public class TileManager {
                     currentTile.randomize();
                     tileMap.put(key, currentTile);
 
+                    walkableTiles[col][row] = !tile[tileNumber].collision;
                     if (tile[tileNumber].collision == false) {
-                        walkableTiles.add(new TileLocation(col, row));
+                        availableTiles.add(new TileLocation(col, row));
                     }
                     col++;
                 }
@@ -95,6 +96,8 @@ public class TileManager {
         int worldCol = 0;
         int worldRow = 0;
 
+        drawBackground(graphics2D);
+
         while (worldCol < Constants.MAX_WORLD_COL && worldRow < Constants.MAX_WORLD_ROW) {
             int worldX = worldCol * Constants.TILE_SIZE;
             int worldY = worldRow * Constants.TILE_SIZE;
@@ -109,8 +112,10 @@ public class TileManager {
                 Tile currentTile = tileMap.get(new Point(worldCol, worldRow));
                 if (currentTile != null) {
                     BufferedImage tileImage = currentTile.getCurrentImage(gamePanel.gameTime);
-                    graphics2D.drawImage(tileImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
-                    drawDebug(graphics2D, currentTile, screenX, screenY);
+                    if (tileImage != null) {
+                        graphics2D.drawImage(tileImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+                        drawDebug(graphics2D, currentTile, screenX, screenY);
+                    }
                 }
             }
             disoverTile(worldCol, worldRow);
@@ -120,6 +125,35 @@ public class TileManager {
                 worldRow++;
             }
         }
+    }
+
+    private void drawBackground(Graphics2D graphics2D) {
+        if (this.gamePanel.background == null) {
+            System.out.println("Background is null ");
+            return;
+        }
+        double parallax = 0.75;
+
+        int bgX = (int) (
+            Constants.SCREEN_WIDTH / 2
+            - (2800 / 2) // center the bg
+            - gamePanel.player.worldX * parallax
+            + gamePanel.player.screenX * parallax
+        ) + Constants.SCREEN_WIDTH/2;
+
+        int bgY = (int) (
+            Constants.SCREEN_HEIGHT / 2
+            - (this.gamePanel.background.getHeight() / 2) // center the bg
+            - gamePanel.player.worldY * parallax
+            + gamePanel.player.screenY * parallax
+        ) + (int) (Constants.SCREEN_HEIGHT  * 1.25);
+
+        graphics2D.drawImage(
+            this.gamePanel.background,
+            bgX, bgY,
+            Constants.WORLD_WIDTH + 400, Constants.WORLD_HEIGHT,
+            null
+        );
     }
 
     private void drawDebug(Graphics2D graphics2D, Tile currentTile, int screenX, int screenY) {
@@ -154,10 +188,10 @@ public class TileManager {
     }
 
     public TileLocation getRandomTileLocation() {
-        if (walkableTiles.isEmpty()) {
+        if (availableTiles.isEmpty()) {
             throw new IllegalArgumentException("Not enough free tiles");
         }
-        return walkableTiles.get(Utils.generateRandomInt(0, walkableTiles.size() - 1));
+        return availableTiles.get(Utils.generateRandomInt(0, availableTiles.size() - 1));
     }
 
     public class TileLocation {

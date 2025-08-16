@@ -320,7 +320,7 @@ public class Player extends Entity {
         playerWrapper.speed = this.speed;
         playerWrapper.direction = this.direction;
         playerWrapper.maxHealth = this.maxHealth;
-        playerWrapper.weapon = this.weapon.weaponType;
+        if (this.weapon != null) playerWrapper.weapon = this.weapon.weaponType;
         playerWrapper.inventory = getInventoryItemsForSave();
         playerWrapper.spells = this.spells;
         return playerWrapper;
@@ -400,7 +400,6 @@ public class Player extends Entity {
     private void checkDeath() {
         if (this.isDead) {
             this.gamePanel.gameState = GameState.DEATH;
-            this.gamePanel.config.saveConfig();
         }
     }
 
