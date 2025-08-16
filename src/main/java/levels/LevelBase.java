@@ -33,6 +33,7 @@ public abstract class LevelBase {
     }
     
     protected GamePanel gamePanel;
+    protected String background = Constants.DEFAULT_BACKGROUND;
     public String mapPath;
     public int levelIndex;
 
@@ -71,7 +72,7 @@ public abstract class LevelBase {
     public void loadMap() {
         this.gamePanel.tileManager.setMap(mapPath);
         try {
-            this.gamePanel.background = ImageIO.read(getClass().getResourceAsStream(Constants.DEFAULT_BACKGROUND));
+            this.gamePanel.background = ImageIO.read(getClass().getResourceAsStream(this.background));
         } catch (IOException e) {
             e.printStackTrace();
         }

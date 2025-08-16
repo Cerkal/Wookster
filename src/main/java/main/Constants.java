@@ -165,6 +165,7 @@ public class Constants {
 
     // Backrounds
     public static final String DEFAULT_BACKGROUND = "/backgrounds/output_image_test.png";
+    public static final String WORLD_00_BACKGROUND = "/backgrounds/world_00.png";
 
     // Fonts
     public static final String FONT_DOS = "/fonts/dos.ttf";

@@ -28,6 +28,7 @@ public class Level00 extends LevelBase {
     public Level00(GamePanel gamePanel) {
         super(gamePanel);
         this.mapPath = Constants.WORLD_00;
+        this.background = Constants.WORLD_00_BACKGROUND;
     }
 
     public void init() {
