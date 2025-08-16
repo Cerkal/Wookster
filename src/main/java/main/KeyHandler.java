@@ -95,7 +95,7 @@ public class KeyHandler implements KeyListener {
                 break;
             case GameState.DEATH:
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                    this.gamePanel.restartLevel();
+                    startGame();
                 }
                 break;
             default:
@@ -150,26 +150,44 @@ public class KeyHandler implements KeyListener {
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             switch (selection) {
                 case Constants.GAME_TITLE_SCREEN_NEW_GAME:
-                    this.gamePanel.gameState = GameState.PLAY;
-                    this.gamePanel.config.dataWrapper = new DataWrapper();
-                    this.gamePanel.restartLevel();
-                    this.gamePanel.stopMusic();
-                    // this.gamePanel.playMusic(Constants.SOUND_BG_01);
+                    startGame();
                     break;
                 case Constants.GAME_TITLE_SCREEN_SAVE_GAME:
                     this.gamePanel.config.saveConfig();
                     System.out.println("Saved game.");
                     break;
                 case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
-                    this.gamePanel.config.loadConfig();
-                    this.gamePanel.restartLevel();
-                    System.out.println("Loaded game.");
+                    startGame();
                     break;
                 case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
                     System.exit(0);
                     break;
             }
         }
+    }
+
+    private void startGame() {
+        if (this.gamePanel.config.dataWrapper.player == null) {
+            newGame();
+        } else {
+            loadGame();
+        }
+    }
+
+    private void loadGame() {
+        this.gamePanel.config.loadConfig();
+        this.gamePanel.restartLevel();
+        this.gamePanel.levelManager.loadLevel(this.gamePanel.config.dataWrapper.currentLevelIndex);
+        System.out.println("Loaded game.");
+    }
+
+    private void newGame() {
+        this.gamePanel.gameState = GameState.PLAY;
+        this.gamePanel.config.dataWrapper = new DataWrapper();
+        this.gamePanel.setupGame();
+        this.gamePanel.stopMusic();
+        System.out.println("New game.");
+        // this.gamePanel.playMusic(Constants.SOUND_BG_01);
     }
 
 }

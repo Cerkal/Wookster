@@ -1,6 +1,9 @@
 package main;
 
+import java.awt.Point;
+
 import entity.Entity;
+import entity.Player;
 import entity.Entity.EntityType;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
@@ -227,6 +230,53 @@ public class Collision {
             projectile.collisionOn = true;
         }
     }
+
+    public boolean checkLineTileCollision(Player player, Entity entity) {
+        if (
+            entity.worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            entity.worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            entity.worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            entity.worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            int startX = entity.worldX + Constants.TILE_SIZE/2;
+            int startY = entity.worldY + Constants.TILE_SIZE/2;
+            int endX = player.worldX + Constants.TILE_SIZE/2;
+            int endY = player.worldY + Constants.TILE_SIZE/2;
+
+            // Bresenham’s line algorithm
+            int x0 = startX / Constants.TILE_SIZE;
+            int y0 = startY / Constants.TILE_SIZE;
+            int x1 = endX / Constants.TILE_SIZE;
+            int y1 = endY / Constants.TILE_SIZE;
+            int dx = Math.abs(x1 - x0);
+            int dy = Math.abs(y1 - y0);
+            int sx = x0 < x1 ? 1 : -1;
+            int sy = y0 < y1 ? 1 : -1;
+            int err = dx - dy;
+
+            while (true) {
+                if (x0 >= 0 && y0 >= 0 && x0 < Constants.MAX_WORLD_COL && y0 < Constants.MAX_WORLD_ROW) {
+                    Tile tile = this.gamePanel.tileManager.tileMap.get(new Point(x0, y0));
+                    if (tile.collision) {
+                        return false;
+                    }
+                }
+                if (x0 == x1 && y0 == y1) break;
+                int e2 = 2 * err;
+                if (e2 > -dy) {
+                    err = err - dy;
+                    x0 = x0 + sx;
+                }
+                if (e2 < dx) {
+                    err = err + dx;
+                    y0 = y0 + sy;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 
     private void changeDirection(Entity entity) {
         if (entity.entityType != EntityType.PLAYER) {

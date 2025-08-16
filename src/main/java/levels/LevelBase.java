@@ -1,9 +1,12 @@
 package levels;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.DataWrapper;
@@ -67,6 +70,11 @@ public abstract class LevelBase {
 
     public void loadMap() {
         this.gamePanel.tileManager.setMap(mapPath);
+        try {
+            this.gamePanel.background = ImageIO.read(getClass().getResourceAsStream(Constants.DEFAULT_BACKGROUND));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void generateRandomObjects() {

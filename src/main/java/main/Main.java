@@ -16,6 +16,9 @@ public class Main {
         gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
         gamePanel.config.loadConfig();
 
+        // BackgroundCreator backgroundCreator = new BackgroundCreator();
+        // backgroundCreator.createBackgroundImage();
+
         window.add(gamePanel);
         window.pack();
         window.setLocationRelativeTo(null);

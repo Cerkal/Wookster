@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 
 import entity.Entity;
 import entity.Entity.Direction;
+import entity.Player;
 import main.Constants;
 import main.GamePanel;
 
@@ -117,6 +118,10 @@ public class Projectile {
     protected void collision() {
         this.gamePanel.collision.checkTileProjectile(this);
         Entity entity = this.gamePanel.collision.projectileCollision(this);
+        if (entity != null) {
+            handleEntityCollision(entity);
+        }
+        entity = (Player) this.gamePanel.collision.getProjectileEntity(this, this.gamePanel.player);
         if (entity != null) {
             handleEntityCollision(entity);
         }

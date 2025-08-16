@@ -1,5 +1,7 @@
 package tile;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +37,17 @@ public class Tile {
         this.tileType = tileType;
         this.image = getImage(image);
         setCollision();
+    }
+
+    public Tile(
+        String tileType,
+        String image,
+        boolean collision,
+        boolean projectileCollision
+    ){
+        this(tileType, image);
+        this.collision = collision;
+        this.projectileCollision = projectileCollision;
     }
 
     public Tile(
@@ -89,6 +102,7 @@ public class Tile {
     }
 
     private BufferedImage getImage(String path) {
+        if (path == null) { return null; }
         BufferedImage image = null;
         try {
             image = ImageIO.read(getClass().getResourceAsStream(path));
@@ -122,8 +136,31 @@ public class Tile {
                 this.collision = true;
                 this.projectileCollision = true;
                 break;
+            case "Clear":
+                this.collision = true;
+                this.projectileCollision = false;
+                break;
+            case "Large Tree":
+                this.collision = true;
+                this.projectileCollision = true;
+                break;
+            case "Leaves":
+                this.collision = true;
+                this.projectileCollision = true;
+                break;
             default:
                 break;
         }
+    }
+
+    public static BufferedImage rotateSquareImage(BufferedImage originalImage, double angleDegrees) {
+        int size = originalImage.getWidth();
+        BufferedImage rotatedImage = new BufferedImage(size, size, originalImage.getType());
+        Graphics2D g2d = rotatedImage.createGraphics();
+        AffineTransform transform = new AffineTransform();
+        transform.rotate(Math.toRadians(angleDegrees), size / 2.0, size / 2.0);
+        g2d.setTransform(transform);
+        g2d.drawImage(originalImage, 0, 0, null);
+        return rotatedImage;
     }
 }
