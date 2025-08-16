@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean debugMap = false;
     public boolean debugMapBuilder = false;
     public boolean debugFPS = false;
-    public boolean debugCollision = true;
+    public boolean debugCollision = false;
 
     public TileManager tileManager = new TileManager(this);
     public GameState gameState = GameState.TITLE;

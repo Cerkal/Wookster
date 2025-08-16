@@ -1,4 +1,2 @@
-```
-bash build_scripts/build.sh
-java -jar game.jar
-```
+Requires Java 21+
+Gradle 8.2+

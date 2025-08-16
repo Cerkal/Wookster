@@ -36,8 +36,8 @@ public class Level00 extends LevelBase {
         this.setStaticObjects();
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.get(0).direction = Direction.DOWN;
-        // this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
-        // this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 9, 8));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 40));
     }
 
     @Override
