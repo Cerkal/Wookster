@@ -90,7 +90,7 @@ public class CrossbowWeapon extends Weapon {
                 this.lastShot = this.gamePanel.gameTime;
                 this.removeAmmo();
                 this.playSound();
-                this.gamePanel.projectileManager.projectiles.add(new ArrowProjectile(this.gamePanel, this.speed));
+                this.gamePanel.projectileManager.add(new ArrowProjectile(this.gamePanel, this.speed));
             }
         }
     }

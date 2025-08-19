@@ -9,31 +9,24 @@ public class LaserProjectile extends Projectile {
 
     public static final int DAMAGE = 20;
 
-    public LaserProjectile(GamePanel gamePanel) {
-        super(gamePanel);
+    public LaserProjectile(GamePanel gamePanel, Entity entity) {
+        super(gamePanel, entity);
         this.speed = BlasterWeapon.BLASTER_SPEED;
         this.damage = DAMAGE;
         this.setImage(Constants.WEAPON_PROJECTILE_LASER);
         startPosition();
     }
 
-    public LaserProjectile(GamePanel gamePanel, Entity entity) {
-        this(gamePanel);
-        this.direction = entity.direction;
-        startPosition(entity);
+    public LaserProjectile(GamePanel gamePanel) {
+        this(gamePanel, gamePanel.player);
     }
 
-    @Override
-    protected void handleEntityCollision(Entity entity) {
-        entity.takeDamage(this.damage);
-    }
-
-    private void startPosition(Entity entity) {
-        this.worldX = entity.worldX;
-        this.worldY = entity.worldY;
-        switch (entity.direction) {
+    private void startPosition() {
+        this.worldX = this.entity.worldX;
+        this.worldY = this.entity.worldY;
+        switch (this.entity.direction) {
             case UP:
-                this.worldY -= Constants.TILE_SIZE/2 + 5;
+                this.worldY -= Constants.TILE_SIZE/2;
                 break;
             case DOWN:
                 this.worldY += Constants.TILE_SIZE/2;
@@ -47,9 +40,5 @@ public class LaserProjectile extends Projectile {
             default:
                 break;
         }
-    } 
-
-    private void startPosition() {
-        startPosition(this.gamePanel.player);
     }
 }

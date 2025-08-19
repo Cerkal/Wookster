@@ -4,7 +4,6 @@ import java.awt.Point;
 
 import entity.Entity;
 import entity.Player;
-import entity.Entity.EntityType;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import tile.Tile;
@@ -64,7 +63,6 @@ public class Collision {
             gamePanel.tileManager.tile[tileNum2].collision == true
         ){
             entity.collisionOn = true;
-            changeDirection(entity);
         }
     }
 
@@ -112,7 +110,6 @@ public class Collision {
         for (Entity target : gamePanel.npcs) {
             collisionEntity = getCollidEntity(entity, target);
             if (collisionEntity != null) {
-                // changeDirection(collisionEntity);
                 return collisionEntity;
             }
         }
@@ -168,6 +165,7 @@ public class Collision {
     }
 
     public Entity getProjectileEntity(Projectile projectile, Entity target) {
+        if (projectile.entity == target) { return null; }
         Entity collisionEntity = null;
         projectile.solidArea.x = projectile.worldX + projectile.solidArea.x;
         projectile.solidArea.y = projectile.worldY + projectile.solidArea.y;
@@ -201,32 +199,36 @@ public class Collision {
         int tileNum1 = 0;
         int tileNum2 = 0;
 
-        switch (projectile.direction) {
-            case UP:
-                projectileTopRow = (projectileBoundaryTop - projectile.speed)/Constants.TILE_SIZE;
-                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
-                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
-                break;
-            case DOWN:
-                projectileBottomRow = (projectileBoundaryBottom + projectile.speed)/Constants.TILE_SIZE;
-                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
-                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
-                break;
-            case LEFT:
-                projectileLeftCol = (projectileBoundaryLeft - projectile.speed)/Constants.TILE_SIZE;
-                tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
-                tileNum2 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
-                break;
-            case RIGHT:
-                projectileRightCol = (projectileBoundaryRight + projectile.speed)/Constants.TILE_SIZE;
-                tileNum1 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
-                tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
-                break;
-        }
-        if (
-            gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
-            gamePanel.tileManager.tile[tileNum2].projectileCollision == true
-        ){
+        try {
+            switch (projectile.direction) {
+                case UP:
+                    projectileTopRow = (projectileBoundaryTop - projectile.speed)/Constants.TILE_SIZE;
+                    tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
+                    tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
+                    break;
+                case DOWN:
+                    projectileBottomRow = (projectileBoundaryBottom + projectile.speed)/Constants.TILE_SIZE;
+                    tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
+                    tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
+                    break;
+                case LEFT:
+                    projectileLeftCol = (projectileBoundaryLeft - projectile.speed)/Constants.TILE_SIZE;
+                    tileNum1 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileTopRow];
+                    tileNum2 = gamePanel.tileManager.mapTileNum[projectileLeftCol][projectileBottomRow];
+                    break;
+                case RIGHT:
+                    projectileRightCol = (projectileBoundaryRight + projectile.speed)/Constants.TILE_SIZE;
+                    tileNum1 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileTopRow];
+                    tileNum2 = gamePanel.tileManager.mapTileNum[projectileRightCol][projectileBottomRow];
+                    break;
+            }
+            if (
+                gamePanel.tileManager.tile[tileNum1].projectileCollision == true ||
+                gamePanel.tileManager.tile[tileNum2].projectileCollision == true
+            ){
+                projectile.collisionOn = true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             projectile.collisionOn = true;
         }
     }
@@ -275,12 +277,5 @@ public class Collision {
             return true;
         }
         return false;
-    }
-
-
-    private void changeDirection(Entity entity) {
-        if (entity.entityType != EntityType.PLAYER) {
-            entity.setAction();
-        }
     }
 }

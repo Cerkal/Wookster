@@ -23,6 +23,7 @@ public class Projectile {
     public int worldY;
     public Direction direction;
     public boolean collisionOn = false;
+    public Entity entity;
 
     public Rectangle solidArea = new Rectangle(Constants.TILE_SIZE/2, Constants.TILE_SIZE/2, 1, 1);
     public int solidAreaDefaultX = solidArea.x;
@@ -36,11 +37,12 @@ public class Projectile {
         LASERS
     };
 
-    public Projectile(GamePanel gamePanel) {
+    public Projectile(GamePanel gamePanel, Entity entity) {
         this.gamePanel = gamePanel;
-        this.direction = gamePanel.player.direction;
-        this.worldX = gamePanel.player.worldX;
-        this.worldY = gamePanel.player.worldY;
+        this.direction = entity.direction;
+        this.entity = entity;
+        this.worldX = entity.worldX;
+        this.worldY = entity.worldY;
         this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
     }
 
@@ -50,10 +52,6 @@ public class Projectile {
         int screenX = this.worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = this.worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         if (
-            this.worldX + Constants.TILE_SIZE > gamePanel.player.worldX - gamePanel.player.screenX &&
-            this.worldX - Constants.TILE_SIZE < gamePanel.player.worldX + gamePanel.player.screenX &&
-            this.worldY + Constants.TILE_SIZE > gamePanel.player.worldY - gamePanel.player.screenY &&
-            this.worldY - Constants.TILE_SIZE < gamePanel.player.worldY + gamePanel.player.screenY &&
             !collisionOn
         ) {
             graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
@@ -128,6 +126,6 @@ public class Projectile {
     }
 
     protected void handleEntityCollision(Entity entity) {
-        // Overridden in subclasses
+        entity.takeDamage(this.damage);
     }
 }

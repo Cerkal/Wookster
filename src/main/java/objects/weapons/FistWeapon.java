@@ -81,7 +81,7 @@ public class FistWeapon extends Weapon {
             this.isAttacking = true;
             int punchSpeed = getSpeed();
             this.punch = new PunchProjectile(this.gamePanel, punchSpeed);
-            this.gamePanel.projectileManager.projectiles.add(this.punch);
+            this.gamePanel.projectileManager.add(this.punch);
         }
     }
 

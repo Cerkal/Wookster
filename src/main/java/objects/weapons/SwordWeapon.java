@@ -81,7 +81,7 @@ public class SwordWeapon extends Weapon {
             this.isAttacking = true;
             int punchSpeed = getSpeed();
             this.swing = new SwordProjectile(this.gamePanel, punchSpeed);
-            this.gamePanel.projectileManager.projectiles.add(this.swing);
+            this.gamePanel.projectileManager.add(this.swing);
         }
     }
 

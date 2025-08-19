@@ -15,8 +15,8 @@ import main.Utils;
 public class Tile {
 
     public String tileType = "Blank";
-    public int worldX;
-    public int worldY;
+    public int x;
+    public int y;
     public BufferedImage image;
     public BufferedImage imageAlt;
     public List<BufferedImage> imageSequence = new ArrayList<BufferedImage>();

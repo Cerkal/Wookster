@@ -150,7 +150,7 @@ public class KeyHandler implements KeyListener {
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             switch (selection) {
                 case Constants.GAME_TITLE_SCREEN_NEW_GAME:
-                    startGame();
+                    newGame();
                     break;
                 case Constants.GAME_TITLE_SCREEN_SAVE_GAME:
                     this.gamePanel.config.saveConfig();
@@ -178,6 +178,9 @@ public class KeyHandler implements KeyListener {
         this.gamePanel.config.loadConfig();
         this.gamePanel.restartLevel();
         this.gamePanel.levelManager.loadLevel(this.gamePanel.config.dataWrapper.currentLevelIndex);
+        this.gamePanel.gameState = GameState.PLAY;
+        this.gamePanel.stopMusic();
+        // this.gamePanel.playMusic(Constants.SOUND_BG_01);
         System.out.println("Loaded game.");
     }
 
@@ -185,9 +188,9 @@ public class KeyHandler implements KeyListener {
         this.gamePanel.gameState = GameState.PLAY;
         this.gamePanel.config.dataWrapper = new DataWrapper();
         this.gamePanel.setupGame();
+        this.gamePanel.gameState = GameState.PLAY;
         this.gamePanel.stopMusic();
-        System.out.println("New game.");
         // this.gamePanel.playMusic(Constants.SOUND_BG_01);
+        System.out.println("New game.");
     }
-
 }

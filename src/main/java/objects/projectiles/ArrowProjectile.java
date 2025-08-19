@@ -8,17 +8,16 @@ public class ArrowProjectile extends Projectile {
 
     public static final int DAMAGE_MODIFIER = 2;
 
-    public ArrowProjectile(GamePanel gamePanel, int speed) {
-        super(gamePanel);
+    public ArrowProjectile(GamePanel gamePanel, Entity entity, int speed) {
+        super(gamePanel, entity);
         this.speed = speed;
         this.damage = getDamageFromSpeed(speed);
         this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
         startPosition();
     }
 
-    @Override
-    protected void handleEntityCollision(Entity entity) {
-        entity.takeDamage(this.damage);
+    public ArrowProjectile(GamePanel gamePanel, int speed) {
+        this(gamePanel, gamePanel.player, speed);
     }
 
     private int getDamageFromSpeed(int speed) {
@@ -26,10 +25,10 @@ public class ArrowProjectile extends Projectile {
     }
 
     private void startPosition() {
-        if (this.gamePanel.player == null) { return; }
-        this.worldX = this.gamePanel.player.worldX;
-        this.worldY = this.gamePanel.player.worldY;
-        switch (this.gamePanel.player.direction) {
+        if (this.entity == null) { return; }
+        this.worldX = this.entity.worldX;
+        this.worldY = this.entity.worldY;
+        switch (this.entity.direction) {
             case UP:
                 this.worldY -= Constants.TILE_SIZE/2 + 5;
                 break;

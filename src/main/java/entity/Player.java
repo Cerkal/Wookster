@@ -87,6 +87,7 @@ public class Player extends Entity {
         this.spells.clear();
 
         addWeapon(WeaponType.FIST);
+        addWeapon(WeaponType.CROSSBOW);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
     }

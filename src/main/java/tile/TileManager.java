@@ -63,6 +63,8 @@ public class TileManager {
                     Point key = new Point(col, row);
                     Tile baseTile = tile[tileNumber];
                     Tile currentTile = new Tile(baseTile);
+                    currentTile.x = col;
+                    currentTile.y = row;
                     currentTile.randomize();
                     tileMap.put(key, currentTile);
 
@@ -78,7 +80,6 @@ public class TileManager {
                     row++;
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,17 +158,27 @@ public class TileManager {
     }
 
     private void drawDebug(Graphics2D graphics2D, Tile currentTile, int screenX, int screenY) {
-        if (this.gamePanel.debugMapBuilder) {
+        if (this.gamePanel.debugMap) {
             graphics2D.setColor(Color.BLACK);
+            graphics2D.drawRect(screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE);
+            screenY += 10;
             graphics2D.drawString(
                 String.valueOf(currentTile.indexNumber),
-                screenX + Constants.TILE_SIZE/2,
-                screenY + Constants.TILE_SIZE/2
+                screenX,
+                screenY
             );
-            if (currentTile.tileHighlight) {
-                graphics2D.setColor(Color.RED);
-            }
-            graphics2D.drawRect(screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE);
+            screenY += 10;
+            graphics2D.drawString(
+                String.valueOf("x: " + currentTile.x),
+                screenX,
+                screenY
+            );
+            screenY += 10;
+            graphics2D.drawString(
+                String.valueOf("y: " + currentTile.y),
+                screenX,
+                screenY
+            );
         }
     }
 

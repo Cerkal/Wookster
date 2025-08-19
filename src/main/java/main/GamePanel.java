@@ -21,7 +21,6 @@ import levels.Level00;
 import levels.Level01;
 import levels.LevelBuilder;
 import objects.SuperObject;
-import objects.projectiles.Projectile;
 import objects.projectiles.ProjectileManager;
 import tile.TileManager;
 
@@ -137,7 +136,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         if (this.gameState == GameState.PLAY) {
             this.player.update();
-            for (Entity npc : this.npcs) {
+            for (Entity npc : new ArrayList<>(this.npcs)) {
                 npc.update();
             }
             levelManager.update();
@@ -205,6 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void drawGame(Graphics2D graphics2D) {
         try {
             this.tileManager.draw(graphics2D);
+
             for (Effect effect : effects) {
                 effect.draw(graphics2D);
             }
@@ -220,12 +220,9 @@ public class GamePanel extends JPanel implements Runnable {
             }
             entityList.clear();
 
-            for (Projectile projectile : this.projectileManager.projectiles) {
-                projectile.draw(graphics2D);
-            }
-            this.projectileManager.removeProjectiles();
+            this.projectileManager.draw(graphics2D);
 
-            levelManager.draw(graphics2D);
+            this.levelManager.draw(graphics2D);
 
             this.ui.draw(graphics2D);
         } catch (Exception exception) {
@@ -237,10 +234,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.objects.clear();
         this.npcs.clear();
         this.entityList.clear();
-        this.projectileManager.projectiles.clear();
+        this.projectileManager.clear();
         this.effects.clear();
         this.player.setDefaultValues();
-        this.gameState = GameState.PLAY;
+        // this.gameState = GameState.PLAY;
     }
 
     private void loadLevels() {

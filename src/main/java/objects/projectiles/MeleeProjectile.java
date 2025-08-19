@@ -8,8 +8,8 @@ public class MeleeProjectile extends Projectile {
 
     public static final int DAMAGE_MODIFIER = 2;
 
-    public MeleeProjectile(GamePanel gamePanel, int hold) {
-        super(gamePanel);
+    public MeleeProjectile(GamePanel gamePanel, Entity entity, int hold) {
+        super(gamePanel, entity);
         this.speed = 0;
         this.damage = getDamageFromHold(hold);
         this.setImage(Constants.EFFECT_ALERT);
@@ -22,9 +22,8 @@ public class MeleeProjectile extends Projectile {
         setPosition();
     }
 
-    @Override
-    protected void handleEntityCollision(Entity entity) {
-        entity.takeDamage(this.damage);
+    public MeleeProjectile(GamePanel gamePanel, int hold) {
+        this(gamePanel, gamePanel.player, hold);
     }
 
     private int getDamageFromHold(int speed) {
@@ -32,9 +31,9 @@ public class MeleeProjectile extends Projectile {
     }
 
     public void setPosition() {
-        this.worldX = this.gamePanel.player.worldX;
-        this.worldY = this.gamePanel.player.worldY;
-        switch (this.gamePanel.player.direction) {
+        this.worldX = this.entity.worldX;
+        this.worldY = this.entity.worldY;
+        switch (this.entity.direction) {
             case UP:
                 this.worldY -= Constants.TILE_SIZE/2 + 5;
                 break;

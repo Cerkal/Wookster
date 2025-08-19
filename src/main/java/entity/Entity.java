@@ -19,6 +19,7 @@ import effects.Effect;
 import main.Constants;
 import main.GamePanel;
 import objects.projectiles.LaserProjectile;
+import objects.projectiles.ProjectileManager;
 import objects.weapons.Weapon;
 
 public class Entity {
@@ -115,33 +116,10 @@ public class Entity {
         drawEffect(graphics2D);
     }
 
-    public void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
-        if (!this.gamePanel.debugCollision) { return; }
-        graphics2D.setColor(Color.RED);
-        graphics2D.drawRect(
-            screenX + solidArea.x,
-            screenY + solidArea.y,
-            solidArea.width,
-            solidArea.height
-        );
-    }
-
     public void update() {
         setAction();
         collision();
         startChase();
-    }
-
-    public void collision() {
-        this.collisionOn = false;
-        this.gamePanel.collision.checkTile(this);
-        this.gamePanel.collision.entityCollision(this);
-        this.gamePanel.collision.objectCollision(this, false);
-        boolean canSeePlayer = this.gamePanel.collision.checkLineTileCollision(gamePanel.player, this);
-        if (canSeePlayer) {
-            this.isAlerted = true;
-        }
-        checkPlayerCollision();
     }
 
     public void checkPlayerCollision() {
@@ -182,131 +160,6 @@ public class Entity {
         }
         return null;
     }
-
-    protected void getSpriteByDirection() {
-        if (this.isDead) {
-            this.image = this.dead;
-            return;
-        }
-        this.image = this.imageMap.get(this.direction).get(this.spriteNumber);
-    }
-
-    public void setAction() {
-        if (!this.movable) { return; }
-        if (this.isAlerted && this.willChase && !this.isChasing) {
-            queueChase();
-        }
-    }
-
-    private void queueChase() {
-        List<Point> path = bfsShortestPath(
-            getLocation(),
-            this.gamePanel.player.getLocation(),
-            this.gamePanel.tileManager.walkableTiles,
-            50,
-            50
-        );
-        if (path != null) {
-            this.moveQueue = new LinkedList<>();
-            for (Point point : path) {
-                this.moveQueue.add(point);
-            }
-            this.isChasing = true;
-        }
-    }
-
-    private void startChase() {
-        if (!this.isChasing) { return; }
-        Point point = this.moveQueue.peek();
-        if (point == null) { return; }
-        moveEntityStep(point);
-        checkLineOfFire();
-        if (getLocation().equals(point)) {
-            this.moveQueue.poll();
-        }
-        if (this.moveQueue.isEmpty()) {
-            stopChase();
-        }
-    }
-
-    private void stopChase() {
-        this.isMoving = false;
-        this.isChasing = false;
-        if (this.moveQueue != null) { this.moveQueue.clear(); }
-    }
-
-    private void checkLineOfFire() {
-        this.lastFire++;
-        if (this.lastFire > Constants.FPS * 1) {
-            switch (this.direction) {
-                case UP:
-                case DOWN:
-                    if (getLocation().x == this.gamePanel.player.getLocation().x) {
-                        this.gamePanel.projectileManager.projectiles.add(new LaserProjectile(this.gamePanel, this));
-                        this.lastFire = 0;
-                    }
-                    break;
-                case RIGHT:
-                case LEFT:
-                    if (getLocation().y == this.gamePanel.player.getLocation().y) {
-                        this.gamePanel.projectileManager.projectiles.add(new LaserProjectile(this.gamePanel, this));
-                        this.lastFire = 0;
-                    }
-                    break;
-            }
-        }
-    }
-
-    protected void moveEntityStep(Point point) {
-        int x = point.x - getLocation().x;
-        int y = point.y - getLocation().y;
-        if (x > 0) {
-            this.direction = Direction.RIGHT;
-        } else if (x < 0) {
-            this.direction = Direction.LEFT;
-        }
-        if (y > 0) {
-            this.direction = Direction.DOWN;
-        } else if (y < 0) {
-            this.direction = Direction.UP;
-        }
-        moveEntiy();
-    }
-
-    public List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable, int width, int height) {
-        // Breadth-First Search
-        Queue<Point> queue = new LinkedList<>();
-        Map<Point, Point> cameFrom = new HashMap<>();
-        queue.add(start);
-        cameFrom.put(start, null);
-
-        int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}};
-
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
-            if (current.equals(goal)) {
-                List<Point> path = new ArrayList<>();
-                for (Point p = goal; p != null; p = cameFrom.get(p)) {
-                    path.add(p);
-                }
-                Collections.reverse(path);
-                return path;
-            }
-            for (int[] d : directions) {
-                int nx = current.x + d[0];
-                int ny = current.y + d[1];
-                Point neighbor = new Point(nx, ny);
-                if (nx >= 0 && ny >= 0 && nx < width && ny < height
-                    && walkable[nx][ny]
-                    && !cameFrom.containsKey(neighbor)) {
-                    queue.add(neighbor);
-                    cameFrom.put(neighbor, current);
-                }
-            }
-        }
-        return null;
-    }
-
 
     public void takeDamage(int amount) {
         if (this.invincable) { return; }
@@ -351,6 +204,179 @@ public class Entity {
         return this.worldY / Constants.TILE_SIZE;
     }
 
+    protected void getSpriteByDirection() {
+        if (this.isDead) {
+            this.image = this.dead;
+            return;
+        }
+        this.image = this.imageMap.get(this.direction).get(this.spriteNumber);
+    }
+
+    protected void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
+        if (!this.gamePanel.debugCollision) { return; }
+        graphics2D.setColor(Color.RED);
+        graphics2D.drawRect(
+            screenX + solidArea.x,
+            screenY + solidArea.y,
+            solidArea.width,
+            solidArea.height
+        );
+    }
+
+    private void collision() {
+        this.collisionOn = false;
+        this.gamePanel.collision.checkTile(this);
+        this.gamePanel.collision.entityCollision(this);
+        this.gamePanel.collision.objectCollision(this, false);
+        boolean canSeePlayer = this.gamePanel.collision.checkLineTileCollision(gamePanel.player, this);
+        if (canSeePlayer) {
+            this.isAlerted = true;
+        }
+        checkPlayerCollision();
+    }
+
+    private void setAction() {
+        if (!this.movable) { return; }
+        if (this.isAlerted && this.willChase && !this.isChasing) {
+            queueChase();
+        }
+    }
+
+    private void queueChase() {
+        List<Point> path = bfsShortestPath(
+            getLocation(),
+            this.gamePanel.player.getLocation(),
+            this.gamePanel.tileManager.walkableTiles,
+            50,
+            50
+        );
+        if (path != null) {
+            this.moveQueue = new LinkedList<>();
+            for (Point point : path) {
+                this.moveQueue.add(point);
+            }
+            this.isChasing = true;
+        }
+    }
+
+    private void startChase() {
+        if (!this.isChasing) { return; }
+        Point point = this.moveQueue.peek();
+        if (point == null) { return; }
+        moveEntityStep(point);
+        checkLineOfFire();
+
+        int targetX = point.x * Constants.TILE_SIZE;
+        int targetY = point.y * Constants.TILE_SIZE;
+
+        if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
+            snapToGrid(point);
+            this.moveQueue.poll();
+        }
+
+        if (this.moveQueue.isEmpty()) {
+            stopChase();
+        }
+    }
+
+    private void stopChase() {
+        this.isMoving = false;
+        this.isChasing = false;
+        if (this.moveQueue != null) { this.moveQueue.clear(); }
+    }
+
+    private void checkLineOfFire() {
+        this.lastFire++;
+        if (this.lastFire > Constants.FPS * 1) {
+            switch (this.direction) {
+                case UP:
+                case DOWN:
+                    if (getLocation().x == this.gamePanel.player.getLocation().x) {
+                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
+                        this.lastFire = 0;
+                    }
+                    break;
+                case RIGHT:
+                case LEFT:
+                    if (getLocation().y == this.gamePanel.player.getLocation().y) {
+                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
+                        this.lastFire = 0;
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void snapToGrid(Point tilePoint) {
+        this.worldX = tilePoint.x * Constants.TILE_SIZE;
+        this.worldY = tilePoint.y * Constants.TILE_SIZE;
+    }
+
+    private void moveEntityStep(Point point) {
+        int targetX = point.x * Constants.TILE_SIZE;
+        int targetY = point.y * Constants.TILE_SIZE;
+
+        int dx = targetX - this.worldX;
+        int dy = targetY - this.worldY;
+
+        if (dx != 0) {
+            this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+            moveEntityToTarget(targetX, this.worldY);
+        } else if (dy != 0) {
+            this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
+            moveEntityToTarget(this.worldX, targetY);
+        }
+    }
+
+    private void moveEntityToTarget(int targetX, int targetY) {
+        if (this.isDead == true) { return; }
+        if (!this.collisionOn) {
+            if (this.worldX != targetX) {
+                if (this.worldX < targetX) {
+                    this.worldX += Math.min(speed, targetX - this.worldX);
+                } else if (this.worldX > targetX) {
+                    this.worldX -= Math.min(speed, this.worldX - targetX);
+                }
+            } else if (this.worldY != targetY) {
+                if (this.worldY < targetY) {
+                    this.worldY += Math.min(speed, targetY - this.worldY);
+                } else if (this.worldY > targetY) {
+                    this.worldY -= Math.min(speed, this.worldY - targetY);
+                }
+            }
+        } else {
+            if (this.moveQueue != null) {
+                this.moveQueue.clear();
+                this.isMoving = false;
+                queueChase();
+            }
+        }
+        sprite();
+        action();
+    }
+
+    private void sprite() {
+        this.spriteCounter++;
+        if (this.spriteCounter > Constants.FPS / 6 && this.isMoving) {
+            if (this.spriteNumber == 1) {
+                this.spriteNumber = 0;
+            } else if (this.spriteNumber == 0) {
+                this.spriteNumber = 1;
+            }
+            this.spriteCounter = 0;
+        }
+    }
+
+    private void action() {
+        this.actionLockCounter++;
+        if (this.actionLockCounter > Constants.FPS * 10) {
+            this.actionLockCounter = 0;
+            stopChase();
+        } else {
+            this.isMoving = true;
+        }
+    }
+
     protected void moveEntiy() {
         if (!this.collisionOn) {
             switch (this.direction) {
@@ -382,14 +408,41 @@ public class Entity {
             this.isMoving = true;
         }
         this.spriteCounter++;
-        if (this.spriteCounter > Constants.FPS / 6 && this.isMoving) {
-            if (this.spriteNumber == 1) {
-                this.spriteNumber = 0;
-            } else if (this.spriteNumber == 0) {
-                this.spriteNumber = 1;
+        sprite();
+    }
+
+    private List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable, int width, int height) {
+        // Breadth-First Search
+        Queue<Point> queue = new LinkedList<>();
+        Map<Point, Point> cameFrom = new HashMap<>();
+        queue.add(start);
+        cameFrom.put(start, null);
+
+        int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+            if (current.equals(goal)) {
+                List<Point> path = new ArrayList<>();
+                for (Point p = goal; p != null; p = cameFrom.get(p)) {
+                    path.add(p);
+                }
+                Collections.reverse(path);
+                return path;
             }
-            this.spriteCounter = 0;
+            for (int[] d : directions) {
+                int nx = current.x + d[0];
+                int ny = current.y + d[1];
+                Point neighbor = new Point(nx, ny);
+                if (nx >= 0 && ny >= 0 && nx < width && ny < height
+                    && walkable[nx][ny]
+                    && !cameFrom.containsKey(neighbor)) {
+                    queue.add(neighbor);
+                    cameFrom.put(neighbor, current);
+                }
+            }
         }
+        return null;
     }
 
     protected void drawEffect(Graphics2D graphics2D) {
