@@ -117,6 +117,7 @@ public class Entity {
     }
 
     public void update() {
+        if (this.isDead) { return; }
         setAction();
         collision();
         startChase();
@@ -173,6 +174,7 @@ public class Entity {
         this.gamePanel.playSoundEffect(this.damageSound);
         this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
         this.effect = new AlertEffect(this.gamePanel, this);
+        this.isAlerted = true;
         System.out.println(this.entityType + ": " + getCurrentHealth());
     }
 
