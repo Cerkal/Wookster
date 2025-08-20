@@ -3,10 +3,12 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import objects.projectiles.LaserProjectile;
+import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
 public class BlasterWeapon extends Weapon {
@@ -39,6 +41,10 @@ public class BlasterWeapon extends Weapon {
         graphics2D.drawString(this.weaponType.name() + ": " + Integer.toString(this.ammo), x, y - 10);
     }
 
+    public Projectile getProjectile(Entity entity) {
+        return new LaserProjectile(this.gamePanel, entity);
+    }
+
     private void init() {
         this.weaponType = WeaponType.BLASTER;
         this.projectileType = ProjectileType.LASERS;
@@ -61,7 +67,7 @@ public class BlasterWeapon extends Weapon {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
-            this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel));
+            this.gamePanel.projectileManager.add(getProjectile(this.player));
         }
     }
 }

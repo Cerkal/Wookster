@@ -6,13 +6,15 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import entity.Entity;
 import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
-public class Weapon {
+public abstract class Weapon {
 
     public static class InventoryWeaponWrapper {
         public WeaponType weaponType;
@@ -120,4 +122,6 @@ public class Weapon {
             return weaponType.creator.create(gamePanel);
         }
     }
+
+    public abstract Projectile getProjectile(Entity entity);
 }

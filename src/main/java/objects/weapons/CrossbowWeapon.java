@@ -3,10 +3,13 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
 import objects.projectiles.ArrowProjectile;
+import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
 public class CrossbowWeapon extends Weapon {
@@ -64,6 +67,14 @@ public class CrossbowWeapon extends Weapon {
         graphics2D.drawString(this.weaponType.name() + ": " + Integer.toString(this.ammo), x, y - 10);
     }
 
+    public Projectile getProjectile(Entity entity) {
+        return new ArrowProjectile(
+            this.gamePanel,
+            entity,
+            Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER
+        );
+    }
+
     private void init() {
         this.weaponType = WeaponType.CROSSBOW;
         this.projectileType = ProjectileType.ARROWS;
@@ -90,7 +101,7 @@ public class CrossbowWeapon extends Weapon {
                 this.lastShot = this.gamePanel.gameTime;
                 this.removeAmmo();
                 this.playSound();
-                this.gamePanel.projectileManager.add(new ArrowProjectile(this.gamePanel, this.speed));
+                this.gamePanel.projectileManager.add(getProjectile(this.player));
             }
         }
     }

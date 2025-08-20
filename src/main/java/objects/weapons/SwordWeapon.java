@@ -3,13 +3,16 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
 import objects.projectiles.MeleeProjectile;
+import objects.projectiles.Projectile;
 import objects.projectiles.SwordProjectile;
 
-public class SwordWeapon extends Weapon {
+public class SwordWeapon extends MeleeWeapon {
 
     // In milliseconds
     static final int FIST_DELAY = 250;
@@ -18,7 +21,6 @@ public class SwordWeapon extends Weapon {
     static final int HOLD_COUNT_MAX = 50;
     static final int SPEED_MODIFIER = 3;
 
-    boolean isAttacking;
     SwordProjectile swing;
 
     public SwordWeapon(GamePanel gamePanel) {
@@ -59,6 +61,14 @@ public class SwordWeapon extends Weapon {
 
         graphics2D.setColor(Color.WHITE);
         graphics2D.drawString(this.weaponType.name(), x, y - 10);
+    }
+
+    public Projectile getProjectile(Entity entity) {
+        return new SwordProjectile(
+            this.gamePanel,
+            entity,
+            Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER
+        );
     }
 
     private void init() {
@@ -102,15 +112,5 @@ public class SwordWeapon extends Weapon {
                 //
             }
         }
-    }
-
-    private int getSpeed() {
-        if (this.hold > HOLD_COUNT_MAX) {
-            return HOLD_COUNT_MAX/SPEED_MODIFIER;
-        }
-        if (this.hold < HOLD_COUNT_MIN) {
-            return HOLD_COUNT_MIN/SPEED_MODIFIER;
-        }
-        return this.hold/SPEED_MODIFIER;
     }
 }

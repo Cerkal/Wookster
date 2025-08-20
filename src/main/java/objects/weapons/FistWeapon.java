@@ -3,24 +3,25 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
 import objects.projectiles.PunchProjectile;
 import objects.projectiles.MeleeProjectile;
+import objects.projectiles.Projectile;
 
-public class FistWeapon extends Weapon {
+public class FistWeapon extends MeleeWeapon {
 
     // In milliseconds
-    static final int FIST_DELAY = 250;
+    static final int DEFAULT_DELAY = 250;
 
-    static final int HOLD_COUNT_MIN = 10;
-    static final int HOLD_COUNT_MAX = 30;
-    static final int SPEED_MODIFIER = 3;
+    static final int DEFAULT_HOLD_COUNT_MIN = 10;
+    static final int DEFAULT_HOLD_COUNT_MAX = 30;
+    static final int DEFAULT_SPEED_MODIFIER = 3;
 
     boolean isAttacking;
-
-    PunchProjectile punch;
 
     public FistWeapon(GamePanel gamePanel) {
         super(gamePanel);
@@ -36,7 +37,7 @@ public class FistWeapon extends Weapon {
             }
             this.hold = 0;
         }
-        playPunch();
+        playAttack();
     }
 
     public void drawWeaponInfo(Graphics2D graphics2D, int y) {
@@ -46,14 +47,14 @@ public class FistWeapon extends Weapon {
 
         int currentHold = this.hold;
 
-        float holdPercent = Math.max(0, Math.min(1f, (float) currentHold / HOLD_COUNT_MAX));
+        float holdPercent = Math.max(0, Math.min(1f, (float) currentHold / DEFAULT_HOLD_COUNT_MAX));
         int holdBarWidth = (int) (width * holdPercent);
 
         graphics2D.setColor(Color.WHITE);
         graphics2D.drawRect(x, y, width, height);
 
         graphics2D.setColor(Color.PINK);
-        if (currentHold < HOLD_COUNT_MIN) {
+        if (currentHold < DEFAULT_HOLD_COUNT_MIN) {
             graphics2D.setColor(Color.LIGHT_GRAY);
         }
         graphics2D.fillRect(x, y, holdBarWidth, height);
@@ -62,11 +63,19 @@ public class FistWeapon extends Weapon {
         graphics2D.drawString(this.weaponType.name(), x, y - 10);
     }
 
+    public Projectile getProjectile(Entity entity) {
+        return new PunchProjectile(
+            this.gamePanel,
+            entity,
+            Utils.generateRandomInt(DEFAULT_HOLD_COUNT_MIN, DEFAULT_HOLD_COUNT_MAX) / DEFAULT_SPEED_MODIFIER
+        );
+    }
+
     private void init() {
         this.weaponType = WeaponType.FIST;
         this.sound = Constants.SOUND_PUNCH;
         this.range = false;
-        this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
+        this.maxDamage = (DEFAULT_HOLD_COUNT_MAX / DEFAULT_SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
         this.ammo = 0;
         if (this.gamePanel.player != null) {
             this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
@@ -74,43 +83,8 @@ public class FistWeapon extends Weapon {
     }
 
     private void punch() {
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > FIST_DELAY) {
-            this.lastShot = this.gamePanel.gameTime;
-            this.removeAmmo();
-            this.playSound();
-            this.isAttacking = true;
-            int punchSpeed = getSpeed();
-            this.punch = new PunchProjectile(this.gamePanel, punchSpeed);
-            this.gamePanel.projectileManager.add(this.punch);
-        }
-    }
-
-    private void playPunch() {
-        if (this.isAttacking) {
-            Long time = (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND;
-            try {
-                if (time > FIST_DELAY/2) {
-                    this.gamePanel.player.attacking = false;
-                    this.isAttacking = false;
-                    this.gamePanel.projectileManager.toRemove.add(this.punch);
-                } else {
-                    this.gamePanel.player.attacking = true;
-                    PunchProjectile punch = (PunchProjectile) this.gamePanel.projectileManager.projectiles.get(0);
-                    punch.setPosition();
-                }
-            } catch (Exception e) {
-                //
-            }
-        }
-    }
-
-    private int getSpeed() {
-        if (this.hold > HOLD_COUNT_MAX) {
-            return HOLD_COUNT_MAX/SPEED_MODIFIER;
-        }
-        if (this.hold < HOLD_COUNT_MIN) {
-            return HOLD_COUNT_MIN/SPEED_MODIFIER;
-        }
-        return this.hold/SPEED_MODIFIER;
+        int punchSpeed = getSpeed();
+        this.projectile = new PunchProjectile(this.gamePanel, punchSpeed);
+        this.attack(this.projectile);
     }
 }

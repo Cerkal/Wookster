@@ -4,6 +4,7 @@ import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
+import objects.weapons.FistWeapon;
 
 public class NPCTrooper extends Entity {
 
@@ -15,6 +16,7 @@ public class NPCTrooper extends Entity {
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
         this.willChase = true;
+        this.weapon = new FistWeapon(gamePanel);
     }
 
     @Override

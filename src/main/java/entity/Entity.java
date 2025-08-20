@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
-import objects.projectiles.LaserProjectile;
+import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
 
 public abstract class Entity {
@@ -298,21 +297,37 @@ public abstract class Entity {
 
     private void checkLineOfFire() {
         if (this.isFriendly) { return; }
+        if (this.weapon == null) { return; }
         this.lastFire++;
+        
+        int buffer = 1;
+        int entityX = getLocation().x;
+        int entityY = getLocation().y;
+        int playerX = this.gamePanel.player.getLocation().x;
+        int playerY = this.gamePanel.player.getLocation().y;
+
         if (this.lastFire > Constants.FPS * 1) {
             switch (this.direction) {
                 case UP:
                 case DOWN:
-                    if (getLocation().x == this.gamePanel.player.getLocation().x) {
-                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
+                    if (entityX >= playerX - buffer && entityX <= playerX + buffer) {
+                        this.gamePanel.projectileManager.add(this.weapon.getProjectile(this));
                         this.lastFire = 0;
+                        if (this.weapon instanceof MeleeWeapon) {
+                            ((MeleeWeapon)this.weapon).playAttack();
+                        }
                     }
                     break;
                 case RIGHT:
                 case LEFT:
-                    if (getLocation().y == this.gamePanel.player.getLocation().y) {
-                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
+                    if (entityY >= playerY - buffer && entityY <= playerY + buffer) {
+                        this.gamePanel.projectileManager.add(this.weapon.getProjectile(this));
                         this.lastFire = 0;
+                        if (this.weapon instanceof MeleeWeapon) {
+                            MeleeWeapon weapon = (MeleeWeapon) this.weapon;
+                            weapon.isAttacking = true;
+                            weapon.playAttack();
+                        }
                     }
                     break;
             }
