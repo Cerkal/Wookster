@@ -1,5 +1,8 @@
 package entity;
 
+import entity.SpriteManager.Sprite;
+import entity.SpriteManager.SpriteAnimation;
+import main.Constants;
 import main.GamePanel;
 
 public class NPCDroids extends Entity {
@@ -25,6 +28,7 @@ public class NPCDroids extends Entity {
 
     @Override
     protected void loadSprites() {
-        throw new UnsupportedOperationException("Unimplemented method 'loadSprites'");
+        String i = SpriteAnimation.IDEL.name();
+        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.DROIDS_IMAGE_DOWN_0));
     }
 }

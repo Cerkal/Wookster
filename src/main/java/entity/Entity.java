@@ -43,10 +43,7 @@ public abstract class Entity {
     protected int spriteCounter = 0;
     protected int spriteNumber = 0;
     protected boolean isMoving = false;
-    public BufferedImage image;
-
-    // Sprite Test
-    public Sprite sprite;
+    protected Sprite sprite;
     SpriteManager spriteManager = new SpriteManager();
 
     // Collision
@@ -141,7 +138,7 @@ public abstract class Entity {
     }
 
     public void handlePlayerCollision(Player player) {
-        // for override in sub class
+        // For override in sub class
     }
 
     public void speak() {
