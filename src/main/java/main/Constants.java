@@ -137,6 +137,9 @@ public class Constants {
     public static final String TROOPER_IMAGE_RIGHT_1 = "/npc/trooper_right_1.png";
     public static final String TROOPER_IMAGE_DEAD = "/npc/trooper_dead.png";
 
+    public static final String TROOPER_IMAGE_IDEL_01 = "/npc/trooper_idel_down.png";
+    public static final String TROOPER_IMAGE_IDEL_02 = "/npc/trooper_idel_down_alt.png";
+
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";
 
