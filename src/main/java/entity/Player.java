@@ -17,7 +17,6 @@ import tile.Tile;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -25,6 +24,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import entity.SpriteManager.Sprite;
+import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
@@ -51,7 +52,6 @@ public class Player extends Entity {
     // Weapons
     public boolean attacking = false;
     public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
-    HashMap<WeaponType, HashMap<Direction, List<BufferedImage>>> imageMapWeapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
@@ -69,7 +69,6 @@ public class Player extends Entity {
         this.screenY = Constants.SCREEN_HEIGHT/2 - (Constants.TILE_SIZE/2);
 
         setDefaultValues();
-        getPlayerImage();
     }
 
     public void setDefaultValues() {
@@ -88,6 +87,7 @@ public class Player extends Entity {
 
         addWeapon(WeaponType.FIST);
         addWeapon(WeaponType.CROSSBOW);
+        addWeapon(WeaponType.SWORD);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
     }
@@ -127,119 +127,11 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D graphics2D) {
-        getCurrentSpriteSet();
-        getSpriteByDirection();
+        getSpiteImage();
         drawPlayerSprite(graphics2D);
         drawSpellEffect(graphics2D);
         drawEffect(graphics2D);
         drawDebugCollision(graphics2D, screenX, screenY);
-    }
-
-    public void getPlayerImage() {
-        try {
-            // Default
-            this.imageMapDefault.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_1))
-            )));
-            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_1))
-            )));
-            this.imageMapDefault.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1))
-            )));
-            this.imageMapDefault.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1))
-            )));
-
-            // Crossbow
-            HashMap<Direction, List<BufferedImage>> imageMapCrossBow = new HashMap<>();
-            imageMapCrossBow.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_UP_1))
-            )));
-            imageMapCrossBow.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_DOWN_1))
-            )));
-            imageMapCrossBow.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_LEFT_1))
-            )));
-            imageMapCrossBow.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1))
-            )));
-            imageMapWeapons.put(WeaponType.CROSSBOW, imageMapCrossBow);
-
-            // Blaster
-            HashMap<Direction, List<BufferedImage>> imageMapBlaster = new HashMap<>();
-            imageMapBlaster.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_UP_1))
-            )));
-            imageMapBlaster.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_DOWN_1))
-            )));
-            imageMapBlaster.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_LEFT_1))
-            )));
-            imageMapBlaster.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_BLASTER_RIGHT_1))
-            )));
-            imageMapWeapons.put(WeaponType.BLASTER, imageMapBlaster);
-
-            // Fist
-            HashMap<Direction, List<BufferedImage>> imageMapFist = new HashMap<>();
-            imageMapFist.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_UP_1))
-            )));
-            imageMapFist.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_DOWN_1))
-            )));
-            imageMapFist.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_LEFT_1))
-            )));
-            imageMapFist.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_FIST_RIGHT_1))
-            )));
-            imageMapWeapons.put(WeaponType.FIST, imageMapFist);
-
-            // Sword
-            HashMap<Direction, List<BufferedImage>> imageMapSword = new HashMap<>();
-            imageMapSword.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_UP_1))
-            )));
-            imageMapSword.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_DOWN_1))
-            )));
-            imageMapSword.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_LEFT_1))
-            )));
-            imageMapSword.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_SWORD_RIGHT_1))
-            )));
-            imageMapWeapons.put(WeaponType.SWORD, imageMapSword);
-
-            this.imageMap = this.imageMapDefault;
-            this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
-        }
     }
 
     public void collision() {
@@ -422,39 +314,14 @@ public class Player extends Entity {
     }
 
     private void drawPlayerSprite(Graphics2D graphics2D) {
-        int screenX = this.screenX;
-        int screenY = this.screenY;
-        int width = Constants.TILE_SIZE;
-        int height = Constants.TILE_SIZE;
-        if (this.weapon != null && this.weapon.longSprite && this.attacking) {
-            switch (this.direction) {
-                case UP:
-                    screenY -= Constants.TILE_SIZE;
-                    height *= 2;
-                    break;
-                case DOWN:
-                    height *= 2;
-                    break;
-                case RIGHT:
-                    width *= 2;
-                    break;
-                case LEFT:
-                    screenX -= Constants.TILE_SIZE;
-                    width *= 2;
-                    break;
-            }
-        }
-        graphics2D.drawImage(this.image, screenX, screenY, width, height, null);
-    }
-
-    private void getCurrentSpriteSet() {
-        if (this.attacking) {
-            if (this.weapon != null && this.imageMapWeapons.get(this.weapon.weaponType) != null) {
-                this.imageMap = this.imageMapWeapons.get(this.weapon.weaponType);
-            }
-        } else {
-            this.imageMap = this.imageMapDefault;
-        }
+        graphics2D.drawImage(
+            this.sprite.image,
+            screenX - this.sprite.xAdjust,
+            screenY - this.sprite.yAdjust,
+            this.sprite.width,
+            this.sprite.height,
+            null
+        );
     }
 
     private void invincableCheck() {
@@ -479,8 +346,8 @@ public class Player extends Entity {
         if (this.collisionEntity != null) {
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
                 if (this.collisionEntity.entityType == EntityType.NPC) {
-                    this.collisionEntity.speak();
                     this.entityInDialogue = collisionEntity;
+                    this.collisionEntity.speak();
                 }
             }
         }
@@ -550,8 +417,64 @@ public class Player extends Entity {
         }
     }
 
-    public class Test {
-        public int count = 0;
-        public String name = "Test";
+    @Override
+    protected void loadSprites() {
+        String m = SpriteAnimation.MOVE.name();
+        spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+        spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_1));
+        spriteManager.setSprite(m, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+        spriteManager.setSprite(m, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_1));
+        spriteManager.setSprite(m, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+        spriteManager.setSprite(m, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_1));
+        spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
+        spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_1));
+
+        String i = SpriteAnimation.IDEL.name();
+        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
+
+        String crossbow = WeaponType.CROSSBOW.name();
+        spriteManager.setSprite(crossbow, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_CROSSBOW_UP_0));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_CROSSBOW_UP_1));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_CROSSBOW_DOWN_0));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_CROSSBOW_DOWN_1));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_CROSSBOW_LEFT_0));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_CROSSBOW_LEFT_1));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0));
+        spriteManager.setSprite(crossbow, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1));
+
+        String blaster = WeaponType.BLASTER.name();
+        spriteManager.setSprite(blaster, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_BLASTER_UP_0));
+        spriteManager.setSprite(blaster, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_BLASTER_UP_1));
+        spriteManager.setSprite(blaster, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_BLASTER_DOWN_0));
+        spriteManager.setSprite(blaster, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_BLASTER_DOWN_1));
+        spriteManager.setSprite(blaster, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_BLASTER_LEFT_0));
+        spriteManager.setSprite(blaster, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_BLASTER_LEFT_1));
+        spriteManager.setSprite(blaster, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_BLASTER_RIGHT_0));
+        spriteManager.setSprite(blaster, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_BLASTER_RIGHT_1));
+
+        String fist = WeaponType.FIST.name();
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_FIST_UP_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_FIST_UP_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_FIST_DOWN_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_FIST_DOWN_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_FIST_LEFT_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_FIST_LEFT_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_FIST_RIGHT_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_FIST_RIGHT_1));
+
+        String sword = WeaponType.SWORD.name();
+        spriteManager.setSprite(sword, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_SWORD_UP_0));
+        spriteManager.setSprite(sword, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_SWORD_UP_1));
+        spriteManager.setSprite(sword, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_SWORD_DOWN_0));
+        spriteManager.setSprite(sword, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_SWORD_DOWN_1));
+        spriteManager.setSprite(sword, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_SWORD_LEFT_0));
+        spriteManager.setSprite(sword, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_SWORD_LEFT_1));
+        spriteManager.setSprite(sword, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_SWORD_RIGHT_0));
+        spriteManager.setSprite(sword, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_SWORD_RIGHT_1));
+        
+        spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
     }
 }

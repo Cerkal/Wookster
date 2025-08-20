@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import entity.NPCMom;
 import entity.NPCTrooper;
 import main.Constants;
 import main.GamePanel;
@@ -37,6 +38,8 @@ public class Level00 extends LevelBase {
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
+
+        this.gamePanel.npcs.add(new NPCMom(gamePanel, 23, 20));
     }
 
     @Override

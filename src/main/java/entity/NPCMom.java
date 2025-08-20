@@ -1,10 +1,7 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
-
+import entity.SpriteManager.Sprite;
+import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
 
@@ -14,36 +11,12 @@ public class NPCMom extends Entity {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
         this.speed = 2;
-        this.getPlayerImage();
         this.setDialogue();
         this.damageSound = Constants.SOUND_HURT;
         this.entityType = EntityType.NPC;
         this.name = "Mom";
-    }
-
-    public void getPlayerImage() {
-        try {
-            this.imageMapDefault.put(Direction.UP, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_UP_1))
-            )));
-            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DOWN_1))
-            )));
-            this.imageMapDefault.put(Direction.LEFT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_LEFT_1))
-            )));
-            this.imageMapDefault.put(Direction.RIGHT, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_RIGHT_1))
-            )));
-            this.imageMap = this.imageMapDefault;
-            this.dead = ImageIO.read(getClass().getResourceAsStream(Constants.PLAYER_IMAGE_DEAD));
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
-        }
+        this.willChase = true;
+        this.isFriendly = true;
     }
 
     public void setDialogue() {
@@ -53,5 +26,26 @@ public class NPCMom extends Entity {
             "You're dead now."
         };
         this.dialogue = lines;
+    }
+
+    @Override
+    protected void loadSprites() {
+        String m = SpriteAnimation.MOVE.name();
+        spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+        spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_1));
+        spriteManager.setSprite(m, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+        spriteManager.setSprite(m, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_1));
+        spriteManager.setSprite(m, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+        spriteManager.setSprite(m, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_1));
+        spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
+        spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_1));
+
+        String i = SpriteAnimation.IDEL.name();
+        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
+        
+        spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
     }
 }

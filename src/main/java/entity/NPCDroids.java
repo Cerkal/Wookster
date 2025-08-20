@@ -1,11 +1,5 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
-
-import main.Constants;
 import main.GamePanel;
 
 public class NPCDroids extends Entity {
@@ -14,23 +8,10 @@ public class NPCDroids extends Entity {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
         this.speed = 2;
-        this.getPlayerImage();
         this.setDialogue();
         this.entityType = EntityType.NPC;
         this.name = "Droids";
         this.movable = false;
-    }
-
-    public void getPlayerImage() {
-        try {
-            this.imageMapDefault.put(Direction.DOWN, new ArrayList<>(Arrays.asList(
-                ImageIO.read(getClass().getResourceAsStream(Constants.DROIDS_IMAGE_DOWN_0)),
-                ImageIO.read(getClass().getResourceAsStream(Constants.DROIDS_IMAGE_DOWN_0))
-            )));
-            this.imageMap = this.imageMapDefault;
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage() + e.getStackTrace());
-        }
     }
 
     public void setDialogue() {
@@ -40,5 +21,10 @@ public class NPCDroids extends Entity {
             "[Beep..] [Boop...] [Whistle...]"
         };
         this.dialogue = lines;
+    }
+
+    @Override
+    protected void loadSprites() {
+        throw new UnsupportedOperationException("Unimplemented method 'loadSprites'");
     }
 }

@@ -16,13 +16,13 @@ import java.util.Queue;
 import effects.AlertEffect;
 import effects.BloodEffect;
 import effects.Effect;
+import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
 import objects.projectiles.LaserProjectile;
-import objects.projectiles.ProjectileManager;
 import objects.weapons.Weapon;
 
-public class Entity {
+public abstract class Entity {
 
     GamePanel gamePanel;
 
@@ -43,10 +43,11 @@ public class Entity {
     protected int spriteCounter = 0;
     protected int spriteNumber = 0;
     protected boolean isMoving = false;
-    public HashMap<Direction, List<BufferedImage>> imageMap = new HashMap<>();
-    public HashMap<Direction, List<BufferedImage>> imageMapDefault = new HashMap<>();
     public BufferedImage image;
-    public BufferedImage dead;
+
+    // Sprite Test
+    public Sprite sprite;
+    SpriteManager spriteManager = new SpriteManager();
 
     // Collision
     public Rectangle solidArea = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
@@ -59,6 +60,7 @@ public class Entity {
     public boolean isDead;
 
     // Alert
+    public boolean isFriendly;
     public boolean willChase;
     private boolean isAlerted;
     private boolean isChasing;
@@ -87,13 +89,14 @@ public class Entity {
         this.solidArea.height = SOLID_AREA_HEIGHT;
         this.solidAreaDefaultX = this.solidArea.x;
         this.solidAreaDefaultY = this.solidArea.y;
+        this.loadSprites();
     }
 
     public Entity(GamePanel gamePanel, int worldX, int worldY) {
         this(gamePanel);
         this.worldX = worldX * Constants.TILE_SIZE;
         this.worldY = worldY * Constants.TILE_SIZE;
-        this.isMoving = true;
+        this.isMoving = false;
     }
 
     public Point getLocation() {
@@ -101,7 +104,7 @@ public class Entity {
     }
 
     public void draw(Graphics2D graphics2D) {
-        getSpriteByDirection();
+        getSpiteImage();
         int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
         int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
         if (
@@ -110,7 +113,14 @@ public class Entity {
             worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
             worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
         ){
-            graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+            graphics2D.drawImage(
+                this.sprite.image,
+                screenX - this.sprite.xAdjust,
+                screenY - this.sprite.yAdjust,
+                this.sprite.width,
+                this.sprite.height,
+                null
+            );
             drawDebugCollision(graphics2D, screenX, screenY);
         }
         drawEffect(graphics2D);
@@ -206,13 +216,11 @@ public class Entity {
         return this.worldY / Constants.TILE_SIZE;
     }
 
-    protected void getSpriteByDirection() {
-        if (this.isDead) {
-            this.image = this.dead;
-            return;
-        }
-        this.image = this.imageMap.get(this.direction).get(this.spriteNumber);
+    protected void getSpiteImage() {
+        this.sprite = this.spriteManager.getSprite(this);
     }
+
+    protected abstract void loadSprites();
 
     protected void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
         if (!this.gamePanel.debugCollision) { return; }
@@ -263,8 +271,12 @@ public class Entity {
 
     private void startChase() {
         if (!this.isChasing) { return; }
+
         Point point = this.moveQueue.peek();
         if (point == null) { return; }
+
+        this.isMoving = true;
+
         moveEntityStep(point);
         checkLineOfFire();
 
@@ -282,12 +294,13 @@ public class Entity {
     }
 
     private void stopChase() {
-        // this.isMoving = false;
+        this.isMoving = false;
         this.isChasing = false;
         if (this.moveQueue != null) { this.moveQueue.clear(); }
     }
 
     private void checkLineOfFire() {
+        if (this.isFriendly) { return; }
         this.lastFire++;
         if (this.lastFire > Constants.FPS * 1) {
             switch (this.direction) {
