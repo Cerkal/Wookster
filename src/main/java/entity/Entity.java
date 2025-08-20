@@ -282,7 +282,7 @@ public class Entity {
     }
 
     private void stopChase() {
-        this.isMoving = false;
+        // this.isMoving = false;
         this.isChasing = false;
         if (this.moveQueue != null) { this.moveQueue.clear(); }
     }
@@ -346,15 +346,8 @@ public class Entity {
                     this.worldY -= Math.min(speed, this.worldY - targetY);
                 }
             }
-        } else {
-            if (this.moveQueue != null) {
-                this.moveQueue.clear();
-                this.isMoving = false;
-                queueChase();
-            }
         }
         sprite();
-        action();
     }
 
     private void sprite() {
@@ -366,16 +359,6 @@ public class Entity {
                 this.spriteNumber = 1;
             }
             this.spriteCounter = 0;
-        }
-    }
-
-    private void action() {
-        this.actionLockCounter++;
-        if (this.actionLockCounter > Constants.FPS * 10) {
-            this.actionLockCounter = 0;
-            stopChase();
-        } else {
-            this.isMoving = true;
         }
     }
 
@@ -395,21 +378,7 @@ public class Entity {
                     this.worldX += speed;
                     break;
             }
-        } else {
-            if (this.moveQueue != null) {
-                this.moveQueue.clear();
-                this.isMoving = false;
-                queueChase();
-            }
         }
-        this.actionLockCounter++;
-        if (this.actionLockCounter > Constants.FPS * 10) {
-            this.actionLockCounter = 0;
-            stopChase();
-        } else {
-            this.isMoving = true;
-        }
-        this.spriteCounter++;
         sprite();
     }
 
