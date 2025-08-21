@@ -39,7 +39,7 @@ public class Level00 extends LevelBase {
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
 
-        this.gamePanel.npcs.add(new NPCMom(gamePanel, 23, 20));
+        this.gamePanel.npcs.add(new NPCMom(gamePanel, 10, 11));
     }
 
     @Override

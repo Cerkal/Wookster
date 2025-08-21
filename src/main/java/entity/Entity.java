@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
-import objects.projectiles.LaserProjectile;
+import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
 
 public abstract class Entity {
@@ -62,7 +61,6 @@ public abstract class Entity {
     private boolean isAlerted;
     private boolean isChasing;
     private Queue<Point> moveQueue;
-    private int lastFire;
 
     // Entity Values
     public EntityType entityType;
@@ -73,6 +71,7 @@ public abstract class Entity {
     public int dialogueIndex = 0;
     public Effect effect;
     public Weapon weapon;
+    public boolean attacking = false;
 
     // Sounds
     protected String damageSound;
@@ -298,24 +297,32 @@ public abstract class Entity {
 
     private void checkLineOfFire() {
         if (this.isFriendly) { return; }
-        this.lastFire++;
-        if (this.lastFire > Constants.FPS * 1) {
-            switch (this.direction) {
-                case UP:
-                case DOWN:
-                    if (getLocation().x == this.gamePanel.player.getLocation().x) {
-                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
-                        this.lastFire = 0;
-                    }
-                    break;
-                case RIGHT:
-                case LEFT:
-                    if (getLocation().y == this.gamePanel.player.getLocation().y) {
-                        this.gamePanel.projectileManager.add(new LaserProjectile(this.gamePanel, this));
-                        this.lastFire = 0;
-                    }
-                    break;
-            }
+        if (this.weapon == null) { return; }
+        
+        int buffer = 1;
+        int entityX = getLocation().x;
+        int entityY = getLocation().y;
+        int playerX = this.gamePanel.player.getLocation().x;
+        int playerY = this.gamePanel.player.getLocation().y;
+
+        if (this.weapon instanceof MeleeWeapon) {
+            MeleeWeapon meleeWeapon = (MeleeWeapon) this.weapon;
+            meleeWeapon.shoot(this);
+        }
+
+        switch (this.direction) {
+            case UP:
+            case DOWN:
+                if (entityX >= playerX - buffer && entityX <= playerX + buffer) {
+                    this.weapon.shoot(this);
+                }
+                break;
+            case RIGHT:
+            case LEFT:
+                if (entityY >= playerY - buffer && entityY <= playerY + buffer) {
+                    this.weapon.shoot(this);
+                }
+                break;
         }
     }
 

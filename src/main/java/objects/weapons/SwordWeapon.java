@@ -3,13 +3,15 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
 import objects.projectiles.MeleeProjectile;
 import objects.projectiles.SwordProjectile;
 
-public class SwordWeapon extends Weapon {
+public class SwordWeapon extends MeleeWeapon {
 
     // In milliseconds
     static final int FIST_DELAY = 250;
@@ -18,11 +20,10 @@ public class SwordWeapon extends Weapon {
     static final int HOLD_COUNT_MAX = 50;
     static final int SPEED_MODIFIER = 3;
 
-    boolean isAttacking;
     SwordProjectile swing;
 
-    public SwordWeapon(GamePanel gamePanel) {
-        super(gamePanel);
+    public SwordWeapon(GamePanel gamePanel, Entity entity) {
+        super(gamePanel, entity);
         init();
     }
 
@@ -36,6 +37,14 @@ public class SwordWeapon extends Weapon {
             this.hold = 0;
         }
         playSwing();
+    }
+
+    public MeleeProjectile getProjectile(Entity entity) {
+        return new SwordProjectile(
+            this.gamePanel,
+            entity,
+            Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER
+        );
     }
 
     public void drawWeaponInfo(Graphics2D graphics2D, int y) {
@@ -78,7 +87,7 @@ public class SwordWeapon extends Weapon {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
-            this.isAttacking = true;
+            this.entity.attacking = true;
             int punchSpeed = getSpeed();
             this.swing = new SwordProjectile(this.gamePanel, punchSpeed);
             this.gamePanel.projectileManager.add(this.swing);
@@ -86,12 +95,12 @@ public class SwordWeapon extends Weapon {
     }
 
     private void playSwing() {
-        if (this.isAttacking) {
+        if (this.entity.attacking) {
             Long time = (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND;
             try {
                 if (time > FIST_DELAY/2) {
                     this.gamePanel.player.attacking = false;
-                    this.isAttacking = false;
+                    this.entity.attacking = false;
                     this.gamePanel.projectileManager.toRemove.add(this.swing);
                 } else {
                     this.gamePanel.player.attacking = true;
@@ -102,15 +111,5 @@ public class SwordWeapon extends Weapon {
                 //
             }
         }
-    }
-
-    private int getSpeed() {
-        if (this.hold > HOLD_COUNT_MAX) {
-            return HOLD_COUNT_MAX/SPEED_MODIFIER;
-        }
-        if (this.hold < HOLD_COUNT_MIN) {
-            return HOLD_COUNT_MIN/SPEED_MODIFIER;
-        }
-        return this.hold/SPEED_MODIFIER;
     }
 }

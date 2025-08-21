@@ -32,6 +32,9 @@ public class Projectile {
     public int speed = 14;
     public int damage = 10;
 
+    public int dispose;
+    public long lastShot;
+
     public enum ProjectileType {
         ARROWS,
         LASERS
@@ -40,6 +43,7 @@ public class Projectile {
     public Projectile(GamePanel gamePanel, Entity entity) {
         this.gamePanel = gamePanel;
         this.direction = entity.direction;
+        this.lastShot = gamePanel.gameTime;
         this.entity = entity;
         this.worldX = entity.worldX;
         this.worldY = entity.worldY;
@@ -47,7 +51,7 @@ public class Projectile {
     }
 
     public void draw(Graphics2D graphics2D) {
-        moveProjectile();
+        update();
         collision();
         int screenX = this.worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = this.worldY - gamePanel.player.worldY + gamePanel.player.screenY;
@@ -81,7 +85,13 @@ public class Projectile {
         }
     }
 
-    private void moveProjectile() {
+    private void update() {
+        if (dispose > 0) {
+            Long time = (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND;
+            if (time > this.dispose / 2) {
+                this.gamePanel.projectileManager.toRemove.add(this);
+            }
+        }
         switch (this.direction) {
             case UP:
                 this.worldY -= this.speed;

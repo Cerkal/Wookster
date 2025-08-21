@@ -3,40 +3,57 @@ package objects.weapons;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import entity.Entity;
+import entity.Player;
 import main.Constants;
 import main.GamePanel;
-import main.InventoryItem;
+import main.Utils;
 import objects.projectiles.ArrowProjectile;
+import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
 public class CrossbowWeapon extends Weapon {
 
     // In milliseconds
-    static final int CROSSBOW_DELAY = 500;
+    static final int CROSSBOW_DELAY = 1750;
 
-    static final int HOLD_COUNT_MIN = 20;
+    static final int HOLD_COUNT_MIN = 25;
     static final int HOLD_COUNT_MAX = 100;
     static final int SPEED_MODIFIER = 3;
     static final int MAX_ARROWS = 50;
     static final int INITALIZED_ARROWS = 20;
 
-    public CrossbowWeapon(GamePanel gamePanel) {
-        super(gamePanel);
-        init();
+    public CrossbowWeapon(GamePanel gamePanel, Entity entity) {
+        super(gamePanel, entity);
+        this.weaponType = WeaponType.CROSSBOW;
+        this.projectileType = ProjectileType.ARROWS;
+        this.sound = Constants.SOUND_ARROW;
+        this.initilizedAmmo = INITALIZED_ARROWS;
+        this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
+        this.range = true;
+        addToInventory();
     }
 
     public void shoot() {
-        this.ammo = this.getAmmoCount();
-        if (ammo <= 0) { return; }
-        if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-            this.hold++;
-            this.gamePanel.player.attacking = true;
+        if (this.entity instanceof Player) {
+            this.ammo = this.getAmmoCount();
+            if (ammo <= 0) { return; }
+            if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+                this.hold++;
+                this.gamePanel.player.attacking = true;
+            } else {
+                if (this.hold > 0 && this.hold > HOLD_COUNT_MIN) {
+                    getSpeed();
+                    shootArrow();
+                }
+                this.hold = 0;
+                this.gamePanel.player.attacking = false;
+            }
         } else {
-            if (this.hold > 0) {
+            if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > CROSSBOW_DELAY) {
+                this.speed = Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER;
                 shootArrow();
             }
-            this.hold = 0;
-            this.gamePanel.player.attacking = false;
         }
     }
 
@@ -64,35 +81,16 @@ public class CrossbowWeapon extends Weapon {
         graphics2D.drawString(this.weaponType.name() + ": " + Integer.toString(this.ammo), x, y - 10);
     }
 
-    private void init() {
-        this.weaponType = WeaponType.CROSSBOW;
-        this.projectileType = ProjectileType.ARROWS;
-        this.sound = Constants.SOUND_ARROW;
-        this.ammo = INITALIZED_ARROWS;
-        this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
-        this.range = true;
-        if (this.gamePanel.player != null) {
-            this.gamePanel.player.addInventoryItem(
-                new InventoryItem(this, 1, true)
-            );
-            if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
-                this.gamePanel.player.addInventoryItem(
-                    new InventoryItem(this.projectileType.name(), INITALIZED_ARROWS, false, false)
-                );
-            }
-        }
+    public Projectile getProjectile(Entity entity) {
+        return new ArrowProjectile(this.gamePanel, entity, this.speed);
     }
 
     private void shootArrow() {
-        if (this.hold > HOLD_COUNT_MIN) {
-            getSpeed();
-            if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > CROSSBOW_DELAY) {
-                this.lastShot = this.gamePanel.gameTime;
-                this.removeAmmo();
-                this.playSound();
-                this.gamePanel.projectileManager.add(new ArrowProjectile(this.gamePanel, this.speed));
-            }
-        }
+        this.lastShot = this.gamePanel.gameTime;
+        this.removeAmmo();
+        this.playSound();
+        this.gamePanel.projectileManager.add(getProjectile(this.entity));
+        this.hold = 0;
     }
 
     private void getSpeed() {

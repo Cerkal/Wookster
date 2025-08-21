@@ -55,23 +55,10 @@ public class SpriteManager {
     public HashMap<String, HashMap<Direction, List<Sprite>>> spriteMap = new HashMap<>();
 
     public void setSprite(String type, Sprite sprite) {
-        if (this.spriteMap.containsKey(type)) {
-            HashMap<Direction, List<Sprite>> currentMap = this.spriteMap.get(type);
-            if (currentMap.containsKey(sprite.direction)) {
-                List<Sprite> currentSpriteList = currentMap.get(sprite.direction);
-                currentSpriteList.add(sprite);
-            } else {
-                List<Sprite> newSpriteList = new ArrayList<>();
-                newSpriteList.add(sprite);
-                currentMap.put(sprite.direction, newSpriteList);
-            }
-        } else {
-            HashMap<Direction, List<Sprite>> newMap = new HashMap<>();
-            List<Sprite> newSpriteList = new ArrayList<>();
-            newSpriteList.add(sprite);
-            newMap.put(sprite.direction, newSpriteList);
-            spriteMap.put(type, newMap);
-        }
+        spriteMap
+            .computeIfAbsent(type, k -> new HashMap<>())
+            .computeIfAbsent(sprite.direction, k -> new ArrayList<>())
+            .add(sprite);
     }
 
     public Sprite getSprite(Entity entity) {
