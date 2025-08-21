@@ -50,7 +50,6 @@ public class Player extends Entity {
     public static final int DEFAULT_SPEED = 4;
 
     // Weapons
-    public boolean attacking = false;
     public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
@@ -87,6 +86,7 @@ public class Player extends Entity {
 
         addWeapon(WeaponType.FIST);
         addWeapon(WeaponType.CROSSBOW);
+        addWeapon(WeaponType.BLASTER);
         addWeapon(WeaponType.SWORD);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
@@ -270,7 +270,7 @@ public class Player extends Entity {
     }
 
     public void addWeapon(WeaponType weaponType) {
-        Weapon weapon = Weapon.WeaponType.create(gamePanel, weaponType);
+        Weapon weapon = Weapon.WeaponType.create(gamePanel, weaponType, this);
         this.weapons.put(weaponType, weapon);
         switchWeapon(weaponType);
     }

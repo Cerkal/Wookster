@@ -21,10 +21,8 @@ public abstract class Weapon {
         public ProjectileType projectileType;
     }
 
-    int speed = 10;
-    long lastShot = 0;
     GamePanel gamePanel;
-    Player player;
+    Entity entity;
     
     public int hold;
     public WeaponType weaponType;
@@ -36,18 +34,25 @@ public abstract class Weapon {
     public boolean longSprite = false;
     public int maxDamage;
     public BufferedImage icon;
+    public int initilizedAmmo = 10;
+    public long lastShot = 0;
+    public int speed = 10;
 
     public HashMap<WeaponType, String> iconImages = Constants.WEAPON_ICONS;
 
-    public Weapon(GamePanel gamePanel) {
+    public Weapon(GamePanel gamePanel, Entity entity) {
         this.gamePanel = gamePanel;
-        this.player = gamePanel.player;
+        this.entity = entity;
     }
 
     public void shoot() {
         if (this.sound != null) {
             this.gamePanel.playSoundEffect(this.sound);
         }
+    }
+
+    public void shoot(Entity entity) {
+        shoot();
     }
 
     public void removeAmmo() {
@@ -102,14 +107,14 @@ public abstract class Weapon {
     }
 
     public enum WeaponType {
-        CROSSBOW(gamePanel -> new CrossbowWeapon(gamePanel)),
-        BLASTER(gamePanel -> new BlasterWeapon(gamePanel)),
-        FIST(gamePanel -> new FistWeapon(gamePanel)),
-        SWORD(gamePanel -> new SwordWeapon(gamePanel));
+        CROSSBOW((gamePanel, entity) -> new CrossbowWeapon(gamePanel, entity)),
+        BLASTER((gamePanel, entity) -> new BlasterWeapon(gamePanel, entity)),
+        FIST((gamePanel, entity) -> new FistWeapon(gamePanel, entity)),
+        SWORD((gamePanel, entity) -> new SwordWeapon(gamePanel, entity));
 
         @FunctionalInterface
         public static interface ObjectCreator {
-            Weapon create(GamePanel gamePanel);
+            Weapon create(GamePanel gamePanel, Entity entity);
         }
 
         private final ObjectCreator creator;
@@ -118,10 +123,22 @@ public abstract class Weapon {
             this.creator = creator;
         }
 
-        public static Weapon create(GamePanel gamePanel, WeaponType weaponType) {
-            return weaponType.creator.create(gamePanel);
+        public static Weapon create(GamePanel gamePanel, WeaponType weaponType, Entity entity) {
+            return weaponType.creator.create(gamePanel, entity);
         }
     }
 
     public abstract Projectile getProjectile(Entity entity);
+
+    protected void addToInventory() {
+        if (this.entity instanceof Player && this.gamePanel.player != null) {
+            this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
+            if (this.projectileType == null) { return; }
+            if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
+                this.gamePanel.player.addInventoryItem(new InventoryItem(
+                    this.projectileType.name(), this.initilizedAmmo, false, false)
+                );
+            }
+        }
+    }
 }

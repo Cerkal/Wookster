@@ -61,7 +61,6 @@ public abstract class Entity {
     private boolean isAlerted;
     private boolean isChasing;
     private Queue<Point> moveQueue;
-    private int lastFire;
 
     // Entity Values
     public EntityType entityType;
@@ -72,6 +71,7 @@ public abstract class Entity {
     public int dialogueIndex = 0;
     public Effect effect;
     public Weapon weapon;
+    public boolean attacking = false;
 
     // Sounds
     protected String damageSound;
@@ -298,7 +298,6 @@ public abstract class Entity {
     private void checkLineOfFire() {
         if (this.isFriendly) { return; }
         if (this.weapon == null) { return; }
-        this.lastFire++;
         
         int buffer = 1;
         int entityX = getLocation().x;
@@ -306,31 +305,24 @@ public abstract class Entity {
         int playerX = this.gamePanel.player.getLocation().x;
         int playerY = this.gamePanel.player.getLocation().y;
 
-        if (this.lastFire > Constants.FPS * 1) {
-            switch (this.direction) {
-                case UP:
-                case DOWN:
-                    if (entityX >= playerX - buffer && entityX <= playerX + buffer) {
-                        this.gamePanel.projectileManager.add(this.weapon.getProjectile(this));
-                        this.lastFire = 0;
-                        if (this.weapon instanceof MeleeWeapon) {
-                            ((MeleeWeapon)this.weapon).playAttack();
-                        }
-                    }
-                    break;
-                case RIGHT:
-                case LEFT:
-                    if (entityY >= playerY - buffer && entityY <= playerY + buffer) {
-                        this.gamePanel.projectileManager.add(this.weapon.getProjectile(this));
-                        this.lastFire = 0;
-                        if (this.weapon instanceof MeleeWeapon) {
-                            MeleeWeapon weapon = (MeleeWeapon) this.weapon;
-                            weapon.isAttacking = true;
-                            weapon.playAttack();
-                        }
-                    }
-                    break;
-            }
+        if (this.weapon instanceof MeleeWeapon) {
+            MeleeWeapon meleeWeapon = (MeleeWeapon) this.weapon;
+            meleeWeapon.shoot(this);
+        }
+
+        switch (this.direction) {
+            case UP:
+            case DOWN:
+                if (entityX >= playerX - buffer && entityX <= playerX + buffer) {
+                    this.weapon.shoot(this);
+                }
+                break;
+            case RIGHT:
+            case LEFT:
+                if (entityY >= playerY - buffer && entityY <= playerY + buffer) {
+                    this.weapon.shoot(this);
+                }
+                break;
         }
     }
 

@@ -1,56 +1,72 @@
 package objects.weapons;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import entity.Entity;
 import main.Constants;
 import main.GamePanel;
 import objects.projectiles.MeleeProjectile;
-import objects.projectiles.Projectile;
 
 public abstract class MeleeWeapon extends Weapon {
 
-    public boolean isAttacking;
+    protected int delay = 500;
+    protected int holdCountMin = 10;
+    protected int holdCountMax = 30;
+    protected int speedModifier = 3;
 
-    static final int DEFAULT_DELAY = 250;
-    static final int DEFAULT_HOLD_COUNT_MIN = 10;
-    static final int DEFAULT_HOLD_COUNT_MAX = 30;
-    static final int DEFAULT_SPEED_MODIFIER = 3;
+    protected MeleeProjectile projectile;
 
-    MeleeProjectile projectile;
-
-    public MeleeWeapon(GamePanel gamePanel) {
-        super(gamePanel);
+    public MeleeWeapon(GamePanel gamePanel, Entity entity) {
+        super(gamePanel, entity);
+        this.range = false;
+        this.ammo = 0;
     }
 
-    public abstract void shoot();
-
-    @Override
-    public Projectile getProjectile(Entity entity) {
-        throw new UnsupportedOperationException("Unimplemented method 'getProjectile'");
+    public void shoot() {
+        if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+            this.hold++;
+        } else {
+            if (this.hold > 0) {
+                attack();
+            }
+            this.hold = 0;
+        }
+        playAttack();
+        if (this.projectile != null) {
+            this.projectile.setPosition();
+        }
     }
 
-    public void attack(MeleeProjectile projectile) {
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > DEFAULT_DELAY) {
+    public void shoot(Entity entity) {
+        attack();
+        playAttack();
+        if (this.projectile != null) {
+            this.projectile.setPosition();
+        }
+    }
+
+    public abstract MeleeProjectile getProjectile(Entity entity);
+
+    public void attack() {
+        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > this.delay) {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
-            this.isAttacking = true;
-            this.projectile = projectile;
+            this.entity.attacking = true;
+            this.projectile = getProjectile(this.entity);
             this.gamePanel.projectileManager.add(this.projectile);
         }
     }
 
     public void playAttack() {
-        if (this.isAttacking) {
+        if (this.entity.attacking) {
             Long time = (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND;
             try {
-                if (time > DEFAULT_DELAY/2) {
-                    this.gamePanel.player.attacking = false;
-                    this.isAttacking = false;
-                    this.gamePanel.projectileManager.toRemove.add(this.projectile);
+                if (time > this.projectile.dispose) {
+                    this.entity.attacking = false;
                 } else {
-                    this.gamePanel.player.attacking = true;
-                    MeleeProjectile projectile = (MeleeProjectile) this.gamePanel.projectileManager.projectiles.get(0);
-                    projectile.setPosition();
+                    this.entity.attacking = true;
                 }
             } catch (Exception e) {
                 //
@@ -59,12 +75,35 @@ public abstract class MeleeWeapon extends Weapon {
     }
 
     protected int getSpeed() {
-        if (this.hold > DEFAULT_HOLD_COUNT_MAX) {
-            return DEFAULT_HOLD_COUNT_MAX / DEFAULT_SPEED_MODIFIER;
+        if (this.hold > this.holdCountMax) {
+            return this.holdCountMax / this.speedModifier;
         }
-        if (this.hold < DEFAULT_HOLD_COUNT_MIN) {
-            return DEFAULT_HOLD_COUNT_MIN / DEFAULT_HOLD_COUNT_MAX;
+        if (this.hold < this.holdCountMin) {
+            return this.holdCountMin / this.holdCountMax;
         }
-        return this.hold / DEFAULT_SPEED_MODIFIER;
+        return this.hold / this.speedModifier;
+    }
+
+    public void drawWeaponInfo(Graphics2D graphics2D, int y) {
+        int x = Constants.TILE_SIZE / 6;
+        int width = Constants.TILE_SIZE * 2;
+        int height = Constants.TILE_SIZE / 4;
+
+        int currentHold = this.hold;
+
+        float holdPercent = Math.max(0, Math.min(1f, (float) currentHold / this.holdCountMax));
+        int holdBarWidth = (int) (width * holdPercent);
+
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawRect(x, y, width, height);
+
+        graphics2D.setColor(Color.PINK);
+        if (currentHold < this.holdCountMin) {
+            graphics2D.setColor(Color.LIGHT_GRAY);
+        }
+        graphics2D.fillRect(x, y, holdBarWidth, height);
+
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawString(this.weaponType.name(), x, y - 10);
     }
 }
