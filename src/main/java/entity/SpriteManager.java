@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
 import main.Constants;
+import main.GamePanel.GameState;
 
 public class SpriteManager {
 
@@ -75,17 +76,14 @@ public class SpriteManager {
             type = SpriteAnimation.IDEL.name();
         }
 
-        // Override for player
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
-            if (player.entityInDialogue != null) {
-                return this.spriteMap.get(type).get(player.direction).get(0);
-            }
-            if (player.attacking) {
-                type = player.weapon.weaponType.name();
-                if (!player.isMoving) {
-                    return this.spriteMap.get(type).get(player.direction).get(0);
-                }
+        if (entity.gamePanel.gameState != GameState.PLAY) {
+            return this.spriteMap.get(type).get(entity.direction).get(0);
+        }
+
+        if (entity.attacking) {
+            type = entity.weapon.weaponType.name();
+            if (!entity.isMoving) {
+                return this.spriteMap.get(type).get(entity.direction).get(0);
             }
         }
 

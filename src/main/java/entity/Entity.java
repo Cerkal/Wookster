@@ -137,7 +137,11 @@ public abstract class Entity {
     }
 
     public void handlePlayerCollision(Player player) {
-        // For override in sub class
+        if (this.isFriendly) { return; }
+        if (this.weapon instanceof MeleeWeapon) {
+            MeleeWeapon meleeWeapon = (MeleeWeapon) this.weapon;
+            meleeWeapon.shoot(this);
+        }
     }
 
     public void speak() {
@@ -298,17 +302,13 @@ public abstract class Entity {
     private void checkLineOfFire() {
         if (this.isFriendly) { return; }
         if (this.weapon == null) { return; }
+        if (this.weapon instanceof MeleeWeapon) { return;}
         
         int buffer = 1;
         int entityX = getLocation().x;
         int entityY = getLocation().y;
         int playerX = this.gamePanel.player.getLocation().x;
         int playerY = this.gamePanel.player.getLocation().y;
-
-        if (this.weapon instanceof MeleeWeapon) {
-            MeleeWeapon meleeWeapon = (MeleeWeapon) this.weapon;
-            meleeWeapon.shoot(this);
-        }
 
         switch (this.direction) {
             case UP:
