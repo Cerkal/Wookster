@@ -63,6 +63,7 @@ public class TileManager {
                     Point key = new Point(col, row);
                     Tile baseTile = tile[tileNumber];
                     Tile currentTile = new Tile(baseTile);
+                    currentTile.imageIndex = tileNumber;
                     currentTile.x = col;
                     currentTile.y = row;
                     currentTile.randomize();
@@ -137,14 +138,14 @@ public class TileManager {
 
         int bgX = (int) (
             Constants.SCREEN_WIDTH / 2
-            - (2800 / 2) // center the bg
+            - (Constants.BACKGROUND_WIDTH / 2) // center the bg
             - gamePanel.player.worldX * parallax
             + gamePanel.player.screenX * parallax
         ) + Constants.SCREEN_WIDTH/2;
 
         int bgY = (int) (
             Constants.SCREEN_HEIGHT / 2
-            - (this.gamePanel.background.getHeight() / 2) // center the bg
+            - (Constants.BACKGROUND_HEIGHT / 2) // center the bg
             - gamePanel.player.worldY * parallax
             + gamePanel.player.screenY * parallax
         ) + (int) (Constants.SCREEN_HEIGHT  * 1.25);
@@ -152,12 +153,22 @@ public class TileManager {
         graphics2D.drawImage(
             this.gamePanel.background,
             bgX, bgY,
-            Constants.WORLD_WIDTH + 400, Constants.WORLD_HEIGHT,
+            Constants.BACKGROUND_WIDTH, Constants.BACKGROUND_HEIGHT,
             null
         );
     }
 
     private void drawDebug(Graphics2D graphics2D, Tile currentTile, int screenX, int screenY) {
+        // if (this.gamePanel.debugMap) {
+        //     graphics2D.drawRect(screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE);
+        //     graphics2D.setColor(Color.WHITE);
+        //     screenY += 10;
+        //     graphics2D.drawString(
+        //         String.valueOf(currentTile.imageIndex),
+        //         screenX,
+        //         screenY
+        //     );
+        // }
         if (this.gamePanel.debugMap) {
             graphics2D.setColor(Color.BLACK);
             graphics2D.drawRect(screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE);
@@ -212,5 +223,13 @@ public class TileManager {
             this.worldX = worldX;
             this.worldY = worldY;
         }
+    }
+
+    public void removeWalkableTile(int x, int y) {
+        if (x < 0 || x >= walkableTiles.length || y < 0 || y >= walkableTiles[0].length) {
+            throw new IllegalArgumentException("Coordinates out of bounds");
+        }
+        walkableTiles[x][y] = false;
+        availableTiles.removeIf(tileLocation -> tileLocation.worldX == x && tileLocation.worldY == y);
     }
 }

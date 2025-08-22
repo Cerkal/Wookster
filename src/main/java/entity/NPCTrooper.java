@@ -5,7 +5,6 @@ import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
 import objects.weapons.BlasterWeapon;
-import objects.weapons.FistWeapon;
 import objects.weapons.Weapon.WeaponType;
 
 public class NPCTrooper extends Entity {
@@ -18,7 +17,7 @@ public class NPCTrooper extends Entity {
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
         this.willChase = true;
-        this.weapon = new FistWeapon(gamePanel, this);
+        this.weapon = new BlasterWeapon(gamePanel, this);
     }
 
     @Override
@@ -34,21 +33,21 @@ public class NPCTrooper extends Entity {
         spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_1));
 
         String i = SpriteAnimation.IDEL.name();
-        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_IDEL_01));
-        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_01, 250));
-        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_02, 50));
-        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_IDEL_01));
-        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_IDEL_01));
+        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_IDEL_UP_00));
+        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_DOWN_00, 250));
+        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_DOWN_01, 50));
+        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_IDEL_LEFT_00));
+        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_IDEL_RIGHT_00));
 
         String fist = WeaponType.FIST.name();
-        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_FIST_UP_0));
-        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_FIST_UP_1));
-        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_FIST_DOWN_0));
-        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_FIST_DOWN_1));
-        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_FIST_LEFT_0));
-        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_FIST_LEFT_1));
-        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_FIST_RIGHT_0));
-        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_FIST_RIGHT_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_FIST_UP_00));
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_FIST_UP_01));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_FIST_DOWN_00));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_FIST_DOWN_01));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_FIST_LEFT_00));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_FIST_LEFT_01));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_FIST_RIGHT_00));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_FIST_RIGHT_01));
         
         spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.TROOPER_IMAGE_DEAD));
     }

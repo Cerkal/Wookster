@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import entity.NPCMom;
 import entity.NPCTrooper;
 import main.Constants;
 import main.GamePanel;
@@ -15,6 +14,7 @@ import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.JermeyObject;
 import objects.KeyObject;
+import objects.LevelDoorObject;
 import objects.SignObject;
 import objects.SwordObject;
 import spells.ClaritySpell;
@@ -38,8 +38,6 @@ public class Level00 extends LevelBase {
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
-
-        this.gamePanel.npcs.add(new NPCMom(gamePanel, 10, 11));
     }
 
     @Override
@@ -57,13 +55,13 @@ public class Level00 extends LevelBase {
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, Constants.LEVEL_00_SIGN));
 
+        LevelDoorObject levelDoor = new LevelDoorObject(this.gamePanel, 10, 7);
+        levelDoor.setDifferentImage(Constants.TILE_CLEAR);
+        this.gamePanel.objects.add(levelDoor);
+
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
-
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell(), 23, 25));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell(),  23, 26));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell(),  23, 27));
     }
 
     public void setStaticObjects() {

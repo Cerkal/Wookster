@@ -55,11 +55,11 @@ public class SpeedSpell extends SuperSpell {
     }
 
     private int randomSpeed() {
-        int speed = Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
-        if (speed == Player.DEFAULT_SPEED) {
-            speed += 2;
+        this.speed = Utils.generateRandomInt(this.MIN_SPEED, this.MAX_SPEED);
+        if (this.speed == Player.DEFAULT_SPEED) {
+            this.speed += 2;
         }
-        return speed;
+        return this.speed;
     }
 
     public int drawDescription(Graphics2D graphics2D, int x, int y, boolean clarity) {

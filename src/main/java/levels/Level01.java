@@ -2,8 +2,15 @@ package levels;
 
 import java.awt.Graphics2D;
 
+import entity.NPCMom;
+import entity.NPCTrooper;
 import main.Constants;
 import main.GamePanel;
+import objects.CarryPotionObject;
+import objects.DoorObject;
+import objects.KeyObject;
+import objects.SignObject;
+import spells.InvincibilitySpell;
 
 public class Level01 extends LevelBase {
 
@@ -14,6 +21,34 @@ public class Level01 extends LevelBase {
 
     public void init() {
         super.init();
+
+        this.gamePanel.player.setLocation(13, 7);
+
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 11, 40));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 26, 8));
+        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 36, 32));
+
+        NPCMom mom = new NPCMom(gamePanel, 38, 9);
+        String[] lines = {
+            "Trees hu?",
+            "It's easy to get lost in here.",
+            "I was going to make this my home.",
+            "Thank God you found me."
+        };
+        mom.setDialogue(lines);
+        this.gamePanel.npcs.add(mom);
+
+        this.gamePanel.objects.add(new DoorObject(this.gamePanel, 27, 38));
+
+        this.gamePanel.objects.add(new KeyObject(this.gamePanel, 30, 30));
+
+        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new InvincibilitySpell(), 10, 10));
+
+        this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 6, "You don't want to go back that way."));
+
+        this.gamePanel.eventHandler.setRandomDamageTile();
+        this.generateRandomObjects();
+        this.generateRandomPotions();
     }
 
     @Override

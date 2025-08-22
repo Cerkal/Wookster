@@ -61,6 +61,7 @@ public abstract class Entity {
     private boolean isAlerted;
     private boolean isChasing;
     private Queue<Point> moveQueue;
+    public boolean isNeeded;
 
     // Entity Values
     public EntityType entityType;
@@ -93,6 +94,11 @@ public abstract class Entity {
         this.worldX = worldX * Constants.TILE_SIZE;
         this.worldY = worldY * Constants.TILE_SIZE;
         this.isMoving = false;
+    }
+
+    public void setLocation(int x, int y) {
+        this.worldX = x * Constants.TILE_SIZE;
+        this.worldY = y * Constants.TILE_SIZE;
     }
 
     public Point getLocation() {
@@ -150,6 +156,7 @@ public abstract class Entity {
         if (this.dialogueIndex >= this.dialogue.length) {
             this.gamePanel.ui.stopDialogue();
             this.dialogueIndex = 0;
+            postDialogAction();
             return;
         }
         this.gamePanel.ui.displayDialog(this.dialogue[this.dialogueIndex]);
@@ -157,6 +164,8 @@ public abstract class Entity {
     
         this.direction = getOppositeDirection(this.gamePanel.player.direction);
     }
+
+    public void postDialogAction() {}
 
     public Direction getOppositeDirection(Direction direction) {
         switch (direction) {
@@ -238,11 +247,15 @@ public abstract class Entity {
         this.gamePanel.collision.checkTile(this);
         this.gamePanel.collision.entityCollision(this);
         this.gamePanel.collision.objectCollision(this, false);
+        checkVisibility();
+        checkPlayerCollision();
+    }
+
+    private void checkVisibility() {
         boolean canSeePlayer = this.gamePanel.collision.checkLineTileCollision(gamePanel.player, this);
         if (canSeePlayer) {
             this.isAlerted = true;
         }
-        checkPlayerCollision();
     }
 
     private void setAction() {

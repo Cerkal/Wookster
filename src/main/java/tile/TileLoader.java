@@ -62,7 +62,12 @@ public class TileLoader {
         // World tiles
         tiles[39] = new Tile("Earth", Constants.TILE_EARTH);
         tiles[40] = new Tile("Wall", Constants.TILE_WALL);
-        tiles[41] = new Tile("Tree", Constants.TILE_TREE);
+        tiles[41] = new Tile(
+            "Tree",
+            Constants.TILE_TREE_00,
+            new ArrayList<String>(Arrays.asList(Constants.TILE_TREE_01, Constants.TILE_TREE_02)),
+            2
+        );
         tiles[42] = new Tile("Tree", Constants.TILE_TREE_FALL);
 
         // Bridge
@@ -77,7 +82,27 @@ public class TileLoader {
         tiles[49] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_00, true, false);
         tiles[50] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_01);
         tiles[51] = new Tile("Bridge", Constants.TILE_BRIDGE_SIDE_02);
-        // Middle
+        
+        // Wood
+        tiles[52] = new Tile("Wood Edge", Constants.TILE_WOOD_02);
+        tiles[53] = new Tile("Wood Edge", Constants.TILE_WOOD_03);
+        tiles[54] = new Tile("Wood Edge", Constants.TILE_WOOD_04);
+        tiles[55] = new Tile("Wood Edge", Constants.TILE_WOOD_05);
+        tiles[56] = new Tile("Wood Edge", Constants.TILE_WOOD_06);
+        tiles[57] = new Tile("Wood Edge", Constants.TILE_WOOD_07);
+        tiles[58] = new Tile("Wood Edge", Constants.TILE_WOOD_08);
+        tiles[59] = new Tile("Wood Edge", Constants.TILE_WOOD_09);
+        tiles[60] = new Tile("Wood Edge", Constants.TILE_WOOD_10);
+        tiles[61] = new Tile("Wood Edge", Constants.TILE_WOOD_11);
+        tiles[62] = new Tile("Wood Edge", Constants.TILE_WOOD_12);
+        tiles[63] = new Tile("Wood Edge", Constants.TILE_WOOD_13);
+
+        tiles[64] = new Tile(
+            "Wood",
+            Constants.TILE_WOOD_BLOCK_00,
+            new ArrayList<String>(Arrays.asList(Constants.TILE_WOOD_BLOCK_01, Constants.TILE_WOOD_BLOCK_02)),
+            2
+        );
 
         for (int i = 0; i < tiles.length; i++) {
             if (tiles[i] != null) {

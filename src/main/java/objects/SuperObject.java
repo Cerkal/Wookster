@@ -178,4 +178,8 @@ public class SuperObject {
             return source.objectType.creator.create(gamePanel, source);
         }
     }
+
+    public void removeWalkableTile() {
+        this.gamePanel.tileManager.removeWalkableTile(this.getRawX(), this.getRawY());
+    }
 }

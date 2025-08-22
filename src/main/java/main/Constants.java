@@ -29,6 +29,10 @@ public class Constants {
 
     public static final int NEW_LINE_SIZE = TILE_SIZE - 5;
 
+    // Background Size
+    public static final int BACKGROUND_WIDTH = 2800;
+    public static final int BACKGROUND_HEIGHT = 2400;
+
     // Full Screen
     public static final int FULL_SCREEN_WIDTH = SCREEN_WIDTH;
     public static final int FULL_SCREEN_HEIGHT = SCREEN_HEIGHT;
@@ -137,8 +141,23 @@ public class Constants {
     public static final String TROOPER_IMAGE_RIGHT_1 = "/npc/trooper_right_1.png";
     public static final String TROOPER_IMAGE_DEAD = "/npc/trooper_dead.png";
 
-    public static final String TROOPER_IMAGE_IDEL_01 = "/npc/trooper_idel_down.png";
-    public static final String TROOPER_IMAGE_IDEL_02 = "/npc/trooper_idel_down_alt.png";
+    public static final String TROOPER_IMAGE_IDEL_UP_00 = "/npc/trooper_idel_up.png";
+    public static final String TROOPER_IMAGE_IDEL_DOWN_00 = "/npc/trooper_idel_down.png";
+    public static final String TROOPER_IMAGE_IDEL_DOWN_01 = "/npc/trooper_idel_down_alt.png";
+    public static final String TROOPER_IMAGE_IDEL_RIGHT_00 = "/npc/trooper_idel_right.png";
+    public static final String TROOPER_IMAGE_IDEL_LEFT_00 = "/npc/trooper_idel_left.png";
+
+    public static final String TROOPER_IMAGE_FIST_UP_00 = "/npc/trooper_up_0.png";
+    public static final String TROOPER_IMAGE_FIST_UP_01 = "/npc/trooper_up_1.png";
+    public static final String TROOPER_IMAGE_FIST_DOWN_00 = "/npc/trooper_down_fist_0.png";
+    public static final String TROOPER_IMAGE_FIST_DOWN_01 = "/npc/trooper_down_fist_1.png";
+    public static final String TROOPER_IMAGE_FIST_RIGHT_00 = "/npc/trooper_right_fist_0.png";
+    public static final String TROOPER_IMAGE_FIST_RIGHT_01 = "/npc/trooper_right_fist_1.png";
+    public static final String TROOPER_IMAGE_FIST_LEFT_00 = "/npc/trooper_left_fist_0.png";
+    public static final String TROOPER_IMAGE_FIST_LEFT_01 = "/npc/trooper_left_fist_1.png";
+
+    // Hat
+    public static final String WOOKSER_MOM_HAT = "/player/mom_hat.png";
 
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";
@@ -179,7 +198,9 @@ public class Constants {
     public static final String TILE_GRASS_01 = "/tile/grass01.png";
     public static final String TILE_EARTH = "/tile/earth.png";
     public static final String TILE_WALL = "/tile/wall.png";
-    public static final String TILE_TREE = "/tile/tree.png";
+    public static final String TILE_TREE_00 = "/tile/tree.png";
+    public static final String TILE_TREE_01 = "/tile/tree_alt.png";
+    public static final String TILE_TREE_02 = "/tile/tree_alt2.png";
     public static final String TILE_TREE_FALL = "/tile/tree_fall.png";
 
     // Bridge
@@ -253,6 +274,24 @@ public class Constants {
     public static final String TILE_ROAD_10 = "/tile/road10.png";
     public static final String TILE_ROAD_11 = "/tile/road11.png";
     public static final String TILE_ROAD_12 = "/tile/road12.png";
+
+    // Wood tiles
+    public static final String TILE_WOOD_BLOCK_00 = "/tile/wood_block_00.png";
+    public static final String TILE_WOOD_BLOCK_01 = "/tile/wood_block_01.png";
+    public static final String TILE_WOOD_BLOCK_02 = "/tile/wood_block_02.png";
+
+    public static final String TILE_WOOD_02 = "/tile/wood02.png";
+    public static final String TILE_WOOD_03 = "/tile/wood03.png";
+    public static final String TILE_WOOD_04 = "/tile/wood04.png";
+    public static final String TILE_WOOD_05 = "/tile/wood05.png";
+    public static final String TILE_WOOD_06 = "/tile/wood06.png";
+    public static final String TILE_WOOD_07 = "/tile/wood07.png";
+    public static final String TILE_WOOD_08 = "/tile/wood08.png";
+    public static final String TILE_WOOD_09 = "/tile/wood09.png";
+    public static final String TILE_WOOD_10 = "/tile/wood10.png";
+    public static final String TILE_WOOD_11 = "/tile/wood11.png";
+    public static final String TILE_WOOD_12 = "/tile/wood12.png";
+    public static final String TILE_WOOD_13 = "/tile/wood13.png";
 
     // Sounds
     public static final String SOUND_BG_01 = "/sounds/backgroundmusic.wav";

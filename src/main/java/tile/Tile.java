@@ -148,6 +148,10 @@ public class Tile {
                 this.collision = true;
                 this.projectileCollision = true;
                 break;
+            case "Wood Edge":
+                this.collision = true;
+                this.projectileCollision = false;
+                break;
             default:
                 break;
         }

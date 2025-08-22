@@ -15,10 +15,12 @@ import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
 import main.InventoryItem.InventoryItemWrapper;
+import objects.CarryPotionObject;
 import objects.PotionObject;
 import objects.SuperObject;
 import objects.SuperObject.ObjectType;
 import objects.SuperObject.SuperObjectWrapper;
+import spells.ClaritySpell;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -46,6 +48,9 @@ public abstract class LevelBase {
     }
 
     public void init() {
+        this.gamePanel.npcs.clear();
+        this.gamePanel.objects.clear();
+        this.gamePanel.effects.clear();
         loadMap();
         loadFromSaveFile();
     }
@@ -92,6 +97,27 @@ public abstract class LevelBase {
                     break;
                 case SpellType.SPEED_SPELL:
                     addGameObject(new PotionObject(this.gamePanel, new SpeedSpell()));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    protected void generateRandomPotions() {
+        List<SpellType> spellList = Arrays.asList(SpellType.values());
+        for (int i = 0; i < 3; i++) {
+            int index = Utils.generateRandomInt(0, spellList.size() - 1);
+            SpellType spellType = spellList.get(index);
+            switch (spellType) {
+                case SpellType.HEALTH_SPELL:
+                    addGameObject(new CarryPotionObject(this.gamePanel, new HealthSpell()));
+                    break;
+                case SpellType.KEY_SPELL:
+                    addGameObject(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
+                    break;
+                case SpellType.SPEED_SPELL:
+                    addGameObject(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
                     break;
                 default:
                     break;

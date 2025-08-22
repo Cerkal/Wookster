@@ -73,10 +73,11 @@ public class SuperSpell {
     }
 
     public enum SpellType {
-        KEY_SPELL      (spell -> new KeySpell()),
-        HEALTH_SPELL   (spell -> new HealthSpell(spell.healthAmount)),
-        SPEED_SPELL    (spell -> new SpeedSpell(spell.speed, spell.spellTime)),
-        CLARITY_SPELL  (spell -> new ClaritySpell());
+        KEY_SPELL           (spell -> new KeySpell()),
+        HEALTH_SPELL        (spell -> new HealthSpell(spell.healthAmount)),
+        SPEED_SPELL         (spell -> new SpeedSpell(spell.speed, spell.spellTime)),
+        CLARITY_SPELL       (spell -> new ClaritySpell()),
+        INVINCIBILITY_SPELL (spell -> new InvincibilitySpell());
 
         @FunctionalInterface
         public interface ObjectCreator {

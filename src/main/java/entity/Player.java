@@ -8,6 +8,7 @@ import objects.SuperObject;
 import objects.weapons.Weapon;
 import objects.weapons.Weapon.WeaponType;
 import spells.HealthSpell;
+import spells.InvincibilitySpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
 import spells.SuperSpell;
@@ -117,9 +118,9 @@ public class Player extends Entity {
             if (this.keyHandler.rightPressed) {
                 this.direction = Direction.RIGHT;
             }
-            collision();
             moveEntiy();            
         }
+        collision();
         spellCheck();
         invincableCheck();
         weapon();
@@ -358,6 +359,7 @@ public class Player extends Entity {
         keySpell();
         speedSpell();
         healthSpell();
+        invincibilitySpell();
     }
 
     private void keySpell() {
@@ -411,6 +413,22 @@ public class Player extends Entity {
             if (currentHealthSpell.spellTime == 0) {
                 adjustHealth(currentHealthSpell.healthAmount);
                 currentHealthSpell.removeSpell(this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void invincibilitySpell() {
+        try {
+            if (this.spells.get(SpellType.INVINCIBILITY_SPELL) == null) {
+                return;
+            };
+            this.invincable = true;
+            InvincibilitySpell currentInvincibilitySpell = (InvincibilitySpell) spells.get(SpellType.INVINCIBILITY_SPELL);
+            if (currentInvincibilitySpell.spellTime == 0) {
+                this.invincable = false;
+                currentInvincibilitySpell.removeSpell(this);
             }
         } catch (Exception e) {
             e.printStackTrace();
