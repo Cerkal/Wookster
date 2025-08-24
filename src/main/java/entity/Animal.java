@@ -14,6 +14,12 @@ public class Animal extends Entity {
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ANIMAL;
         this.name = "Animal";
+        this.solidArea.x = SOLID_AREA_X;
+        this.solidArea.y = SOLID_AREA_X;
+        this.solidArea.width = SOLID_AREA_WIDTH;
+        this.solidArea.height = SOLID_AREA_WIDTH;
+        this.solidAreaDefaultX = this.solidArea.x;
+        this.solidAreaDefaultY = this.solidArea.y;
         this.willChase = true;
         this.isFriendly = false;
         this.isFrenzy = true;

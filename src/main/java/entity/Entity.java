@@ -18,6 +18,7 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
 import tile.TileManager.TileLocation;
@@ -211,7 +212,8 @@ public abstract class Entity {
             this.frenzyTarget = null;
             if (this.moveQueue != null) {
                 this.moveQueue.clear();
-                startFrenzy();
+                this.frenzyTarget = getPushBackLocation(this.gamePanel.player);
+                startFrenzy(this.frenzyTarget);
             }
         }
     }
@@ -280,20 +282,8 @@ public abstract class Entity {
         if (isFrenzy && (collidedWithEntity || collidedWithPlayer)) {
             collisionCounter++;
             if (collisionCounter > 20) {
-                switch (this.direction) {
-                    case UP:
-                        this.frenzyTarget = new Point(getRawX(), getRawY() + 1);
-                        break;
-                    case DOWN:
-                        this.frenzyTarget = new Point(getRawX(), getRawY() - 1);
-                        break;
-                    case LEFT:
-                        this.frenzyTarget = new Point(getRawX() + 1, getRawY());
-                        break;
-                    case RIGHT:
-                        this.frenzyTarget = new Point(getRawX() - 1, getRawY());
-                        break;
-                }
+                Entity entity = (collisionEntity != null) ? collisionEntity : collisionPlayer;
+                this.frenzyTarget = getPushBackLocation(entity);
                 startFrenzy(this.frenzyTarget);
                 collisionCounter = 0;
             }
@@ -514,6 +504,35 @@ public abstract class Entity {
                 this.effect.draw(graphics2D);
             }
         }
+    }
+
+    private Point getPushBackLocation(Entity entity) {
+        int dx = entity.worldX - worldX;
+        int dy = entity.worldY - worldY;
+        List<Point> points = new ArrayList<Point>();
+        if (dx != 0 && dy != 0) {
+            int ix = dx / Math.abs(dx) * -1;
+            int iy = dy / Math.abs(dy) * -1;
+            for (int y = getRawY() - 1; y > 0 && y < Constants.TILE_SIZE; y += iy) {
+                for (int x = getRawX() - 1; x > 0 && x < Constants.TILE_SIZE; x += ix) {
+                    if (this.gamePanel.tileManager.walkableTiles[x][y]) {
+                        points.add(new Point(x, y));
+                    }
+                }
+            }
+        }
+        if (points.size() > 0) {
+            return getPushBackLocFromWalkable(points);
+        }
+        return getFrenzyLocation();
+    }
+
+    private Point getPushBackLocFromWalkable(List<Point> points) {
+        this.frenzyTarget = points.get(Utils.generateRandomInt(0, points.size() - 1));
+        if (!getValidFrenzyPath()) {
+            getPushBackLocFromWalkable(points);
+        }
+        return this.frenzyTarget;
     }
 
     private void startFrenzy() {
