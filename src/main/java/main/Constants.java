@@ -156,6 +156,17 @@ public class Constants {
     public static final String TROOPER_IMAGE_FIST_LEFT_00 = "/npc/trooper_left_fist_0.png";
     public static final String TROOPER_IMAGE_FIST_LEFT_01 = "/npc/trooper_left_fist_1.png";
 
+    // Animals
+    public static final String PIG_IMAGE_UP_00 = "/animals/pigs/pig_up_0.png";
+    public static final String PIG_IMAGE_UP_01 = "/animals/pigs/pig_up_1.png";
+    public static final String PIG_IMAGE_DOWN_00 = "/animals/pigs/pig_down_0.png";
+    public static final String PIG_IMAGE_DOWN_01 = "/animals/pigs/pig_down_1.png";
+    public static final String PIG_IMAGE_RIGHT_00 = "/animals/pigs/pig_right_0.png";
+    public static final String PIG_IMAGE_RIGHT_01 = "/animals/pigs/pig_right_1.png";
+    public static final String PIG_IMAGE_LEFT_00 = "/animals/pigs/pig_left_0.png";
+    public static final String PIG_IMAGE_LEFT_01 = "/animals/pigs/pig_left_1.png";
+    public static final String PIG_IMAGE_DEAD = "/animals/pigs/pig_dead.png";
+
     // Hat
     public static final String WOOKSER_MOM_HAT = "/player/mom_hat.png";
 
@@ -182,6 +193,7 @@ public class Constants {
 
     // Maps
     public static final String WORLD_BUILDER = "/maps/world_builder.txt";
+    public static final String WORLD_TUTORIAL = "/maps/world_tutorial.txt";
     public static final String WORLD_00 = "/maps/world_00.txt";
     public static final String WORLD_01 = "/maps/world_01.txt";
 

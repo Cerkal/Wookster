@@ -18,8 +18,10 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
+import tile.TileManager.TileLocation;
 
 public abstract class Entity {
 
@@ -31,7 +33,7 @@ public abstract class Entity {
     public static final int SOLID_AREA_HEIGHT = 40;
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
-    public enum EntityType { PLAYER, NPC, ENEMY }
+    public enum EntityType { PLAYER, NPC, ENEMY, ANIMAL }
 
     // Location
     public int worldX, worldY;
@@ -54,14 +56,18 @@ public abstract class Entity {
     public boolean invincable = false;
     public int invincableCounter;
     public boolean isDead;
+    Entity collisionEntity = null;
+    Entity collisionPlayer = null;
+    int collisionCounter;
 
     // Alert
     public boolean isFriendly;
     public boolean willChase;
     private boolean isAlerted;
-    private boolean isChasing;
-    private Queue<Point> moveQueue;
+    protected boolean isChasing;
+    protected Queue<Point> moveQueue;
     public boolean isNeeded;
+    public boolean isFrenzy;
 
     // Entity Values
     public EntityType entityType;
@@ -76,6 +82,8 @@ public abstract class Entity {
 
     // Sounds
     protected String damageSound;
+
+    protected Point frenzyTarget = null;
 
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -132,7 +140,11 @@ public abstract class Entity {
         if (this.isDead) { return; }
         setAction();
         collision();
-        startChase();
+        if (isFrenzy) {
+            startFrenzy();
+        } else {
+            startChase();
+        }
     }
 
     public void checkPlayerCollision() {
@@ -195,6 +207,14 @@ public abstract class Entity {
         this.effect = new AlertEffect(this.gamePanel, this);
         this.isAlerted = true;
         System.out.println(this.entityType + ": " + getCurrentHealth());
+        if (this instanceof Animal) {
+            this.isFrenzy = true;
+            this.frenzyTarget = null;
+            if (this.moveQueue != null) {
+                this.moveQueue.clear();
+                startFrenzy();
+            }
+        }
     }
 
     public void increaseHealth(double amount) {
@@ -245,10 +265,40 @@ public abstract class Entity {
     private void collision() {
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);
-        this.gamePanel.collision.entityCollision(this);
         this.gamePanel.collision.objectCollision(this, false);
         checkVisibility();
-        checkPlayerCollision();
+
+        collisionEntity = this.gamePanel.collision.entityCollision(this);
+        collisionPlayer = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
+
+        boolean collidedWithEntity = collisionEntity != null;
+        boolean collidedWithPlayer = collisionPlayer != null;
+        
+        if (collidedWithPlayer) {
+            handlePlayerCollision(this.gamePanel.player);
+        }
+
+        if (isFrenzy && (collidedWithEntity || collidedWithPlayer)) {
+            collisionCounter++;
+            if (collisionCounter > 20) {
+                switch (this.direction) {
+                    case UP:
+                        this.frenzyTarget = new Point(getRawX(), getRawY() + 1);
+                        break;
+                    case DOWN:
+                        this.frenzyTarget = new Point(getRawX(), getRawY() - 1);
+                        break;
+                    case LEFT:
+                        this.frenzyTarget = new Point(getRawX() + 1, getRawY());
+                        break;
+                    case RIGHT:
+                        this.frenzyTarget = new Point(getRawX() - 1, getRawY());
+                        break;
+                }
+                startFrenzy(this.frenzyTarget);
+                collisionCounter = 0;
+            }
+        }
     }
 
     private void checkVisibility() {
@@ -260,19 +310,21 @@ public abstract class Entity {
 
     private void setAction() {
         if (!this.movable) { return; }
-        if (this.isAlerted && this.willChase && !this.isChasing) {
+        if (this.isAlerted && this.willChase && !this.isChasing && !this.isFrenzy) {
             queueChase();
         }
     }
 
-    private void queueChase() {
+    protected void queueChase() {
         List<Point> path = bfsShortestPath(
             getLocation(),
             this.gamePanel.player.getLocation(),
-            this.gamePanel.tileManager.walkableTiles,
-            50,
-            50
+            this.gamePanel.tileManager.walkableTiles
         );
+        getPath(path);
+    }
+
+    private void getPath(List<Point> path) {
         if (path != null) {
             this.moveQueue = new LinkedList<>();
             for (Point point : path) {
@@ -412,7 +464,9 @@ public abstract class Entity {
         sprite();
     }
 
-    private List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable, int width, int height) {
+    protected List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable) {
+        int width = this.gamePanel.tileManager.walkableTiles.length;
+        int height = this.gamePanel.tileManager.walkableTiles[0].length;
         // Breadth-First Search
         Queue<Point> queue = new LinkedList<>();
         Map<Point, Point> cameFrom = new HashMap<>();
@@ -446,6 +500,11 @@ public abstract class Entity {
         return null;
     }
 
+    private Point getFrenzyLocation() {
+        TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
+        return new Point(tileLocation.worldX, tileLocation.worldY);
+    }
+
     protected void drawEffect(Graphics2D graphics2D) {
         if (this.effect != null) {
             if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > 500) {
@@ -456,5 +515,105 @@ public abstract class Entity {
                 this.effect.draw(graphics2D);
             }
         }
+    }
+
+    private void startFrenzy() {
+        if (this.frenzyTarget == null) {
+            this.frenzyTarget = getFrenzyLocation();
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                this.frenzyTarget,
+                this.gamePanel.tileManager.walkableTiles
+            );
+            if (path != null) {
+                this.moveQueue = new LinkedList<>(path);
+            } else {
+                this.frenzyTarget = null;
+                startFrenzy();
+            }
+        }
+
+        if (getLocation().equals(this.frenzyTarget)) {
+            this.frenzyTarget = getFrenzyLocation();
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                this.frenzyTarget,
+                this.gamePanel.tileManager.walkableTiles
+            );
+            if (path != null) {
+                this.moveQueue = new LinkedList<>(path);
+            } else {
+                this.frenzyTarget = null;
+                startFrenzy();
+            }
+        }
+
+        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
+            Point nextPoint = this.moveQueue.peek();
+            moveEntityStep(nextPoint);
+
+            int targetX = nextPoint.x * Constants.TILE_SIZE;
+            int targetY = nextPoint.y * Constants.TILE_SIZE;
+
+            if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
+                snapToGrid(nextPoint);
+                this.moveQueue.poll();
+            }
+        }
+
+        this.isMoving = true;
+        sprite();
+    }
+
+    private void startFrenzy(Point point) {
+        if (point != null && !getLocation().equals(point)) {
+            this.frenzyTarget = point;
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                this.frenzyTarget,
+                this.gamePanel.tileManager.walkableTiles
+            );
+            if (path != null && !path.isEmpty()) {
+                this.moveQueue = new LinkedList<>(path);
+            } else {
+                this.frenzyTarget = getFrenzyLocation();
+                path = bfsShortestPath(
+                    getLocation(),
+                    this.frenzyTarget,
+                    this.gamePanel.tileManager.walkableTiles
+                );
+                if (path != null && !path.isEmpty()) {
+                    path.removeFirst();
+                    this.moveQueue = new LinkedList<>(path);
+                }
+            }
+        } else {
+            this.frenzyTarget = getFrenzyLocation();
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                this.frenzyTarget,
+                this.gamePanel.tileManager.walkableTiles
+            );
+            if (path != null && !path.isEmpty()) {
+                path.removeFirst();
+                this.moveQueue = new LinkedList<>(path);
+            }
+        }
+
+        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
+            Point nextPoint = this.moveQueue.peek();
+            moveEntityStep(nextPoint);
+
+            int targetX = nextPoint.x * Constants.TILE_SIZE;
+            int targetY = nextPoint.y * Constants.TILE_SIZE;
+
+            if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
+                snapToGrid(nextPoint);
+                this.moveQueue.poll();
+            }
+        }
+
+        this.isMoving = true;
+        sprite();
     }
 }

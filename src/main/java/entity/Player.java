@@ -86,9 +86,6 @@ public class Player extends Entity {
         this.spells.clear();
 
         addWeapon(WeaponType.FIST);
-        addWeapon(WeaponType.CROSSBOW);
-        addWeapon(WeaponType.BLASTER);
-        addWeapon(WeaponType.SWORD);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
     }
@@ -285,7 +282,8 @@ public class Player extends Entity {
         if (this.weapon == null) { return; }
         if (
             this.collisionEntity == null ||
-            (this.collisionEntity != null && this.collisionEntity.entityType == EntityType.ENEMY)
+            (this.collisionEntity != null && this.collisionEntity.entityType == EntityType.ENEMY) ||
+            (this.collisionEntity != null && this.collisionEntity.entityType == EntityType.ANIMAL)
         ){
             this.weapon.shoot();
         }
@@ -344,12 +342,14 @@ public class Player extends Entity {
     private void entityCollision() {
         this.entityInDialogue = null;
         this.collisionEntity = this.gamePanel.collision.entityCollision(this);
-        if (this.collisionEntity != null) {
+        if (
+            this.collisionEntity != null &&
+            this.collisionEntity.isFriendly &&
+            this.collisionEntity.entityType == EntityType.NPC
+        ){
             if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
-                if (this.collisionEntity.entityType == EntityType.NPC) {
-                    this.entityInDialogue = collisionEntity;
-                    this.collisionEntity.speak();
-                }
+                this.entityInDialogue = collisionEntity;
+                this.collisionEntity.speak();
             }
         }
     }

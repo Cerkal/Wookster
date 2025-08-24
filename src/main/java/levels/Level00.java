@@ -35,6 +35,7 @@ public class Level00 extends LevelBase {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile();
         this.setStaticObjects();
+
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
