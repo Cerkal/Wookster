@@ -18,7 +18,6 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
-import main.Utils;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
 import tile.TileManager.TileLocation;
@@ -518,51 +517,14 @@ public abstract class Entity {
     }
 
     private void startFrenzy() {
-        if (this.frenzyTarget == null) {
+        if (this.frenzyTarget == null || getLocation().equals(this.frenzyTarget)) {
             this.frenzyTarget = getFrenzyLocation();
-            List<Point> path = bfsShortestPath(
-                getLocation(),
-                this.frenzyTarget,
-                this.gamePanel.tileManager.walkableTiles
-            );
-            if (path != null) {
-                this.moveQueue = new LinkedList<>(path);
-            } else {
+            if (!getValidFrenzyPath()) {
                 this.frenzyTarget = null;
                 startFrenzy();
             }
         }
-
-        if (getLocation().equals(this.frenzyTarget)) {
-            this.frenzyTarget = getFrenzyLocation();
-            List<Point> path = bfsShortestPath(
-                getLocation(),
-                this.frenzyTarget,
-                this.gamePanel.tileManager.walkableTiles
-            );
-            if (path != null) {
-                this.moveQueue = new LinkedList<>(path);
-            } else {
-                this.frenzyTarget = null;
-                startFrenzy();
-            }
-        }
-
-        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
-            Point nextPoint = this.moveQueue.peek();
-            moveEntityStep(nextPoint);
-
-            int targetX = nextPoint.x * Constants.TILE_SIZE;
-            int targetY = nextPoint.y * Constants.TILE_SIZE;
-
-            if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
-                snapToGrid(nextPoint);
-                this.moveQueue.poll();
-            }
-        }
-
-        this.isMoving = true;
-        sprite();
+        moveFrenziedEntity();
     }
 
     private void startFrenzy(Point point) {
@@ -571,7 +533,11 @@ public abstract class Entity {
         } else {
             this.frenzyTarget = getFrenzyLocation();
         }
+        if (!getValidFrenzyPath()) startFrenzy(getFrenzyLocation());
+        moveFrenziedEntity();
+    }
 
+    private boolean getValidFrenzyPath() {
         List<Point> path = bfsShortestPath(
             getLocation(),
             this.frenzyTarget,
@@ -580,10 +546,13 @@ public abstract class Entity {
         if (path != null && !path.isEmpty()) {
             path.removeFirst();
             this.moveQueue = new LinkedList<>(path);
+            return true;
         } else {
-            startFrenzy(getFrenzyLocation());
+            return false;
         }
+    }
 
+    private void moveFrenziedEntity() {
         if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
             Point nextPoint = this.moveQueue.peek();
             moveEntityStep(nextPoint);
@@ -596,7 +565,6 @@ public abstract class Entity {
                 this.moveQueue.poll();
             }
         }
-
         this.isMoving = true;
         sprite();
     }
