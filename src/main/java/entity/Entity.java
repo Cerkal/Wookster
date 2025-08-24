@@ -568,36 +568,20 @@ public abstract class Entity {
     private void startFrenzy(Point point) {
         if (point != null && !getLocation().equals(point)) {
             this.frenzyTarget = point;
-            List<Point> path = bfsShortestPath(
-                getLocation(),
-                this.frenzyTarget,
-                this.gamePanel.tileManager.walkableTiles
-            );
-            if (path != null && !path.isEmpty()) {
-                this.moveQueue = new LinkedList<>(path);
-            } else {
-                this.frenzyTarget = getFrenzyLocation();
-                path = bfsShortestPath(
-                    getLocation(),
-                    this.frenzyTarget,
-                    this.gamePanel.tileManager.walkableTiles
-                );
-                if (path != null && !path.isEmpty()) {
-                    path.removeFirst();
-                    this.moveQueue = new LinkedList<>(path);
-                }
-            }
         } else {
             this.frenzyTarget = getFrenzyLocation();
-            List<Point> path = bfsShortestPath(
-                getLocation(),
-                this.frenzyTarget,
-                this.gamePanel.tileManager.walkableTiles
-            );
-            if (path != null && !path.isEmpty()) {
-                path.removeFirst();
-                this.moveQueue = new LinkedList<>(path);
-            }
+        }
+
+        List<Point> path = bfsShortestPath(
+            getLocation(),
+            this.frenzyTarget,
+            this.gamePanel.tileManager.walkableTiles
+        );
+        if (path != null && !path.isEmpty()) {
+            path.removeFirst();
+            this.moveQueue = new LinkedList<>(path);
+        } else {
+            startFrenzy(getFrenzyLocation());
         }
 
         if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
