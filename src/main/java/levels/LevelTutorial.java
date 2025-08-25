@@ -12,6 +12,7 @@ import entity.Animal;
 import entity.Entity;
 import entity.NPCGeneric;
 import main.Constants;
+import main.Dialogue;
 import main.GamePanel;
 import main.Quest;
 import tile.Tile;
@@ -90,29 +91,12 @@ public class LevelTutorial extends LevelBase {
                     }
                 }
             }
-            String[] lines = {
-                "Well thats one way to do it.",
-                "I'd have just killed em' all.",
-                "But look at you...",
-                "Savior of the pigs."
-            };
+            String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
             if (deadCount > 0) {
-                String[] someDead = {
-                    "I guess that works.",
-                    "I feel pretty bad for Onkie.",
-                    "He was my favorite...",
-                };
-                lines = someDead;
+                lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
             }
             if (pigs.size() == deadCount) {
-                String[] deadLines = {
-                    "Oof. Well...",
-                    "I guess that solves the problem.",
-                    "Don't know why they all had to die...",
-                    "Pretty grim...",
-                    "I don't want to talk to you anymore..."
-                };
-                lines = deadLines;
+                lines = Dialogue.TUTORIAL_PIGS_NEGITIVE;
             }
             this.oldman.setDialogue(lines);
         }
