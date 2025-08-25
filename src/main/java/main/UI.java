@@ -224,9 +224,10 @@ public class UI {
         }
         graphics2D.setFont(this.customFontSmall);
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString(Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " + playerLocation, 10, Constants.SCREEN_HEIGHT - 50);
-        graphics2D.drawString("Spell: " + spells.toString(), 10, Constants.SCREEN_HEIGHT - 30);
-        graphics2D.drawString("Inv: " + this.gamePanel.player.inventory.toString(), 10, Constants.SCREEN_HEIGHT - 10);
+        graphics2D.drawString(Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " + playerLocation, 10, Constants.SCREEN_HEIGHT - 70);
+        graphics2D.drawString("Spell: " + spells.toString(), 10, Constants.SCREEN_HEIGHT - 50);
+        graphics2D.drawString("Inv: " + this.gamePanel.player.inventory.toString(), 10, Constants.SCREEN_HEIGHT - 30);
+        graphics2D.drawString("Quests: " + this.gamePanel.quests.toString(), 10, Constants.SCREEN_HEIGHT - 10);
     }
 
     private void drawMessage(Graphics2D graphics2D, String message, boolean slowType) {

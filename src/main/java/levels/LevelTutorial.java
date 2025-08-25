@@ -1,14 +1,30 @@
 package levels;
 
 import java.awt.Graphics2D;
-import java.util.HashMap;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import entity.Animal;
 import entity.Entity;
+import entity.NPCGeneric;
 import main.Constants;
 import main.GamePanel;
+import main.Quest;
+import tile.Tile;
 
 public class LevelTutorial extends LevelBase {
+
+    List<Entity> pigs = Arrays.asList(
+        new Animal(gamePanel, 20, 8),
+        new Animal(gamePanel, 20, 12),
+        new Animal(gamePanel, 20, 16)
+    );
+
+    Entity oldman;
 
     public LevelTutorial(GamePanel gamePanel) {
         super(gamePanel);
@@ -18,25 +34,88 @@ public class LevelTutorial extends LevelBase {
 
     public void init() {
         super.init();
-        this.gamePanel.player.setLocation(15 , 10);
+        this.gamePanel.player.setLocation(15 , 12);
+        this.gamePanel.npcs.addAll(pigs);
 
-        this.gamePanel.npcs.add(new Animal(gamePanel, 15, 15));
-        this.gamePanel.npcs.add(new Animal(gamePanel, 17, 17));
-        this.gamePanel.npcs.add(new Animal(gamePanel, 15, 8));
+        this.oldman = new NPCGeneric(gamePanel, 22, 15) {
+            @Override
+            public void postDialogAction() {
+                new Quest(this.gamePanel, "Pigs");
+            }
+        };
+        String[] lines = {
+            "Can you help me with these pigs?",
+            "Just deal with them...",
+            "Sometimes they just need a good punch.",
+            "Press and hold the space bar to punch."
+        };
+        oldman.setDialogue(lines);
+        this.gamePanel.npcs.add(oldman);
     }
-
 
     public void setObjects() {}
 
     @Override
     public void update() {
-        // System.out.println("---");
-        // for (Entity entity : this.gamePanel.npcs) {
-        //     if (entity instanceof Animal) {
-        //         System.out.println(entity.getLocation());
-        //     }
-        // }
-        // System.out.println("---");
+        Set<Entity> inPen = new HashSet<>();
+        int pigCount = 0;
+        for (Entity entity : this.gamePanel.npcs) {
+            if (!entity.isDead && entity instanceof Animal) {
+                pigCount += 1;
+            }
+        }
+        for (Entity entity : this.gamePanel.npcs) {
+            if (entity instanceof Animal) {
+                if (
+                    entity.getRawX() > 31 &&
+                    entity.getRawX() < 37 &&
+                    entity.getRawY() > 6 &&
+                    entity.getRawY() < 16
+                ) {
+                    inPen.add(entity);
+                } else {
+                    inPen.remove(entity);
+                }
+            }
+        }
+        if (inPen.size() == pigCount && this.gamePanel.quests.containsKey("Pigs")) {
+            this.gamePanel.quests.get("Pigs").completeQuest();
+            int deadCount = 0;
+            for (Entity entity : this.gamePanel.npcs) {
+                if (entity instanceof Animal) {
+                    entity.movable = false;
+                    entity.isMoving = false;
+                    if ( entity.isDead) {                
+                        deadCount++;
+                    }
+                }
+            }
+            String[] lines = {
+                "Well thats one way to do it.",
+                "I'd have just killed em' all.",
+                "But look at you...",
+                "Savior of the pigs."
+            };
+            if (deadCount > 0) {
+                String[] someDead = {
+                    "I guess that works.",
+                    "I feel pretty bad for Onkie.",
+                    "He was my favorite...",
+                };
+                lines = someDead;
+            }
+            if (pigs.size() == deadCount) {
+                String[] deadLines = {
+                    "Oof. Well...",
+                    "I guess that solves the problem.",
+                    "Don't know why they all had to die...",
+                    "Pretty grim...",
+                    "I don't want to talk to you anymore..."
+                };
+                lines = deadLines;
+            }
+            this.oldman.setDialogue(lines);
+        }
     }
 
     @Override

@@ -173,6 +173,12 @@ public class Constants {
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";
 
+    // Oldman
+    public static final String OLD_MAN_UP_0 = "/npc/oldman_up.png";
+    public static final String OLD_MAN_DOWN_0 = "/npc/oldman_down.png";
+    public static final String OLD_MAN_LEFT_0 = "/npc/oldman_left.png";
+    public static final String OLD_MAN_RIGHT_0 = "/npc/oldman_right.png";
+
     // Effects
     public static final String SPELL_EFFECT_SPARKLE_0 = "/effects/sparkle_01.png";
     public static final String SPELL_EFFECT_SPARKLE_1 = "/effects/sparkle_02.png";
@@ -326,6 +332,7 @@ public class Constants {
     public static final String SOUND_TROOPER_HURT = "/sounds/trooperhurt.wav";
     public static final String SOUND_DEFLATE = "/sounds/deflate.wav";
     public static final String SOUND_DEATH = "/sounds/youbemorecareful.wav";
+    public static final String SOUND_QUEST_COMPLETE = "/sounds/quest_complete.wav";
     
     public static final List<String> SOUND_LIST = new ArrayList<>(
         List.of(

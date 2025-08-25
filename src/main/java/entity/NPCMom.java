@@ -36,10 +36,6 @@ public class NPCMom extends Entity {
         }
     }
 
-    public void setDialogue(String[] lines) {
-        this.dialogue = lines;
-    }
-
     @Override
     public void postDialogAction() {
         this.willChase = true;

@@ -25,7 +25,7 @@ import tile.TileManager.TileLocation;
 
 public abstract class Entity {
 
-    GamePanel gamePanel;
+    protected GamePanel gamePanel;
 
     public static final int SOLID_AREA_X = 10;
     public static final int SOLID_AREA_Y = 4;
@@ -43,7 +43,7 @@ public abstract class Entity {
     // Sprite
     protected int spriteCounter = 0;
     protected int spriteNumber = 0;
-    protected boolean isMoving = false;
+    public boolean isMoving = false;
     protected Sprite sprite;
     SpriteManager spriteManager = new SpriteManager();
 
@@ -246,6 +246,10 @@ public abstract class Entity {
         return this.worldY / Constants.TILE_SIZE;
     }
 
+    public void setDialogue(String[] lines) {
+        this.dialogue = lines;
+    }
+
     protected void getSpiteImage() {
         this.sprite = this.spriteManager.getSprite(this);
     }
@@ -281,9 +285,13 @@ public abstract class Entity {
 
         if (isFrenzy && (collidedWithEntity || collidedWithPlayer)) {
             collisionCounter++;
-            if (collisionCounter > 20) {
-                Entity entity = (collisionEntity != null) ? collisionEntity : collisionPlayer;
-                this.frenzyTarget = getPushBackLocation(entity);
+            if (collisionCounter > this.speed * 2) {
+                if (collidedWithEntity) {
+                    this.frenzyTarget = getPushBackLocation(collisionEntity);
+                }
+                if (collidedWithPlayer) {
+                    this.frenzyTarget = getPushBackLocation(collisionPlayer);
+                }
                 startFrenzy(this.frenzyTarget);
                 collisionCounter = 0;
             }
@@ -572,6 +580,11 @@ public abstract class Entity {
     }
 
     private void moveFrenziedEntity() {
+        if (!movable) {
+            this.frenzyTarget = null;
+            this.isFrenzy = false;
+            return;
+        }
         if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
             Point nextPoint = this.moveQueue.peek();
             moveEntityStep(nextPoint);

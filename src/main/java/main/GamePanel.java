@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -42,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean debugMap = false;
     public boolean debugMapBuilder = false;
     public boolean debugFPS = false;
-    public boolean debugCollision = true;
+    public boolean debugCollision = false;
 
     public TileManager tileManager = new TileManager(this);
     public GameState gameState = GameState.TITLE;
@@ -56,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
     public LevelManager levelManager = new LevelManager(this);
     public EventHandler eventHandler;
     public BufferedImage background;
+    public HashMap<String, Quest> quests = new HashMap<>();
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
