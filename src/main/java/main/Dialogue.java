@@ -59,7 +59,7 @@ public class Dialogue {
     };
 
     public static final String[] TUTORIAL_COMPLETE = {
-        PLAYER_NAME + "... About your mom...",
+        PLAYER_NAME + ", about your mom...",
         "She went out for berries or something.",
         "I'm worried about her.",
         "Please find her.",

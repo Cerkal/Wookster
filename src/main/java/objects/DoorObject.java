@@ -16,6 +16,7 @@ public class DoorObject extends SuperObject {
         if (this.gamePanel.player.getInventoryItem(key) > 0) {
             this.removeObject();
             this.gamePanel.player.removeInventoryItem(key);
+            addWalkableTile();
         } else {
             this.playSecondarySound();
         }

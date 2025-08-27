@@ -3,14 +3,19 @@ package objects.weapons;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import entity.Entity;
 import entity.Player;
 import main.Constants;
+import main.DataWrapper;
 import main.GamePanel;
 import main.InventoryItem;
+import main.InventoryItem.InventoryItemWrapper;
+import objects.SuperObject;
+import objects.SuperObject.ObjectType;
 import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 

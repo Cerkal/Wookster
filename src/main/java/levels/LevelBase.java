@@ -2,6 +2,7 @@ package levels;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import objects.PotionObject;
 import objects.SuperObject;
 import objects.SuperObject.ObjectType;
 import objects.SuperObject.SuperObjectWrapper;
+import objects.weapons.Weapon.WeaponType;
 import spells.ClaritySpell;
 import spells.HealthSpell;
 import spells.KeySpell;
@@ -134,7 +136,7 @@ public abstract class LevelBase {
         return c.getName();
     }
 
-    private void loadObjectItems(DataWrapper dataWrapper) {
+    public void loadObjectItems(DataWrapper dataWrapper) {
         this.gamePanel.objects.clear();
         LevelWrapper levelWrapper = dataWrapper.getSavedLevelData(this.levelIndex);
         if (levelWrapper.objects != null) {
@@ -145,17 +147,20 @@ public abstract class LevelBase {
         }
     }
 
-    private void loadInventoryItems(DataWrapper dataWrapper) {
+    public void loadInventoryItems(DataWrapper dataWrapper) {
         this.gamePanel.player.inventory = new HashMap<>();
         List<InventoryItemWrapper> inventoryItems = dataWrapper.getSavedInventoryItems();
         if (inventoryItems != null) {
+            List<InventoryItem> others = new ArrayList<>();
+            List<WeaponType> weapons = new ArrayList<>();
+
             for (InventoryItemWrapper item : inventoryItems) {
                 InventoryItem inventoryItem;
                 if (item.object != null) {
                     SuperObject object = ObjectType.create(gamePanel, item.object);
-                    this.gamePanel.player.addInventoryItem(object.inventoryItem);
+                    others.add(object.inventoryItem);
                 } else if (item.weapon != null) {
-                    this.gamePanel.player.addWeapon(item.weapon.weaponType);
+                    weapons.add(item.weapon.weaponType);
                 } else {
                     inventoryItem = new InventoryItem(
                         item.itemName,
@@ -163,8 +168,16 @@ public abstract class LevelBase {
                         item.usable,
                         item.visibility
                     );
-                    this.gamePanel.player.addInventoryItem(inventoryItem);
+                    others.add(inventoryItem);
                 }
+            }
+
+            for (InventoryItem item : others) {
+                this.gamePanel.player.addInventoryItem(item);
+            }
+
+            for (WeaponType item : weapons) {
+                this.gamePanel.player.addWeapon(item);
             }
         }
     }

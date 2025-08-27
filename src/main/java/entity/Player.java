@@ -39,6 +39,7 @@ public class Player extends Entity {
         public int speed;
         public Direction direction;
         public int maxHealth;
+        public int health;
         public WeaponType weapon;
         public HashMap<String, InventoryItemWrapper> inventory;
         public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
@@ -211,6 +212,7 @@ public class Player extends Entity {
         playerWrapper.speed = this.speed;
         playerWrapper.direction = this.direction;
         playerWrapper.maxHealth = this.maxHealth;
+        playerWrapper.health = this.health;
         if (this.weapon != null) playerWrapper.weapon = this.weapon.weaponType;
         playerWrapper.inventory = getInventoryItemsForSave();
         playerWrapper.spells = this.spells;
@@ -494,5 +496,14 @@ public class Player extends Entity {
         spriteManager.setSprite(sword, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_SWORD_RIGHT_1));
         
         spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
+    }
+
+    public void loadPlayerSaveState(PlayerWrapper playerWrapper) {
+        this.worldX = playerWrapper.worldX * Constants.TILE_SIZE;
+        this.worldY = playerWrapper.worldY * Constants.TILE_SIZE;
+        this.speed = playerWrapper.speed;
+        this.direction = playerWrapper.direction;
+        this.maxHealth = playerWrapper.maxHealth;
+        this.health = playerWrapper.health;
     }
 }

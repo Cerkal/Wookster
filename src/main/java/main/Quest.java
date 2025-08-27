@@ -2,25 +2,22 @@ package main;
 
 public class Quest {
 
-    GamePanel gamePanel;
+    // GamePanel gamePanel;
 
     public String name;
     public int progress;
     
-    public Quest(GamePanel gamePanel, String name) {
-        this.gamePanel = gamePanel;
+    public Quest(String name) { //GamePanel gamePanel, String name) {
         this.name = name;
-        this.gamePanel.questManager.addQuest(this);
+        // this.gamePanel.questManager.addQuest(this);
     }
 
-    public void completeQuest() {
+    public void completeQuest(GamePanel gamePanel) {
         this.progress = 100;
-        this.gamePanel.questManager.completedQuests.put(this.name, this);
-        this.gamePanel.questManager.removeQuest(this.name);
-        this.gamePanel.sound.playSoundEffect(Constants.SOUND_QUEST_COMPLETE);
-    }
-
-    public void setProgress(int progress) {
+        gamePanel.questManager.completedQuests.put(this.name, this);
+        gamePanel.questManager.removeQuest(this.name);
+        gamePanel.sound.playSoundEffect(Constants.SOUND_QUEST_COMPLETE);
+    }    public void setProgress(int progress) {
         this.progress = progress;
     }
 

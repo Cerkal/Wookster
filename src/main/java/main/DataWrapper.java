@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -11,10 +12,12 @@ import main.InventoryItem.InventoryItemWrapper;
 
 public class DataWrapper {
 
+    public int currentLevelIndex;
     PlayerWrapper player;
     String currentLevel;
-    int currentLevelIndex;
     List<LevelWrapper> levels = new ArrayList<>();
+    HashMap<String, Quest> currentQuests = new HashMap<>();
+    HashMap<String, Quest> completedQuests = new HashMap<>();
 
     public PlayerWrapper getSavedPlayerData() {
         return this.player;
@@ -37,6 +40,8 @@ public class DataWrapper {
 
     public String getDataForSave(GamePanel gamePanel) {
         this.player = gamePanel.player.getPlayerSaveState();
+        this.currentQuests = gamePanel.questManager.getCurrentQuests();
+        this.completedQuests = gamePanel.questManager.getCompletedQuests();
         LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
         try {
             this.levels.set(levelWrapper.levelIndex, levelWrapper);
@@ -44,6 +49,7 @@ public class DataWrapper {
             this.levels.add(levelWrapper);
         }
         this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
+        this.currentLevelIndex = gamePanel.levelManager.currentLevelIndex;
         Gson gson = new Gson();
         String json = gson.toJson(this);
         return json;

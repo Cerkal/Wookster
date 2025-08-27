@@ -191,7 +191,6 @@ public class KeyHandler implements KeyListener {
         this.gamePanel.gameState = GameState.PLAY;
         this.gamePanel.config.dataWrapper = new DataWrapper();
         this.gamePanel.setupGame();
-        this.gamePanel.gameState = GameState.PLAY;
         this.gamePanel.stopMusic();
         // this.gamePanel.playMusic(Constants.SOUND_BG_01);
         System.out.println("New game.");

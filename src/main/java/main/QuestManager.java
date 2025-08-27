@@ -41,4 +41,12 @@ public class QuestManager {
     public Quest getQuest(String name) {
         return this.currentQuests.get(name);
     }
+
+    public HashMap<String, Quest> getCurrentQuests() {
+        return this.currentQuests;
+    }
+
+    public HashMap<String, Quest> getCompletedQuests() {
+        return this.completedQuests;
+    }
 }

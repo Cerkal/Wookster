@@ -232,4 +232,14 @@ public class TileManager {
         walkableTiles[x][y] = false;
         availableTiles.removeIf(tileLocation -> tileLocation.worldX == x && tileLocation.worldY == y);
     }
+
+    public void addWalkableTile(int x, int y) {
+        if (x < 0 || x >= walkableTiles.length || y < 0 || y >= walkableTiles[0].length) {
+            throw new IllegalArgumentException("Coordinates out of bounds");
+        }
+        if (!walkableTiles[x][y]) {
+            walkableTiles[x][y] = true;
+            availableTiles.add(new TileLocation(x, y));
+        }
+    }
 }
