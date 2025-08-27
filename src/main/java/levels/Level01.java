@@ -1,10 +1,12 @@
 package levels;
 
+import java.awt.Dialog;
 import java.awt.Graphics2D;
 
 import entity.NPCMom;
 import entity.NPCTrooper;
 import main.Constants;
+import main.Dialogue;
 import main.GamePanel;
 import objects.CarryPotionObject;
 import objects.DoorObject;
@@ -29,13 +31,7 @@ public class Level01 extends LevelBase {
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 36, 32));
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9);
-        String[] lines = {
-            "Trees hu?",
-            "It's easy to get lost in here.",
-            "I was going to make this my home.",
-            "Thank God you found me."
-        };
-        mom.setDialogue(lines);
+        mom.setDialogue(Dialogue.LEVEL_00_MOM);
         this.gamePanel.npcs.add(mom);
 
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 27, 38));

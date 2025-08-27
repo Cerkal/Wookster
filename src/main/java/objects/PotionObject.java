@@ -6,14 +6,18 @@ import spells.SuperSpell;
 
 public class PotionObject extends SuperObject {
 
+    public static final String COLOR = "green";
+
     public PotionObject(GamePanel gamePanel) {
         super(gamePanel);
         init();
+        this.spell = generateRandomSpell();
     }
 
     public PotionObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         init();
+        this.spell = generateRandomSpell();
     }
 
     public PotionObject(GamePanel gamePanel, SuperSpell spell) {

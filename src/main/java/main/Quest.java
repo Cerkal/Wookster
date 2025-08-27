@@ -10,11 +10,13 @@ public class Quest {
     public Quest(GamePanel gamePanel, String name) {
         this.gamePanel = gamePanel;
         this.name = name;
-        this.gamePanel.quests.put(name, this);
+        this.gamePanel.questManager.addQuest(this);
     }
 
     public void completeQuest() {
-        this.gamePanel.quests.remove(this.name);
+        this.progress = 100;
+        this.gamePanel.questManager.completedQuests.put(this.name, this);
+        this.gamePanel.questManager.removeQuest(this.name);
         this.gamePanel.sound.playSoundEffect(Constants.SOUND_QUEST_COMPLETE);
     }
 
@@ -24,5 +26,10 @@ public class Quest {
 
     public int getProgress() {
         return this.progress;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + this.progress + "]";
     }
 }

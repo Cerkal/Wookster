@@ -64,8 +64,8 @@ public class EventHandler {
                 checkCollision(randomDamageTile.worldX, randomDamageTile.worldY, null) &&
                 this.canTouchAgain
             ){
-                int index = Utils.generateRandomInt(0, Constants.RNADOM_HURT_DIALOGUE.size() - 1);
-                String message = Constants.RNADOM_HURT_DIALOGUE.get(index);
+                int index = Utils.generateRandomInt(0, Constants.RANDOM_HURT_DIALOGUE.size() - 1);
+                String message = Constants.RANDOM_HURT_DIALOGUE.get(index);
                 message(randomDamageTile.worldX, randomDamageTile.worldY, message);
             }
         }
@@ -87,7 +87,7 @@ public class EventHandler {
     }
 
     private void damagePlayer() {
-        this.gamePanel.player.takeDamage(10);
+        this.gamePanel.player.takeDamage(Utils.generateRandomInt(5, 15));
     }
 
     private void spellPlayer() {

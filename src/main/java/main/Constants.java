@@ -388,10 +388,10 @@ public class Constants {
     public static final String RANDOM_HURT_DIALOGUE_03 = "You step in ewok poo. Gross.";
     public static final String RANDOM_HURT_DIALOGUE_04 = "You step on a nail. Ouch.";
 
-    public static final String MESSAGE_POTION_GOOD = "The potion is spicy and nice.";
+    public static final String MESSAGE_POTION_GOOD = "The potion warms your heart.";
     public static final String MESSAGE_POTION_BAD = "The potion is wet and smelly.";
 
-    public static final List<String> RNADOM_HURT_DIALOGUE = new ArrayList<>(
+    public static final List<String> RANDOM_HURT_DIALOGUE = new ArrayList<>(
         List.of(
             RANDOM_HURT_DIALOGUE_01,
             RANDOM_HURT_DIALOGUE_02,
