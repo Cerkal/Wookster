@@ -28,5 +28,6 @@ public class DoorObject extends SuperObject {
         this.collision = true;
         this.soundPrimary = Constants.SOUND_UNLOCK;
         this.soundSecondary = Constants.SOUND_LOCK;
+        removeWalkableTile();
     }
 }

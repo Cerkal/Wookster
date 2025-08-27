@@ -58,6 +58,7 @@ public class GamePanel extends JPanel implements Runnable {
     public EventHandler eventHandler;
     public BufferedImage background;
     public HashMap<String, Quest> quests = new HashMap<>();
+    public QuestManager questManager = new QuestManager(this);
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();

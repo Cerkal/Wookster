@@ -1,8 +1,6 @@
 package levels;
 
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +13,20 @@ import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
 import main.Quest;
-import tile.Tile;
+import main.QuestManager;
+import objects.CarryPotionObject;
+import objects.DoorObject;
+import objects.SuperObject;
+import spells.SpeedSpell;
+import spells.SuperSpell;
 
 public class LevelTutorial extends LevelBase {
+
+    SuperObject inventoryDoor;
+    QuestManager questManager;
+
+    private static String PIGS_QUEST = "Pigs";
+    private static String INVENTORY_QUEST = "Inventory";
 
     List<Entity> pigs = Arrays.asList(
         new Animal(gamePanel, 20, 8),
@@ -25,10 +34,12 @@ public class LevelTutorial extends LevelBase {
         new Animal(gamePanel, 20, 16)
     );
 
-    Entity oldman;
+    Entity oldmanPigs;
+    Entity oldmanInventory;
 
     public LevelTutorial(GamePanel gamePanel) {
         super(gamePanel);
+        this.questManager = this.gamePanel.questManager;
         this.mapPath = Constants.WORLD_TUTORIAL;
         this.background = Constants.WORLD_00_BACKGROUND;
     }
@@ -38,20 +49,17 @@ public class LevelTutorial extends LevelBase {
         this.gamePanel.player.setLocation(15 , 12);
         this.gamePanel.npcs.addAll(pigs);
 
-        this.oldman = new NPCGeneric(gamePanel, 22, 15) {
+        this.inventoryDoor = new DoorObject(this.gamePanel, 36, 21);
+        this.gamePanel.objects.add(this.inventoryDoor);
+
+        this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
             @Override
             public void postDialogAction() {
-                new Quest(this.gamePanel, "Pigs");
+                this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, PIGS_QUEST));
             }
         };
-        String[] lines = {
-            "Can you help me with these pigs?",
-            "Just deal with them...",
-            "Sometimes they just need a good punch.",
-            "Press and hold the space bar to punch."
-        };
-        oldman.setDialogue(lines);
-        this.gamePanel.npcs.add(oldman);
+        oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
+        this.gamePanel.npcs.add(oldmanPigs);
     }
 
     public void setObjects() {}
@@ -79,8 +87,8 @@ public class LevelTutorial extends LevelBase {
                 }
             }
         }
-        if (inPen.size() == pigCount && this.gamePanel.quests.containsKey("Pigs")) {
-            this.gamePanel.quests.get("Pigs").completeQuest();
+        if (inPen.size() == pigCount && this.questManager.isActiveQuest(PIGS_QUEST)) {
+            this.questManager.getQuest(PIGS_QUEST).completeQuest();
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -98,7 +106,69 @@ public class LevelTutorial extends LevelBase {
             if (pigs.size() == deadCount) {
                 lines = Dialogue.TUTORIAL_PIGS_NEGITIVE;
             }
-            this.oldman.setDialogue(lines);
+
+            this.gamePanel.npcs.remove(this.oldmanPigs);
+            this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
+                @Override
+                public void postDialogAction() {
+                    this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, INVENTORY_QUEST));
+                }
+            };
+            this.oldmanPigs.setDialogue(lines);
+            this.gamePanel.npcs.add(this.oldmanPigs);
+        }
+
+        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
+            this.gamePanel.objects.remove(this.inventoryDoor);
+
+            if (this.oldmanInventory == null) {
+                this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
+                    @Override
+                    public void postDialogAction() {
+                        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
+                            if (inventoryQuest.getProgress() == 0) {
+                                this.gamePanel.objects.add(
+                                    new CarryPotionObject(
+                                        this.gamePanel,
+                                        new SpeedSpell(6),
+                                        this.gamePanel.player.getRawX(),
+                                        this.gamePanel.player.getRawY()
+                                    )
+                                );
+                                inventoryQuest.setProgress(50);
+                            }
+                        }
+                    }
+                };
+                this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_START);
+                this.gamePanel.npcs.add(this.oldmanInventory);
+            }
+
+            if (this.gamePanel.player.spells.containsKey(SuperSpell.SpellType.SPEED_SPELL)) {
+                Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
+                inventoryQuest.completeQuest();
+                this.gamePanel.npcs.remove(this.oldmanInventory);
+                this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
+                    @Override
+                    public void postDialogAction() {
+                        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
+                            if (inventoryQuest.getProgress() == 0) {
+                                this.gamePanel.objects.add(
+                                    new CarryPotionObject(
+                                        this.gamePanel,
+                                        new SpeedSpell(6),
+                                        this.gamePanel.player.getRawX(),
+                                        this.gamePanel.player.getRawY()
+                                    )
+                                );
+                                inventoryQuest.setProgress(50);
+                            }
+                        }
+                    }
+                };
+            }
         }
     }
 
