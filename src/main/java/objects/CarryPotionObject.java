@@ -10,6 +10,8 @@ import spells.SuperSpell.SpellType;
 
 public class CarryPotionObject extends SuperObject {
 
+    public static final String COLOR = "purple";
+
     public CarryPotionObject(GamePanel gamePanel) {
         super(gamePanel);
         init();

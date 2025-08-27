@@ -14,6 +14,8 @@ public class Quest {
     }
 
     public void completeQuest() {
+        this.progress = 100;
+        this.gamePanel.questManager.completedQuests.put(this.name, this);
         this.gamePanel.questManager.removeQuest(this.name);
         this.gamePanel.sound.playSoundEffect(Constants.SOUND_QUEST_COMPLETE);
     }
@@ -24,5 +26,10 @@ public class Quest {
 
     public int getProgress() {
         return this.progress;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + this.progress + "]";
     }
 }

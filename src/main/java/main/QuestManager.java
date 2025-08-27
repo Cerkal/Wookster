@@ -21,6 +21,19 @@ public class QuestManager {
         return this.currentQuests.containsKey(name);
     }
 
+    public boolean isCompletedQuest(String name) {
+        return this.completedQuests.containsKey(name);
+    }
+
+    public int getProgress(String name) {
+        if (isActiveQuest(name)) {
+            return getQuest(name).getProgress();
+        } else if (isCompletedQuest(name)) {
+            return 100;
+        }
+        return 0;
+    }
+
     public void removeQuest(String name) {
         this.currentQuests.remove(name);
     }

@@ -3,13 +3,21 @@ package objects;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
+import spells.ClaritySpell;
+import spells.HealthSpell;
+import spells.InvincibilitySpell;
+import spells.KeySpell;
+import spells.SpeedSpell;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 import tile.TileManager.TileLocation;
@@ -181,5 +189,24 @@ public class SuperObject {
 
     public void removeWalkableTile() {
         this.gamePanel.tileManager.removeWalkableTile(this.getRawX(), this.getRawY());
+    }
+
+    protected SuperSpell generateRandomSpell() {
+        List<SpellType> spellList = Arrays.asList(SpellType.values());
+        int index = Utils.generateRandomInt(0, spellList.size() - 1);
+        SpellType spellType = spellList.get(index);
+        switch (spellType) {
+            case SpellType.HEALTH_SPELL:
+                return new HealthSpell();
+            case SpellType.KEY_SPELL:
+                return new KeySpell();
+            case SpellType.CLARITY_SPELL:
+                return new ClaritySpell();
+            case SpellType.INVINCIBILITY_SPELL:
+                return new InvincibilitySpell();
+            case SpellType.SPEED_SPELL:
+            default:
+                return new SpeedSpell();
+        }
     }
 }

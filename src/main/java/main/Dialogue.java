@@ -1,6 +1,10 @@
 package main;
 
+import objects.PotionObject;
+
 public class Dialogue {
+
+    private static final String PLAYER_NAME = "Wookster";
 
     // Tutorial
     public static final String[] TUTORIAL_PIGS_START = {
@@ -14,7 +18,7 @@ public class Dialogue {
         "Well thats one way to do it.",
         "I'd have just killed em' all.",
         "But look at you...",
-        "Savior of the pigs."
+        "\"Savior of the Pigs\""
     };
 
     public static final String[] TUTORIAL_PIGS_NEUTRAL = {
@@ -43,6 +47,31 @@ public class Dialogue {
     public static final String[] TUTORIAL_INVENTORY_REMINDER = {
         "Press " + KeyHandler.I + " to open your inventory.",
         "Then drink the potion by pressing " + KeyHandler.SPACEBAR,
-        "Its not that hard.",
+        "It's not that hard.",
+    };
+
+    public static final String[] TUTORIAL_INVENTORY_COMPLETE = {
+        "Wow look at you run.",
+        "You can use inventory to select usable items.",
+        "But I don't have to tell you that. You inventory pro you.",
+        "Careful with the " + PotionObject.COLOR + " potions though.",
+        "They can be good or bad. It's a risk."
+    };
+
+    public static final String[] TUTORIAL_COMPLETE = {
+        PLAYER_NAME + "... About your mom...",
+        "She went out for berries or something.",
+        "I'm worried about her.",
+        "Please find her.",
+        "Take this crossbow.",
+        "I'm your dad by the way."
+    };
+
+    // Level 00
+    public static final String[] LEVEL_00_MOM = {
+        "Trees hu?",
+        "It's easy to get lost in here.",
+        "I was going to make this my home.",
+        "Thank God you found me."
     };
 }

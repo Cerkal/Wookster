@@ -16,26 +16,31 @@ import main.Quest;
 import main.QuestManager;
 import objects.CarryPotionObject;
 import objects.DoorObject;
+import objects.PotionObject;
 import objects.SuperObject;
+import objects.weapons.Weapon.WeaponType;
 import spells.SpeedSpell;
 import spells.SuperSpell;
 
 public class LevelTutorial extends LevelBase {
 
-    SuperObject inventoryDoor;
     QuestManager questManager;
+    SuperObject inventoryDoor;
+    SuperObject potionDoor;
 
-    private static String PIGS_QUEST = "Pigs";
-    private static String INVENTORY_QUEST = "Inventory";
+    Entity oldmanPigs;
+    Entity oldmanInventory;
+    Entity oldmanDad;
+
+    private static String QUEST_PIGS = "Pigs";
+    private static String QUEST_INVENTORY = "Inventory";
+    private static String QUEST_MOM = "Find Mom";
 
     List<Entity> pigs = Arrays.asList(
         new Animal(gamePanel, 20, 8),
         new Animal(gamePanel, 20, 12),
         new Animal(gamePanel, 20, 16)
     );
-
-    Entity oldmanPigs;
-    Entity oldmanInventory;
 
     public LevelTutorial(GamePanel gamePanel) {
         super(gamePanel);
@@ -52,13 +57,18 @@ public class LevelTutorial extends LevelBase {
         this.inventoryDoor = new DoorObject(this.gamePanel, 36, 21);
         this.gamePanel.objects.add(this.inventoryDoor);
 
+        this.potionDoor = new DoorObject(this.gamePanel, 27, 29);
+        this.gamePanel.objects.add(this.potionDoor);
+
+        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 25, 29));
+
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
             @Override
             public void postDialogAction() {
-                this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, PIGS_QUEST));
+                this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, QUEST_PIGS));
             }
         };
-        oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
+        this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
         this.gamePanel.npcs.add(oldmanPigs);
     }
 
@@ -87,8 +97,8 @@ public class LevelTutorial extends LevelBase {
                 }
             }
         }
-        if (inPen.size() == pigCount && this.questManager.isActiveQuest(PIGS_QUEST)) {
-            this.questManager.getQuest(PIGS_QUEST).completeQuest();
+        if (inPen.size() == pigCount && this.questManager.isActiveQuest(QUEST_PIGS)) {
+            this.questManager.getQuest(QUEST_PIGS).completeQuest();
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -111,22 +121,22 @@ public class LevelTutorial extends LevelBase {
             this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
                 @Override
                 public void postDialogAction() {
-                    this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, INVENTORY_QUEST));
+                    this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, QUEST_INVENTORY));
                 }
             };
             this.oldmanPigs.setDialogue(lines);
             this.gamePanel.npcs.add(this.oldmanPigs);
         }
 
-        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
+        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {
                 this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
                     @Override
                     public void postDialogAction() {
-                        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
-                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
+                        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
                             if (inventoryQuest.getProgress() == 0) {
                                 this.gamePanel.objects.add(
                                     new CarryPotionObject(
@@ -136,7 +146,7 @@ public class LevelTutorial extends LevelBase {
                                         this.gamePanel.player.getRawY()
                                     )
                                 );
-                                inventoryQuest.setProgress(50);
+                                inventoryQuest.setProgress(25);
                             }
                         }
                     }
@@ -145,30 +155,45 @@ public class LevelTutorial extends LevelBase {
                 this.gamePanel.npcs.add(this.oldmanInventory);
             }
 
-            if (this.gamePanel.player.spells.containsKey(SuperSpell.SpellType.SPEED_SPELL)) {
-                Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
-                inventoryQuest.completeQuest();
+            if (this.gamePanel.questManager.getQuest(QUEST_INVENTORY).getProgress() == 25) {
+                this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_REMINDER);
+            }
+
+            if (
+                this.gamePanel.player.spells.containsKey(SuperSpell.SpellType.SPEED_SPELL) &&
+                this.gamePanel.questManager.getProgress(QUEST_INVENTORY) < 50
+            ){
+                Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
+                inventoryQuest.setProgress(50);
                 this.gamePanel.npcs.remove(this.oldmanInventory);
                 this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
                     @Override
                     public void postDialogAction() {
-                        if (this.gamePanel.questManager.isActiveQuest(INVENTORY_QUEST)) {
-                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(INVENTORY_QUEST);
-                            if (inventoryQuest.getProgress() == 0) {
-                                this.gamePanel.objects.add(
-                                    new CarryPotionObject(
-                                        this.gamePanel,
-                                        new SpeedSpell(6),
-                                        this.gamePanel.player.getRawX(),
-                                        this.gamePanel.player.getRawY()
-                                    )
-                                );
-                                inventoryQuest.setProgress(50);
+                        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
+                            if (inventoryQuest.getProgress() == 50) {
+                                inventoryQuest.completeQuest();
                             }
                         }
                     }
                 };
+                this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_COMPLETE);
+                this.gamePanel.npcs.add(this.oldmanInventory);
             }
+        }
+
+        if (this.gamePanel.questManager.isCompletedQuest(QUEST_INVENTORY)) {
+            this.gamePanel.objects.remove(this.potionDoor);
+                this.oldmanDad = new NPCGeneric(gamePanel, 16, 27) {
+                @Override
+                public void postDialogAction() {
+                    this.gamePanel.questManager.addQuest(new Quest(this.gamePanel, QUEST_MOM));
+                    this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
+                    this.gamePanel.levelManager.loadNextLevel();
+                }
+            };
+            this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
+            this.gamePanel.npcs.add(this.oldmanDad);
         }
     }
 
