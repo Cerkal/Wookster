@@ -9,7 +9,7 @@ public class LevelTemplate extends LevelBase {
 
     public LevelTemplate(GamePanel gamePanel) {
         super(gamePanel);
-        this.mapPath = Constants.WORLD_01; // MAP FILE PATH
+        this.mapPath = Constants.WORLD_02; // MAP FILE PATH
     }
 
     public void init() {

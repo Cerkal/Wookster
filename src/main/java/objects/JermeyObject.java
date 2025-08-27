@@ -1,6 +1,6 @@
 package objects;
 
-import levels.Level00;
+import levels.Level01;
 import main.Constants;
 import main.GamePanel;
 
@@ -37,7 +37,7 @@ public class JermeyObject extends SuperObject {
         }
 
         if (this.gamePanel.levelManager.currentLevelIndex != 0) { return; }
-        Level00 level00 = (Level00) this.gamePanel.levelManager.getCurrentLevel();
+        Level01 level00 = (Level01) this.gamePanel.levelManager.getCurrentLevel();
         if (!this.soundPrimary.contains(START) && !level00.jermeyCount.containsKey(this.soundPrimary)) {
             level00.jermeyCount.put(this.soundPrimary, level00.jermeyCount.size());
         }

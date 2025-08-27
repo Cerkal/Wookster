@@ -191,6 +191,10 @@ public class SuperObject {
         this.gamePanel.tileManager.removeWalkableTile(this.getRawX(), this.getRawY());
     }
 
+    public void addWalkableTile() {
+        this.gamePanel.tileManager.addWalkableTile(this.getRawX(), this.getRawY());
+    }
+
     protected SuperSpell generateRandomSpell() {
         List<SpellType> spellList = Arrays.asList(SpellType.values());
         int index = Utils.generateRandomInt(0, spellList.size() - 1);

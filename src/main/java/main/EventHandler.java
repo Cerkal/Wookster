@@ -45,8 +45,8 @@ public class EventHandler {
         }
     }
 
-    public void setRandomDamageTile() {
-        for (int i = 0; i < 10; i++) {
+    public void setRandomDamageTile(int count) {
+        for (int i = 0; i < count; i++) {
             TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
             randomDamage.add(tileLocation);
         }

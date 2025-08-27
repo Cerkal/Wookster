@@ -199,9 +199,9 @@ public class Constants {
 
     // Maps
     public static final String WORLD_BUILDER = "/maps/world_builder.txt";
-    public static final String WORLD_TUTORIAL = "/maps/world_tutorial.txt";
     public static final String WORLD_00 = "/maps/world_00.txt";
     public static final String WORLD_01 = "/maps/world_01.txt";
+    public static final String WORLD_02 = "/maps/world_02.txt";
 
     // Backrounds
     public static final String DEFAULT_BACKGROUND = "/backgrounds/output_image_test.png";
