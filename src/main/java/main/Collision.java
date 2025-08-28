@@ -126,16 +126,16 @@ public class Collision {
 
         switch (entity.direction) {
             case UP:
-                entity.solidArea.y -= entity.speed;
+                entity.solidArea.y -= entity.speed + target.speed;
                 break;
             case DOWN:
-                entity.solidArea.y += entity.speed;
+                entity.solidArea.y += entity.speed + target.speed;
                 break;
             case LEFT:
-                entity.solidArea.x -= entity.speed;
+                entity.solidArea.x -= entity.speed + target.speed;
                 break;
             case RIGHT:
-                entity.solidArea.x += entity.speed;
+                entity.solidArea.x += entity.speed + target.speed;
                 break;
         }
         if (

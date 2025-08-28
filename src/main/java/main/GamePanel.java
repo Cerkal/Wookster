@@ -215,6 +215,8 @@ public class GamePanel extends JPanel implements Runnable {
                 object.draw(graphics2D);
             }
 
+            this.projectileManager.draw(graphics2D);
+
             entityList.add(this.player);
             entityList.addAll(this.npcs);
             Collections.sort(entityList, Comparator.comparingInt(e -> e.worldY));
@@ -222,8 +224,6 @@ public class GamePanel extends JPanel implements Runnable {
                 entity.draw(graphics2D);
             }
             entityList.clear();
-
-            this.projectileManager.draw(graphics2D);
 
             this.levelManager.draw(graphics2D);
 

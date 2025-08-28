@@ -147,13 +147,6 @@ public abstract class Entity {
         }
     }
 
-    public void checkPlayerCollision() {
-        Entity entity = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
-        if (entity != null) {
-            handlePlayerCollision(this.gamePanel.player);
-        }
-    }
-
     public void handlePlayerCollision(Player player) {
         if (this.isFriendly) { return; }
         if (this.weapon instanceof MeleeWeapon) {
@@ -538,6 +531,10 @@ public abstract class Entity {
     private Point getPushBackLocFromWalkable(List<Point> points) {
         this.frenzyTarget = points.get(Utils.generateRandomInt(0, points.size() - 1));
         if (!getValidFrenzyPath()) {
+            points.remove(this.frenzyTarget);
+            if (points.isEmpty()) {
+                return getFrenzyLocation();
+            }
             getPushBackLocFromWalkable(points);
         }
         return this.frenzyTarget;
