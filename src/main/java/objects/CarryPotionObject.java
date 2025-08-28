@@ -14,11 +14,13 @@ public class CarryPotionObject extends SuperObject {
 
     public CarryPotionObject(GamePanel gamePanel) {
         super(gamePanel);
+        this.spell = generateRandomSpell();
         init();
     }
 
     public CarryPotionObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
+        this.spell = generateRandomSpell();
         init();
     }
 

@@ -24,7 +24,6 @@ import objects.SuperObject.SuperObjectWrapper;
 import objects.weapons.Weapon.WeaponType;
 import spells.ClaritySpell;
 import spells.HealthSpell;
-import spells.KeySpell;
 import spells.SpeedSpell;
 import spells.SuperSpell.SpellType;
 
@@ -65,6 +64,8 @@ public abstract class LevelBase {
         ){
             loadInventoryItems(dataWrapper);
             loadObjectItems(dataWrapper);
+            loadPlayerSaveState(dataWrapper);
+            loadQuestData(dataWrapper);
             System.out.println("Loading level " + levelIndex);
         } else {
             setObjects();
@@ -86,23 +87,8 @@ public abstract class LevelBase {
     }
 
     protected void generateRandomObjects() {
-        List<SpellType> spellList = Arrays.asList(SpellType.values());
         for (int i = 0; i < 3; i++) {
-            int index = Utils.generateRandomInt(0, spellList.size() - 1);
-            SpellType spellType = spellList.get(index);
-            switch (spellType) {
-                case SpellType.HEALTH_SPELL:
-                    addGameObject(new PotionObject(this.gamePanel, new HealthSpell()));
-                    break;
-                case SpellType.KEY_SPELL:
-                    addGameObject(new PotionObject(this.gamePanel, new KeySpell()));
-                    break;
-                case SpellType.SPEED_SPELL:
-                    addGameObject(new PotionObject(this.gamePanel, new SpeedSpell()));
-                    break;
-                default:
-                    break;
-            }
+            addGameObject(new PotionObject(this.gamePanel));
         }
     }
 
@@ -180,5 +166,14 @@ public abstract class LevelBase {
                 this.gamePanel.player.addWeapon(item);
             }
         }
+    }
+
+    public void loadPlayerSaveState(DataWrapper dataWrapper) {
+        this.gamePanel.player.loadPlayerSaveState(dataWrapper.getSavedPlayerData());
+    }
+
+    public void loadQuestData(DataWrapper dataWrapper) {
+        this.gamePanel.questManager.currentQuests = dataWrapper.getCurrentQuests();
+        this.gamePanel.questManager.completedQuests = dataWrapper.getCompletedQuests();
     }
 }

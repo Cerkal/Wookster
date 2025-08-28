@@ -46,7 +46,8 @@ public class Level00 extends LevelBase {
     public Level00(GamePanel gamePanel) {
         super(gamePanel);
         this.questManager = this.gamePanel.questManager;
-        this.mapPath = Constants.WORLD_00;
+        // this.mapPath = Constants.WORLD_00;
+        this.mapPath = "/maps/build/generated_map.txt";
         this.background = Constants.WORLD_00_BACKGROUND;
     }
 

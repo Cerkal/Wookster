@@ -19,6 +19,14 @@ public class DataWrapper {
     HashMap<String, Quest> currentQuests = new HashMap<>();
     HashMap<String, Quest> completedQuests = new HashMap<>();
 
+    public HashMap<String, Quest> getCompletedQuests() {
+        return this.completedQuests;
+    }
+
+    public HashMap<String, Quest> getCurrentQuests() {
+        return this.currentQuests;
+    }
+
     public PlayerWrapper getSavedPlayerData() {
         return this.player;
     }
