@@ -36,23 +36,23 @@ public class JermeyObject extends SuperObject {
             lastPlayTime = currentTime;
         }
 
-        if (this.gamePanel.levelManager.currentLevelIndex != 0) { return; }
-        Level01 level00 = (Level01) this.gamePanel.levelManager.getCurrentLevel();
-        if (!this.soundPrimary.contains(START) && !level00.jermeyCount.containsKey(this.soundPrimary)) {
-            level00.jermeyCount.put(this.soundPrimary, level00.jermeyCount.size());
+        if (this.gamePanel.levelManager.currentLevelIndex != 1) { return; }
+        Level01 level = (Level01) this.gamePanel.levelManager.getCurrentLevel();
+        if (!this.soundPrimary.contains(START) && !level.jermeyCount.containsKey(this.soundPrimary)) {
+            level.jermeyCount.put(this.soundPrimary, level.jermeyCount.size());
         }
-    
+
         if (this.soundPrimary.contains(START)) {
             if (
-                level00.jermeyCount.size() == 2 &&
-                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_02) != null &&
-                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_02) == 0 &&
-                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_03) != null &&
-                level00.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_03) == 1
+                level.jermeyCount.size() == 2 &&
+                level.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_04) != null &&
+                level.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_04) == 0 &&
+                level.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_01) != null &&
+                level.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_01) == 1
             ){
                 this.removeObject();
             } else {
-                level00.jermeyCount.clear();
+                level.jermeyCount.clear();
             }
         }
     }

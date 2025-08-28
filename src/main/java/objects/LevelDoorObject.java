@@ -12,10 +12,11 @@ public class LevelDoorObject extends SuperObject {
 
     public void setDifferentImage(String path) {
         if (path != null) {
-            this.image = null;
+            this.setImage(path);
         }
     }
 
+    @Override
     public void activateObject() {
         this.gamePanel.levelManager.loadNextLevel();
     }

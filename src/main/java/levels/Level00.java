@@ -1,6 +1,7 @@
 package levels;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -60,9 +61,21 @@ public class Level00 extends LevelBase {
                 this.gamePanel.questManager.addQuest(new Quest(QUEST_PIGS));
             }
         };
-        this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
         this.oldmanPigs.invincable = true;
+        this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
         this.gamePanel.npcs.add(oldmanPigs);
+
+        this.oldmanDad = new NPCGeneric(gamePanel, 16, 27) {
+            @Override
+            public void postDialogAction() {
+                this.gamePanel.questManager.addQuest(new Quest(QUEST_MOM));
+                this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
+                this.gamePanel.levelManager.loadNextLevel();
+            }
+        };
+        this.oldmanDad.invincable = true;
+        this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
+        this.gamePanel.npcs.add(this.oldmanDad);
     }
 
     public void setObjects() {
@@ -79,12 +92,12 @@ public class Level00 extends LevelBase {
     public void update() {
         Set<Entity> inPen = new HashSet<>();
         int pigCount = 0;
-        for (Entity entity : this.gamePanel.npcs) {
+        for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
             if (!entity.isDead && entity instanceof Animal) {
                 pigCount += 1;
             }
         }
-        for (Entity entity : this.gamePanel.npcs) {
+        for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
             if (entity instanceof Animal) {
                 if (
                     entity.getRawX() > 31 &&
@@ -125,11 +138,12 @@ public class Level00 extends LevelBase {
                     this.gamePanel.questManager.addQuest(new Quest(QUEST_INVENTORY));
                 }
             };
+            this.oldmanPigs.invincable = true;
             this.oldmanPigs.setDialogue(lines);
             this.gamePanel.npcs.add(this.oldmanPigs);
         }
 
-        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
+        if (this.gamePanel.questManager.isCompletedQuest(QUEST_PIGS)) {
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {
@@ -152,11 +166,12 @@ public class Level00 extends LevelBase {
                         }
                     }
                 };
+                this.oldmanInventory.invincable = true;
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_START);
                 this.gamePanel.npcs.add(this.oldmanInventory);
             }
 
-            if (this.gamePanel.questManager.getQuest(QUEST_INVENTORY).getProgress() == 25) {
+            if (this.gamePanel.questManager.getProgress(QUEST_INVENTORY) == 25) {
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_REMINDER);
             }
 
@@ -178,6 +193,7 @@ public class Level00 extends LevelBase {
                         }
                     }
                 };
+                this.oldmanInventory.invincable = true;
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_COMPLETE);
                 this.gamePanel.npcs.add(this.oldmanInventory);
             }
@@ -185,16 +201,6 @@ public class Level00 extends LevelBase {
 
         if (this.gamePanel.questManager.isCompletedQuest(QUEST_INVENTORY)) {
             this.gamePanel.objects.remove(this.potionDoor);
-                this.oldmanDad = new NPCGeneric(gamePanel, 16, 27) {
-                @Override
-                public void postDialogAction() {
-                    this.gamePanel.questManager.addQuest(new Quest(QUEST_MOM));
-                    this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
-                    this.gamePanel.levelManager.loadNextLevel();
-                }
-            };
-            this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
-            this.gamePanel.npcs.add(this.oldmanDad);
         }
     }
 

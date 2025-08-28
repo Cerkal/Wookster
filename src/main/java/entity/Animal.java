@@ -20,6 +20,8 @@ public class Animal extends Entity {
         this.solidArea.height = SOLID_AREA_WIDTH;
         this.solidAreaDefaultX = this.solidArea.x;
         this.solidAreaDefaultY = this.solidArea.y;
+        this.maxHealth = 20;
+        this.health = this.maxHealth;
         this.willChase = true;
         this.isFriendly = false;
         this.isFrenzy = true;
@@ -39,13 +41,9 @@ public class Animal extends Entity {
 
         String i = SpriteAnimation.IDEL.name();
         spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.PIG_IMAGE_UP_00));
-        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.PIG_IMAGE_UP_01));
         spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PIG_IMAGE_DOWN_00));
-        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PIG_IMAGE_DOWN_01));
         spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PIG_IMAGE_LEFT_00));
-        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PIG_IMAGE_LEFT_01));
         spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PIG_IMAGE_RIGHT_00));
-        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PIG_IMAGE_RIGHT_01));
         
         spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PIG_IMAGE_DEAD));
     }

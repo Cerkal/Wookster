@@ -5,20 +5,30 @@ import main.GamePanel;
 
 public class DoorObject extends SuperObject {
 
+    private long lastPlayTime;
+
     public DoorObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
+        this.lastPlayTime = 0;
         init();
     }
 
     public void activateObject() {
         super.activateObject();
+
         String key = ObjectType.KEY.name();
         if (this.gamePanel.player.getInventoryItem(key) > 0) {
             this.removeObject();
             this.gamePanel.player.removeInventoryItem(key);
             addWalkableTile();
         } else {
-            this.playSecondarySound();
+            long currentTime = this.gamePanel.gameTime;
+            long elapsed = currentTime - lastPlayTime;
+
+            if (elapsed > Constants.NANO_SECOND * 2.5) {
+                this.playSecondarySound();
+                lastPlayTime = currentTime;
+            }
         }
     }
 
