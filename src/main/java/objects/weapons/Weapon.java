@@ -3,19 +3,15 @@ package objects.weapons;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import entity.Entity;
 import entity.Player;
 import main.Constants;
-import main.DataWrapper;
 import main.GamePanel;
 import main.InventoryItem;
-import main.InventoryItem.InventoryItemWrapper;
-import objects.SuperObject;
-import objects.SuperObject.ObjectType;
+import main.Utils;
 import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
@@ -106,6 +102,11 @@ public abstract class Weapon {
     protected void setWeaponIcon() {
         try {
             this.icon = ImageIO.read(getClass().getResourceAsStream(this.iconImages.get(this.weaponType)));
+            this.icon = Utils.scaleImage(
+                this.icon,
+                Constants.GAME_INVENTORY_ICON_SIZE,
+                Constants.GAME_INVENTORY_ICON_SIZE
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }

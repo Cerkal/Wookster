@@ -65,6 +65,7 @@ public class Constants {
         )
     );
     public static final String GAME_INVENTORY = "Inventory";
+    public static final int GAME_INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
 
     // Files
     public static final String SAVE_FILE = "save.json";

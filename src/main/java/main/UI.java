@@ -7,8 +7,10 @@ import java.awt.image.BufferedImage;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import main.GamePanel.GameState;
 import main.Selector.SelectionResult;
@@ -103,7 +105,8 @@ public class UI {
     }
 
     public void titleScreen(Graphics2D graphics2D) {
-        graphics2D.setBackground(Color.BLACK);
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         graphics2D.setFont(this.customFontLarge);
         graphics2D.setColor(Color.WHITE);
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
@@ -209,7 +212,7 @@ public class UI {
     public void drawInventoryIcon(Graphics2D graphics2D, int x, int y, BufferedImage icon) {
         int iconX = x - Constants.TILE_SIZE * 3;
         int iconY = y - 14;
-        graphics2D.drawImage(icon, iconX + 12, iconY + 12, Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 2, null);
+        graphics2D.drawImage(icon, iconX + 12, iconY + 12, null);
         graphics2D.drawRect(iconX - 3, iconY- 3, Constants.TILE_SIZE * 2 + 26, Constants.TILE_SIZE * 2 + 26);
     }
 
@@ -231,7 +234,19 @@ public class UI {
         graphics2D.drawString("Completed Quests: " + this.gamePanel.questManager.completedQuests.toString(), 10, debugLine -= debugLineDiff);
         graphics2D.drawString("Inv: " + this.gamePanel.player.inventory.toString(), 10, debugLine -= debugLineDiff);
         graphics2D.drawString("Spell: " + spells.toString(), 10, debugLine -= debugLineDiff);
-        graphics2D.drawString(Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND) + " " + playerLocation, 10, debugLine -= debugLineDiff);
+
+        List<String> strings = Arrays.asList(
+            Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND),
+            "FPS (" + String.valueOf(this.gamePanel.fps) + ")",
+            playerLocation
+        );
+        graphics2D.drawString(combineToString(strings), 10, debugLine -= debugLineDiff);
+    }
+
+    private String combineToString(List<String> strings) {
+        return strings == null ? "" :
+            strings.stream()
+                .collect(Collectors.joining(" "));
     }
 
     private void drawMessage(Graphics2D graphics2D, String message, boolean slowType) {

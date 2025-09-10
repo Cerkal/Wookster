@@ -1,6 +1,7 @@
 package levels;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.DataWrapper;
-import main.EventHandler;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
@@ -39,16 +39,18 @@ public abstract class LevelBase {
     protected String background = Constants.DEFAULT_BACKGROUND;
     public String mapPath;
     public int levelIndex;
+    public Point playerStartLocation = new Point(23, 23);
 
     public LevelBase(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.mapPath = Constants.WORLD_00;
         this.gamePanel.objects.clear();
-        this.gamePanel.eventHandler = new EventHandler(this.gamePanel);
+        // this.gamePanel.eventHandler = new EventHandler(this.gamePanel);
         this.levelIndex = this.gamePanel.levelManager.currentLevelIndex;
     }
 
     public void init() {
+        this.gamePanel.player.setLocation(this.playerStartLocation);
         this.gamePanel.npcs.clear();
         this.gamePanel.objects.clear();
         this.gamePanel.effects.clear();

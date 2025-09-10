@@ -10,6 +10,7 @@ import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 import main.GamePanel.GameState;
 
 public class NPCMom extends Entity {
@@ -31,6 +32,7 @@ public class NPCMom extends Entity {
     private void setHat() {
         try {
             this.hat = ImageIO.read(getClass().getResourceAsStream(Constants.WOOKSER_MOM_HAT));
+            this.hat = Utils.scaleImage(this.hat);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,8 +87,6 @@ public class NPCMom extends Entity {
                 this.hat,
                 screenX,
                 screenY - 18,
-                Constants.TILE_SIZE,
-                Constants.TILE_SIZE,
                 null
             );
         }

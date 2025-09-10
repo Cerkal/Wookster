@@ -13,17 +13,13 @@ import spells.KeySpell;
 import spells.SpeedSpell;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
-import tile.Tile;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
@@ -34,8 +30,8 @@ import main.InventoryItem;
 public class Player extends Entity {
 
     public static class PlayerWrapper {
-        public int worldX;
-        public int worldY;
+        public int worldX = Constants.TILE_SIZE * 23; // Set from level base
+        public int worldY = Constants.TILE_SIZE * 21; 
         public int speed;
         public Direction direction;
         public int maxHealth;
@@ -45,7 +41,7 @@ public class Player extends Entity {
         public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     }
 
-    KeyHandler keyHandler;
+    public KeyHandler keyHandler;
 
     public final int screenX;
     public final int screenY;
@@ -73,8 +69,6 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues() {
-        this.worldX = Constants.TILE_SIZE * 23;
-        this.worldY = Constants.TILE_SIZE * 21;
         this.speed = DEFAULT_SPEED;
         this.direction = Direction.DOWN;
         this.entityType = EntityType.PLAYER;
@@ -299,19 +293,8 @@ public class Player extends Entity {
 
     private void drawSpellEffect(Graphics2D graphics2D) {
         if (this.spells.size() == 0) return;
-        Tile sparkle = new Tile();
-        try {
-            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_0)));
-            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_1)));
-            sparkle.imageSequence.add(ImageIO.read(getClass().getResourceAsStream(Constants.SPELL_EFFECT_SPARKLE_2)));
-            sparkle.collision = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (sparkle != null) {
-            BufferedImage sparkleImage = sparkle.getCurrentImage(this.gamePanel.gameTime);
-            graphics2D.drawImage(sparkleImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
-        }
+        Sprite effectSprite = this.spriteManager.getSprite(this, SpriteAnimation.EFFECT.name());
+        graphics2D.drawImage(effectSprite.image, screenX, screenY, null);
     }
 
     private void drawPlayerSprite(Graphics2D graphics2D) {
@@ -319,8 +302,6 @@ public class Player extends Entity {
             this.sprite.image,
             screenX - this.sprite.xAdjust,
             screenY - this.sprite.yAdjust,
-            this.sprite.width,
-            this.sprite.height,
             null
         );
     }
@@ -439,6 +420,12 @@ public class Player extends Entity {
 
     @Override
     protected void loadSprites() {
+
+        String e = SpriteAnimation.EFFECT.name();
+        spriteManager.setSprite(e, new Sprite(null, Constants.SPELL_EFFECT_SPARKLE_0));
+        spriteManager.setSprite(e, new Sprite(null, Constants.SPELL_EFFECT_SPARKLE_1));
+        spriteManager.setSprite(e, new Sprite(null, Constants.SPELL_EFFECT_SPARKLE_2));
+
         String m = SpriteAnimation.MOVE.name();
         spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
         spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_1));

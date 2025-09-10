@@ -1,7 +1,7 @@
 package levels;
 
-import java.awt.Dialog;
 import java.awt.Graphics2D;
+import java.awt.Point;
 
 import entity.NPCMom;
 import entity.NPCTrooper;
@@ -19,12 +19,11 @@ public class Level02 extends LevelBase {
     public Level02(GamePanel gamePanel) {
         super(gamePanel);
         this.mapPath = Constants.WORLD_02;
+        this.playerStartLocation = new Point(13, 7);
     }
 
     public void init() {
         super.init();
-
-        this.gamePanel.player.setLocation(13, 7);
 
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 11, 40));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 26, 8));

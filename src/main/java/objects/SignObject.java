@@ -21,5 +21,6 @@ public class SignObject extends SuperObject {
         this.name = objectType.name();
         this.collision = true;
         this.setImage(Constants.OBJECT_SIGN_IMAGE);
+        removeWalkableTile();
     }
 }

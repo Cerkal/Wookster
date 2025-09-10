@@ -115,7 +115,7 @@ public class TileManager {
                 if (currentTile != null) {
                     BufferedImage tileImage = currentTile.getCurrentImage(gamePanel.gameTime);
                     if (tileImage != null) {
-                        graphics2D.drawImage(tileImage, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+                        graphics2D.drawImage(tileImage, screenX, screenY, null);
                         drawDebug(graphics2D, currentTile, screenX, screenY);
                     }
                 }

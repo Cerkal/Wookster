@@ -109,6 +109,11 @@ public abstract class Entity {
         this.worldY = y * Constants.TILE_SIZE;
     }
 
+    public void setLocation(Point point) {
+        this.worldX = point.x * Constants.TILE_SIZE;
+        this.worldY = point.y * Constants.TILE_SIZE;
+    }
+
     public Point getLocation() {
         return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
     }
@@ -127,8 +132,6 @@ public abstract class Entity {
                 this.sprite.image,
                 screenX - this.sprite.xAdjust,
                 screenY - this.sprite.yAdjust,
-                this.sprite.width,
-                this.sprite.height,
                 null
             );
             drawDebugCollision(graphics2D, screenX, screenY);

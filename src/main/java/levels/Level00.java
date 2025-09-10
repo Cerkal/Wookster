@@ -1,6 +1,7 @@
 package levels;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,11 +49,11 @@ public class Level00 extends LevelBase {
         this.questManager = this.gamePanel.questManager;
         this.mapPath = Constants.WORLD_00;
         this.background = Constants.WORLD_00_BACKGROUND;
+        this.playerStartLocation = new Point(15, 12);
     }
 
     public void init() {
         super.init();
-        this.gamePanel.player.setLocation(15 , 12);
         this.gamePanel.npcs.addAll(pigs);
 
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
@@ -112,7 +113,6 @@ public class Level00 extends LevelBase {
             }
         }
         if (inPen.size() == pigCount && this.questManager.isActiveQuest(QUEST_PIGS)) {
-            this.questManager.getQuest(QUEST_PIGS).completeQuest(this.gamePanel);
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -135,6 +135,9 @@ public class Level00 extends LevelBase {
             this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
                 @Override
                 public void postDialogAction() {
+                    this.gamePanel.questManager
+                        .getQuest(QUEST_PIGS)
+                        .completeQuest(this.gamePanel);
                     this.gamePanel.questManager.addQuest(new Quest(QUEST_INVENTORY));
                 }
             };

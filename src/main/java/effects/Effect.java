@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class Effect {
 
@@ -34,7 +35,7 @@ public class Effect {
             this.worldY + (Constants.TILE_SIZE) > (gamePanel.player.worldY - gamePanel.player.screenY) &&
             this.worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY)
         ){
-            graphics2D.drawImage(this.image, screenX, screenY - Constants.TILE_SIZE/2, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+            graphics2D.drawImage(this.image, screenX, screenY - Constants.TILE_SIZE/2, null);
         }
     }
 
@@ -44,7 +45,8 @@ public class Effect {
 
     protected void setImage(String image) {
         try {
-            this.image  = ImageIO.read(getClass().getResourceAsStream(image));
+            this.image = ImageIO.read(getClass().getResourceAsStream(image));
+            this.image = Utils.scaleImage(this.image); 
         } catch (Exception e) {
             e.printStackTrace();
         }

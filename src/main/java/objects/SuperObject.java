@@ -54,6 +54,7 @@ public class SuperObject {
     public boolean carriable;
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
+    private BufferedImage inventoryIcon;
 
     public SuperObject(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -79,7 +80,7 @@ public class SuperObject {
             this.worldY - (Constants.TILE_SIZE) < (gamePanel.player.worldY + gamePanel.player.screenY) &&
             this.visibility == true
         ){
-            graphics2D.drawImage(this.image, screenX, screenY, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+            graphics2D.drawImage(this.image, screenX, screenY, null);
         }
     }
 
@@ -110,18 +111,33 @@ public class SuperObject {
     }
 
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
+        if (this.inventoryIcon == null) {
+            setIcon();
+        }
         try {
-            BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(this.objectIcons.get(this.objectType)));
-            this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, icon);
+            this.gamePanel.ui.drawInventoryIcon(graphics2D, x, y, this.inventoryIcon);
         } catch (Exception e) {
             e.printStackTrace();
         }
         graphics2D.drawString(this.name, x, y);
     }
 
+    protected void setIcon() {
+        try {
+            String imagePath = this.objectIcons.get(this.objectType);
+            if (imagePath == null) { return; }
+            this.inventoryIcon = ImageIO.read(getClass().getResourceAsStream(imagePath));
+            int doubleTile = Constants.TILE_SIZE * 2;
+            this.inventoryIcon = Utils.scaleImage(this.inventoryIcon, doubleTile, doubleTile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void setImage(String imagePath) {
         try {
             this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
+            this.image = Utils.scaleImage(this.image);
         } catch (Exception e) {
             e.printStackTrace();
         }

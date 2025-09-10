@@ -3,6 +3,8 @@ plugins {
     id 'application'
 }
 
+version = '1.0.0'
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -23,4 +25,50 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+// Windows EXE installer
+// tasks.register('jpackageApp', Exec) {
+//     dependsOn build
+//     workingDir "$buildDir/libs"
+//     commandLine 'jpackage',
+//         '--type', 'exe',
+//         '--input', "$buildDir/libs",
+//         '--main-jar', 'Wookster-1.0.0.jar',
+//         '--main-class', 'main.Main',
+//         '--name', 'Wookster',
+//         '--app-version', version,
+//         '--win-dir-chooser',
+//         '--win-shortcut',
+//         '--win-menu',
+//         '--icon', "$projectDir/src/main/resources/icons/icon.ico"
+// }
+
+// Portable build, No installer
+tasks.register('jpackagePortable', Exec) {
+    dependsOn build
+
+    def inputDir = "$buildDir/jars"       // staging area for jars
+    def outputDir = "$buildDir/portable"  // final portable app output
+
+    doFirst {
+        mkdir(inputDir)
+        mkdir(outputDir)
+        copy {
+            from("$buildDir/libs/Wookster-1.0.0.jar")
+            into(inputDir)
+        }
+    }
+
+    workingDir "$projectDir"
+
+    commandLine 'jpackage',
+        '--type', 'app-image',
+        '--input', inputDir,
+        '--main-jar', 'Wookster-1.0.0.jar',
+        '--main-class', 'main.Main',
+        '--name', 'Wookster',
+        '--app-version', version,
+        '--icon', "$projectDir/src/main/resources/icons/icon.ico",
+        '--dest', outputDir   // make sure app output is separate
 }

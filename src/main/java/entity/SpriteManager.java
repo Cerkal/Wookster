@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
 import main.Constants;
+import main.Utils;
 import main.GamePanel.GameState;
 
 public class SpriteManager {
@@ -17,7 +18,8 @@ public class SpriteManager {
     public static enum SpriteAnimation {
         MOVE,
         IDEL,
-        DEAD;
+        DEAD,
+        EFFECT;
     }
 
     public static class Sprite {
@@ -35,9 +37,10 @@ public class SpriteManager {
             try {
                 this.direction = direction;
                 this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
+                this.image = Utils.scaleImage(image);
                 this.frames = frames;
-                this.height = this.image.getHeight() * Constants.SCALE;
-                this.width = this.image.getWidth() * Constants.SCALE;
+                this.height = this.image.getHeight();
+                this.width = this.image.getWidth();
                 if (this.height > Constants.TILE_SIZE && direction == Direction.UP) {
                     this.yAdjust = this.height - Constants.TILE_SIZE;
                 }
@@ -62,13 +65,16 @@ public class SpriteManager {
             .add(sprite);
     }
 
-    public Sprite getSprite(Entity entity) {
+    public Sprite getSprite(Entity entity, String type) {
+        List<Sprite> sprites = this.spriteMap.get(type).get(null);
         long gameTime = entity.gamePanel.gameTime;
-
+        return getSpriteFromList(sprites, gameTime);
+    }
+    
+    public Sprite getSprite(Entity entity) {
         if (entity.isDead) {
             return this.spriteMap.get(SpriteAnimation.DEAD.name()).get(null).get(0);
         }
-        
         String type;
         if (entity.isMoving) {
             type = SpriteAnimation.MOVE.name();
@@ -86,9 +92,12 @@ public class SpriteManager {
                 return this.spriteMap.get(type).get(entity.direction).get(0);
             }
         }
-
         List<Sprite> sprites = this.spriteMap.get(type).get(entity.direction);
+        long gameTime = entity.gamePanel.gameTime;
+        return getSpriteFromList(sprites, gameTime);
+    }
 
+    private Sprite getSpriteFromList(List<Sprite> sprites, long gameTime) {
         long nsPerFrame = 1_000_000_000L / 60;
         long totalFrames = gameTime / nsPerFrame;
         int totalSpriteFrames = 0;
@@ -109,5 +118,4 @@ public class SpriteManager {
 
         return sprites.get(0);
     }
-
 }

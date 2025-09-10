@@ -35,7 +35,7 @@ public class Tile {
         String image
     ){
         this.tileType = tileType;
-        this.image = getImage(image);
+        this.image = setImage(image);
         setCollision();
     }
 
@@ -101,11 +101,12 @@ public class Tile {
         }
     }
 
-    private BufferedImage getImage(String path) {
+    private BufferedImage setImage(String path) {
         if (path == null) { return null; }
         BufferedImage image = null;
         try {
             image = ImageIO.read(getClass().getResourceAsStream(path));
+            image = Utils.scaleImage(image);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,7 +117,7 @@ public class Tile {
         List<BufferedImage> imageSequence = new ArrayList<BufferedImage>();
         if (paths == null) { return imageSequence; }
         for (String path : paths) {
-            BufferedImage image = getImage(path);
+            BufferedImage image = setImage(path);
             imageSequence.add(image);
         }
         return imageSequence;

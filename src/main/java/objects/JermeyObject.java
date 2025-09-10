@@ -17,12 +17,14 @@ public class JermeyObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.TILE_TREE_FALL);
         this.isSpecial = true;
+        removeWalkableTile();
     }
 
     public JermeyObject(GamePanel gamePanel, int worldX, int worldY, String sound, boolean isDoor) {
         this(gamePanel, worldX, worldY, sound);
         this.collision = true;
         this.setImage(Constants.OBJECT_DOOR_IMAGE);
+        removeWalkableTile();
     }
 
     public void activateObject() {
@@ -51,6 +53,7 @@ public class JermeyObject extends SuperObject {
                 level.jermeyCount.get(Constants.LEVEL_00_JERMEY_SOUND_01) == 1
             ){
                 this.removeObject();
+                this.addWalkableTile();
             } else {
                 level.jermeyCount.clear();
             }

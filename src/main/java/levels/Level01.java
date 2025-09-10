@@ -1,6 +1,7 @@
 package levels;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,14 +30,13 @@ public class Level01 extends LevelBase {
         super(gamePanel);
         this.mapPath = Constants.WORLD_01;
         this.background = Constants.WORLD_00_BACKGROUND;
+        this.playerStartLocation = new Point(23, 23);
     }
 
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);
         this.setStaticObjects();
-
-        this.gamePanel.player.setLocation(23, 23);
 
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));

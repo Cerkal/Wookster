@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
 import entity.Entity;
 import entity.Player;
@@ -107,7 +108,7 @@ public class Collision {
 
     public Entity entityCollision(Entity entity) {
         Entity collisionEntity = null;
-        for (Entity target : gamePanel.npcs) {
+        for (Entity target : new ArrayList<>(gamePanel.npcs)) {
             collisionEntity = getCollidEntity(entity, target);
             if (collisionEntity != null) {
                 return collisionEntity;

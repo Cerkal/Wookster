@@ -15,20 +15,20 @@ public class BackgroundCreator {
         try {
             BufferedImage grass00 = ImageIO.read(getClass().getResourceAsStream(Constants.TILE_GRASS_00));
             BufferedImage grass01 = ImageIO.read(getClass().getResourceAsStream(Constants.TILE_GRASS_01));
-            Graphics2D g2d = bufferedImage.createGraphics();
+            Graphics2D graphics2D = bufferedImage.createGraphics();
             for (int x = 0; x < Constants.TILE_SIZE * Constants.MAX_WORLD_COL; x++) {
                 for (int y = 0; y < Constants.TILE_SIZE * Constants.MAX_WORLD_COL; y++) {
                     int random = Utils.generateRandomInt(0, 4);
                     if (random > 2) {
-                        g2d.drawImage(grass01, x, y, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+                        graphics2D.drawImage(grass01, x, y, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
                     } else {
-                        g2d.drawImage(grass00, x, y, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
+                        graphics2D.drawImage(grass00, x, y, Constants.TILE_SIZE, Constants.TILE_SIZE, null);
                     }
                     y += Constants.TILE_SIZE - 2;
                 }
                 x += Constants.TILE_SIZE - 2;
             }   
-            g2d.dispose();
+            graphics2D.dispose();
             File outputFile = new File("src/main/resources/backgrounds/output_image.png");
             String formatName = "png";
             try {

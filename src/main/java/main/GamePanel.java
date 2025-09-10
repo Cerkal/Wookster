@@ -1,19 +1,16 @@
 package main;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Canvas;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.JPanel;
-import javax.swing.plaf.DimensionUIResource;
 
 import effects.Effect;
 import entity.Entity;
@@ -26,7 +23,11 @@ import objects.SuperObject;
 import objects.projectiles.ProjectileManager;
 import tile.TileManager;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends Canvas implements Runnable {
+
+    private Thread gameThread;
+    private boolean running = false;
+    private BufferStrategy bufferStrategy;
     
     public enum GameState {
         TITLE,
@@ -37,18 +38,15 @@ public class GamePanel extends JPanel implements Runnable {
         DEATH
     }
 
-    Thread gameThread;
-
-    // Debug
     public boolean debugAll = false;
     public boolean debugMap = false;
     public boolean debugMapBuilder = false;
-    public boolean debugFPS = false;
+    public boolean debugRenderTime = false;
+    public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
 
-    public TileManager tileManager = new TileManager(this);
     public GameState gameState = GameState.TITLE;
-    public long gameTime = 0;
+    public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
     public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
@@ -56,10 +54,12 @@ public class GamePanel extends JPanel implements Runnable {
     public Sound sound = new Sound();
     public Config config = new Config(this);
     public LevelManager levelManager = new LevelManager(this);
-    public EventHandler eventHandler;
-    public BufferedImage background;
+    public EventHandler eventHandler = new EventHandler(this);
     public HashMap<String, Quest> quests = new HashMap<>();
     public QuestManager questManager = new QuestManager(this);
+    public long gameTime = 0;
+    public int fps;
+    public BufferedImage background;
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
@@ -73,120 +73,183 @@ public class GamePanel extends JPanel implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
-    public GamePanel() {
-        this.setPreferredSize(new DimensionUIResource(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
-        this.setBackground(Color.BLACK);
-        this.setDoubleBuffered(true);
-        this.addKeyListener(keyHandler);
-        this.setFocusable(true);
+    public GamePanel(int width, int height) {
+        setPreferredSize(new Dimension(width, height));
+        setIgnoreRepaint(true);
+        setFocusable(true);
+        addKeyListener(this.player.keyHandler);
+        loadLevels();
     }
 
-    public void setupGame() {
-        restartLevel();
-        loadLevels();
-        this.sound.mute = false;
-        if (this.isFullScreen) {
-            this.fullScreen = new BufferedImage(this.fullScreenWidth, this.fullScreenHeight, BufferedImage.TYPE_INT_ARGB);
-            this.graphics = (Graphics2D) this.fullScreen.getGraphics();
-            setFullScreen();
+    public void startGame() {
+        if (this.config.dataWrapper.player == null) {
+            newGame();
+        } else {
+            loadGame();
         }
     }
 
-    public void startGameThread() {
-        this.gameThread = new Thread(this);
+    public void loadGame() {
+        this.config.loadConfig();
+        this.restartLevel();
+        this.levelManager.loadLevel(this.config.dataWrapper.currentLevelIndex);
+        this.gameState = GameState.PLAY;
+        this.stopMusic();
+        this.playMusic(Constants.SOUND_BG_01);
+        System.out.println("Loaded game.");
+    }
+
+    public void newGame() {
+        this.gameState = GameState.PLAY;
+        this.config.dataWrapper = new DataWrapper();
+        this.restartLevel();
+        this.levelManager.loadLevel(1);
+        this.stopMusic();
+        this.playMusic(Constants.SOUND_BG_01);
+        System.out.println("New game.");
+    }
+
+    public void start() {
+        if (this.running) return;
+        this.running = true;
+        this.sound.mute = false;
+        this.gameThread = new Thread(this, "GameThread");
         this.gameThread.start();
+    }
+
+    public void stop() {
+        this.running = false;
+        try {
+            if (this.gameThread != null) {
+                this.gameThread.join();
+            }
+        } catch (InterruptedException ignored) {}
     }
 
     @Override
     public void run() {
-        double drawInterval = Constants.NANO_SECOND / Constants.FPS;
-        double delta = 0;
+        // Wait until the Canvas is displayable
+        while (!isDisplayable()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {}
+        }
+
+        // Create BufferStrategy safely
+        createBufferStrategy(3);
+        this.bufferStrategy = getBufferStrategy();
+
+        final int TARGET_FPS = 60;
+        final double NS_PER_UPDATE = 1_000_000_000.0 / TARGET_FPS;
+
         long lastTime = System.nanoTime();
-        long currentTime;
-        long startTime = lastTime;
-        long timer = 0;
-        int drawCount = 0;
+        long timer = System.currentTimeMillis();
+        double delta = 0;
+        int frames = 0;
 
-        while (gameThread != null) {
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
-            lastTime = currentTime;
+        while (running) {
+            long now = System.nanoTime();
+            double elapsed = now - lastTime; // elapsed nanoseconds since last loop
+            delta += elapsed / NS_PER_UPDATE;
+            lastTime = now;
+            this.gameTime += (long) elapsed;
 
-            this.gameTime = currentTime - startTime;
+            long updateStart, updateTime, renderStart, renderTime;
 
-            if (delta >= 1) {
+            // Update game logic at fixed timestep
+            while (delta >= 1) {
+                updateStart = System.nanoTime();
                 update();
-                if (this.isFullScreen) {
-                    drawToGraphics();
-                    drawToScreen();
-                } else {
-                    repaint();
+                updateTime = System.nanoTime() - updateStart;
+                if (this.debugUpdateTime) {
+                    System.out.println("Update: " + (updateTime / 1_000_000.0) + " ms");
                 }
                 delta--;
-                drawCount++;
             }
 
-            if (timer >= Constants.NANO_SECOND) {
-                if (debugFPS) {
-                    System.out.print("FPS: " + drawCount + " ");
-                }
-                drawCount = 0;
-                timer = 0;
+            // Render as often as possible
+            renderStart = System.nanoTime();
+            render();
+            renderTime = System.nanoTime() - renderStart;
+            if (this.debugRenderTime) {
+                System.out.println("Render: " + (renderTime / 1_000_000.0) + " ms");
+            }
+
+            frames++;
+
+            // Maintain FPS by sleeping the thread
+            long frameTime = System.nanoTime() - now;
+            long sleepTime = (long) NS_PER_UPDATE - frameTime;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
+                } catch (InterruptedException ignored) {}
+            }
+
+            if (System.currentTimeMillis() - timer >= 1000) {
+                this.fps = frames;
+                frames = 0;
+                timer += 1000;
             }
         }
     }
 
-    public void update() {
+    private void update() {
         if (this.gameState == GameState.PLAY) {
             this.player.update();
             for (Entity npc : new ArrayList<>(this.npcs)) {
                 npc.update();
             }
-            levelManager.update();
+            this.levelManager.update();
         }
     }
 
-    public void drawToGraphics() {
-        switch (this.gameState) {
-            case GameState.TITLE:
-                titleScreen(this.graphics);
-                break;
-            default:
-                drawGame(this.graphics);
-                break;
-        }
+    private void render() {
+        if (this.bufferStrategy == null) return;
+        do {
+            do {
+                Graphics2D graphics2D = null;
+                try {
+                    graphics2D = (Graphics2D) this.bufferStrategy.getDrawGraphics();
+                    graphics2D.clearRect(0, 0, getWidth(), getHeight());
+                    switch (this.gameState) {
+                        case TITLE -> drawTitleScreen(graphics2D);
+                        default -> drawGame(graphics2D);
+                    }
+
+                } finally {
+                    if (graphics2D != null) graphics2D.dispose();
+                }
+            } while (this.bufferStrategy.contentsRestored());
+
+            this.bufferStrategy.show();
+            Toolkit.getDefaultToolkit().sync(); // IMPORTANT: reduces tearing on Windows
+        } while (this.bufferStrategy.contentsLost());
     }
 
-    public void drawToScreen() {
-        Graphics graphicsBasic = getGraphics();
-        graphicsBasic.drawImage(this.fullScreen, 0, 0, this.fullScreenWidth, this.fullScreenHeight, null);
-        graphicsBasic.dispose();
+    private void drawTitleScreen(Graphics2D graphics2D) {
+        this.ui.titleScreen(graphics2D);
     }
 
-    public void setFullScreen() {
-        GraphicsEnvironment graphicsEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice graphicsDevice = graphicsEnv.getDefaultScreenDevice();
-        graphicsDevice.setFullScreenWindow(Main.window);
-        this.fullScreenWidth = Main.window.getWidth();
-        this.fullScreenHeight = Main.window.getHeight();
-    }
+    private void drawGame(Graphics2D graphics2D) {
+        try {
+            this.tileManager.draw(graphics2D);
+            for (Effect effect : effects) effect.draw(graphics2D);
+            for (SuperObject object : objects) object.draw(graphics2D);
 
-    public void paintComponent(Graphics graphics) {
-        if (this.isFullScreen) {
-            return;
+            this.entityList.add(this.player);
+            this.entityList.addAll(this.npcs);
+            Collections.sort(this.entityList, Comparator.comparingInt(entity -> entity.worldY));
+            for (Entity entity : this.entityList) entity.draw(graphics2D);
+            this.entityList.clear();
+
+            this.projectileManager.draw(graphics2D);
+            this.levelManager.draw(graphics2D);
+            this.ui.draw(graphics2D);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        super.paintComponent(graphics);
-        Graphics2D graphics2D = (Graphics2D) graphics;
-        switch (this.gameState) {
-            case GameState.TITLE:
-                titleScreen(graphics2D);
-                break;
-            default:
-                drawGame(graphics2D);
-                break;
-        }
-        graphics2D.dispose();
     }
 
     public void playMusic(String soundFile) {
@@ -201,39 +264,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.sound.playSoundEffect(soundFile);
     }
 
-    private void titleScreen(Graphics2D graphics2D) {
-        this.ui.titleScreen(graphics2D);
-    }
-
-    private void drawGame(Graphics2D graphics2D) {
-        try {
-            this.tileManager.draw(graphics2D);
-
-            for (Effect effect : effects) {
-                effect.draw(graphics2D);
-            }
-            for (SuperObject object : this.objects) {
-                object.draw(graphics2D);
-            }
-
-            this.projectileManager.draw(graphics2D);
-
-            entityList.add(this.player);
-            entityList.addAll(this.npcs);
-            Collections.sort(entityList, Comparator.comparingInt(e -> e.worldY));
-            for (Entity entity : this.entityList) {
-                entity.draw(graphics2D);
-            }
-            entityList.clear();
-
-            this.levelManager.draw(graphics2D);
-
-            this.ui.draw(graphics2D);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
     public void restartLevel() {
         this.objects.clear();
         this.npcs.clear();
@@ -241,7 +271,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.projectileManager.clear();
         this.effects.clear();
         this.player.setDefaultValues();
-        // this.gameState = GameState.PLAY;
     }
 
     private void loadLevels() {
@@ -249,7 +278,5 @@ public class GamePanel extends JPanel implements Runnable {
         levelManager.addLevel(new Level01(this));
         levelManager.addLevel(new Level02(this));
         levelManager.addLevel(new Level03(this));
-        levelManager.loadLevel(0);
     }
 }
-
