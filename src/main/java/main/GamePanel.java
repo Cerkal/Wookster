@@ -20,6 +20,7 @@ import entity.Entity;
 import entity.Player;
 import levels.Level01;
 import levels.Level02;
+import levels.Level03;
 import levels.Level00;
 import objects.SuperObject;
 import objects.projectiles.ProjectileManager;
@@ -247,6 +248,7 @@ public class GamePanel extends JPanel implements Runnable {
         levelManager.addLevel(new Level00(this));
         levelManager.addLevel(new Level01(this));
         levelManager.addLevel(new Level02(this));
+        levelManager.addLevel(new Level03(this));
         levelManager.loadLevel(0);
     }
 }

@@ -5,8 +5,11 @@ import java.util.*;
 
 public class LevelCreator {
 
+    private static final int CLEAR = 0;
     private static final int WATER = 12;
     private static final int GRASS = 10;
+    private static final int TREE = 40;
+    private static final int WOOD = 64;
 
     private static final String INPUT_PATH = "/maps/build/raw_map.txt";
     private static final String OUTPUT_PATH = "src/main/resources/maps/build/generated_map.txt";
@@ -22,8 +25,10 @@ public class LevelCreator {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int tile = mapTileNum[x][y];
-                if (tile == GRASS) {
-                    newMap[x][y] = determineEdgeTile(x, y);
+                if (tile == GRASS || tile == TREE) {
+                    newMap[x][y] = determineEdgeTileGrass(x, y);
+                } else if (tile == WOOD) {
+                    newMap[x][y] = determineEdgeTileWood(x, y);
                 } else {
                     newMap[x][y] = tile;
                 }
@@ -33,7 +38,48 @@ public class LevelCreator {
         saveMap(outputPath, newMap, rows, cols);
     }
 
-    private int determineEdgeTile(int x, int y) {
+    private int determineEdgeTileWood(int x, int y) {
+        boolean up = isClear(x, y - 1);
+        boolean down = isClear(x, y + 1);
+        boolean left = isClear(x - 1, y);
+        boolean right = isClear(x + 1, y);
+
+        boolean upLeft = isClear(x - 1, y - 1);
+        boolean upRight = isClear(x + 1, y - 1);
+        boolean downLeft = isClear(x - 1, y + 1);
+        boolean downRight = isClear(x + 1, y + 1);
+
+        // --- Outer Corners ---
+        if (up && left && !down && !right) return 60;   // top-left outer
+        if (up && right && !down && !left) return 63;   // top-right outer
+        if (down && left && !up && !right) return 61;   // bottom-left outer
+        if (down && right && !up && !left) return 62;   // bottom-right outer
+
+        // --- Straight Edges ---
+        if (up && !down) return 58;       // water above
+        if (down && !up) return 53;       // water below
+        if (left && !right) return 56;    // water left
+        if (right && !left) return 55;    // water right
+
+        // --- Inner Corners (water diagonal, but not directly) ---
+        if (upLeft && !up && !left) return 59;          // inner top-left
+        if (upRight && !up && !right) return 57;        // inner top-right
+        if (downLeft && !down && !left) return 54;      // inner bottom-left
+        if (downRight && !down && !right) return 52;    // inner bottom-right
+
+        // Surrounded -> still grass
+        return WOOD;
+    }
+
+    private boolean isClear(int x, int y) {
+        if (x < 0 || y < 0 || x >= mapTileNum.length || y >= mapTileNum[0].length) {
+            return false;
+        }
+        return mapTileNum[x][y] == CLEAR;
+    }
+
+
+    private int determineEdgeTileGrass(int x, int y) {
         boolean up = isWater(x, y - 1);
         boolean down = isWater(x, y + 1);
         boolean left = isWater(x - 1, y);
@@ -99,7 +145,11 @@ public class LevelCreator {
         try (PrintWriter pw = new PrintWriter(new FileWriter(path))) {
             for (int y = 0; y < rows; y++) {
                 for (int x = 0; x < cols; x++) {
-                    pw.print(newMap[x][y]);
+                    if (newMap[x][y] == 0) {
+                        pw.print("00");
+                    } else {
+                        pw.print(newMap[x][y]);
+                    }
                     if (x < cols - 1) pw.print(" ");
                 }
                 pw.println();
