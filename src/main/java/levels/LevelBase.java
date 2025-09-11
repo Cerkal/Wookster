@@ -15,6 +15,7 @@ import main.DataWrapper;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import main.GamePanel.GameState;
 import main.InventoryItem.InventoryItemWrapper;
 import objects.CarryPotionObject;
 import objects.PotionObject;
@@ -45,8 +46,23 @@ public abstract class LevelBase {
         this.gamePanel = gamePanel;
         this.mapPath = Constants.WORLD_00;
         this.gamePanel.objects.clear();
-        // this.gamePanel.eventHandler = new EventHandler(this.gamePanel);
         this.levelIndex = this.gamePanel.levelManager.currentLevelIndex;
+    }
+
+    public void loading() {
+        this.gamePanel.gameState = GameState.LOADING;
+        long loadingStartTime = System.currentTimeMillis();
+        new Thread(() -> {
+            init();
+            long elapsed = System.currentTimeMillis() - loadingStartTime;
+            if (elapsed < Constants.MIN_LOADING) {
+                try {
+                    Thread.sleep(Constants.MIN_LOADING - elapsed);
+                } catch (InterruptedException ignored) {}
+            }
+
+            this.gamePanel.gameState = GameState.PLAY;
+        }).start();
     }
 
     public void init() {

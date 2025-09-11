@@ -26,7 +26,7 @@ public class LevelManager {
     public void loadLevel(int index) {
         if (index >= 0 && index < levels.size()) {
             currentLevelIndex = index;
-            getCurrentLevel().init();
+            getCurrentLevel().loading();
         }
     }
 

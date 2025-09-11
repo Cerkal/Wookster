@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class Constants {
     public static final int MAX_SCREEN_ROW = 12;
     public static final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL;
     public static final int SCREEN_HEIGHT = TILE_SIZE * MAX_SCREEN_ROW;
+    public static final int MIN_LOADING = 1000; // ms
+    public static final int DOT_UPDATE_INTERVAL = 100; // ms
 
     public static final int MAX_WORLD_COL = 50;
     public static final int MAX_WORLD_ROW = 50;
@@ -51,6 +54,7 @@ public class Constants {
     public static final String GAME_TITLE = "BLAM!";
     public static final String GAME_PAUSED = "Game Paused";
     public static final String GAME_DEATH = "Dead";
+    public static final String GAME_LOADING = "Loading";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
@@ -65,7 +69,14 @@ public class Constants {
         )
     );
     public static final String GAME_INVENTORY = "Inventory";
+    public static final String GAME_QUESTS = "Quests";
+    
     public static final int GAME_INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
+
+    public static final List<String> INVENTORY_TABS = Arrays.asList(
+        GAME_INVENTORY,
+        GAME_QUESTS
+    );
 
     // Files
     public static final String SAVE_FILE = "save.json";

@@ -29,7 +29,10 @@ public class GamePanel extends Canvas implements Runnable {
     private boolean running = false;
     private BufferStrategy bufferStrategy;
     
+    private static final String GAME_THREAD = "GameThread";
+    
     public enum GameState {
+        LOADING,
         TITLE,
         PLAY,
         PAUSE,
@@ -60,6 +63,7 @@ public class GamePanel extends Canvas implements Runnable {
     public long gameTime = 0;
     public int fps;
     public BufferedImage background;
+    public boolean loaded = true;
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
@@ -103,7 +107,7 @@ public class GamePanel extends Canvas implements Runnable {
         this.gameState = GameState.PLAY;
         this.config.dataWrapper = new DataWrapper();
         this.restartLevel();
-        this.levelManager.loadLevel(1);
+        this.levelManager.loadLevel(0);
         this.stopMusic();
         this.playMusic(Constants.SOUND_BG_01);
         System.out.println("New game.");
@@ -113,7 +117,7 @@ public class GamePanel extends Canvas implements Runnable {
         if (this.running) return;
         this.running = true;
         this.sound.mute = false;
-        this.gameThread = new Thread(this, "GameThread");
+        this.gameThread = new Thread(this, GAME_THREAD);
         this.gameThread.start();
     }
 
@@ -135,7 +139,6 @@ public class GamePanel extends Canvas implements Runnable {
             } catch (InterruptedException ignored) {}
         }
 
-        // Create BufferStrategy safely
         createBufferStrategy(3);
         this.bufferStrategy = getBufferStrategy();
 
@@ -156,7 +159,7 @@ public class GamePanel extends Canvas implements Runnable {
 
             long updateStart, updateTime, renderStart, renderTime;
 
-            // Update game logic at fixed timestep
+            // Update
             while (delta >= 1) {
                 updateStart = System.nanoTime();
                 update();
@@ -167,7 +170,7 @@ public class GamePanel extends Canvas implements Runnable {
                 delta--;
             }
 
-            // Render as often as possible
+            // Render
             renderStart = System.nanoTime();
             render();
             renderTime = System.nanoTime() - renderStart;
@@ -214,6 +217,7 @@ public class GamePanel extends Canvas implements Runnable {
                     graphics2D.clearRect(0, 0, getWidth(), getHeight());
                     switch (this.gameState) {
                         case TITLE -> drawTitleScreen(graphics2D);
+                        case LOADING -> drawLoadingScreen(graphics2D);
                         default -> drawGame(graphics2D);
                     }
 
@@ -231,16 +235,20 @@ public class GamePanel extends Canvas implements Runnable {
         this.ui.titleScreen(graphics2D);
     }
 
+    private void drawLoadingScreen(Graphics2D graphics2D) {
+        this.ui.drawLoadingScreen(graphics2D);
+    }
+
     private void drawGame(Graphics2D graphics2D) {
         try {
             this.tileManager.draw(graphics2D);
-            for (Effect effect : effects) effect.draw(graphics2D);
-            for (SuperObject object : objects) object.draw(graphics2D);
+            for (Effect effect : new ArrayList<>(effects)) effect.draw(graphics2D);
+            for (SuperObject object : new ArrayList<>(objects)) object.draw(graphics2D);
 
             this.entityList.add(this.player);
             this.entityList.addAll(this.npcs);
             Collections.sort(this.entityList, Comparator.comparingInt(entity -> entity.worldY));
-            for (Entity entity : this.entityList) entity.draw(graphics2D);
+            for (Entity entity : new ArrayList<>(this.entityList)) entity.draw(graphics2D);
             this.entityList.clear();
 
             this.projectileManager.draw(graphics2D);

@@ -9,11 +9,14 @@ public class Main {
     public static void main(String[] args) {
         window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(true);
+        window.setResizable(false);
+        window.setUndecorated(true);
         window.setTitle(Constants.GAME_TITLE);
 
-        // Create GamePanel with size
-        GamePanel gamePanel = new GamePanel(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        GamePanel gamePanel = new GamePanel(
+            Constants.SCREEN_WIDTH,
+            Constants.SCREEN_HEIGHT
+        );
 
         gamePanel.playMusic(Constants.SOUND_TITLE_SCREEN);
         gamePanel.config.loadConfig();
@@ -23,10 +26,9 @@ public class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         gamePanel.requestFocus();
-        // gamePanel.setupGame();
         gamePanel.start();
 
-        // Start the game loop on the EDT to ensure the Canvas is displayable
+        // Game loop to be added to EDT
         javax.swing.SwingUtilities.invokeLater(gamePanel::start);
 
         // Debug visual pipelines bro

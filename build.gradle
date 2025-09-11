@@ -45,30 +45,45 @@ tasks.withType(JavaCompile) {
 // }
 
 // Portable build, No installer
-tasks.register('jpackagePortable', Exec) {
+tasks.register("jpackagePortable", Exec) {
     dependsOn build
-
-    def inputDir = "$buildDir/jars"       // staging area for jars
-    def outputDir = "$buildDir/portable"  // final portable app output
+    workingDir "$buildDir/portable"
+    
+    def inputDir = file("$buildDir/portable/input")
+    def outputDir = file("$buildDir/portable/output/Wookster")
 
     doFirst {
+        // Clean input folder
         mkdir(inputDir)
-        mkdir(outputDir)
         copy {
             from("$buildDir/libs/Wookster-1.0.0.jar")
             into(inputDir)
         }
-    }
 
-    workingDir "$projectDir"
+        // Clean output folder
+        if (outputDir.exists()) {
+            println "Deleting existing output folder..."
+            delete(outputDir)
+        }
+    }
 
     commandLine 'jpackage',
         '--type', 'app-image',
-        '--input', inputDir,
+        '--input', "$buildDir/portable/input",
+        '--dest', "$buildDir/portable/output",
         '--main-jar', 'Wookster-1.0.0.jar',
         '--main-class', 'main.Main',
         '--name', 'Wookster',
         '--app-version', version,
-        '--icon', "$projectDir/src/main/resources/icons/icon.ico",
-        '--dest', outputDir   // make sure app output is separate
+        '--icon', "$projectDir/src/main/resources/icons/icon.ico"
+
+    doLast {
+        copy {
+            from("$rootDir/Wookster.cfg")
+            into("$buildDir/portable/output/Wookster/app")
+        }
+        println "Copied Wookster.cfg to output/Wookster/app/"
+        println "Completed export"
+        println "Folder location: $buildDir/portable/output/Wookster"
+    }
 }
