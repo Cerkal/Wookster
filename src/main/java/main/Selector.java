@@ -21,8 +21,11 @@ public class Selector implements KeyListener {
     List<List<String>> selectorItemsLong = new ArrayList<>();
 
     public int commandNumber = 0;
+    public int tabNumber = 0;
+
     int pageSize = 6;
     int pageNumber = 0;
+    int tabSize = 2;
     String selectedItem;
     int markedSelectedIndex;
     boolean markedSelected;
@@ -33,6 +36,8 @@ public class Selector implements KeyListener {
     Font customFontMedium;
     Font customFontLarge;
 
+    boolean selectorEnabled = true;
+
     class SelectionResult {
         public boolean selected = false;
         public String selectedName;
@@ -41,6 +46,11 @@ public class Selector implements KeyListener {
         public String getSelectedName() {
             return this.selectedName.replaceAll("\\(\\d+\\)", "").trim();
         }
+    }
+
+    public Selector(GamePanel gamePanel, int tabSize) {
+        this(gamePanel);
+        this.tabSize = tabSize;
     }
 
     public Selector(GamePanel gamePanel) {
@@ -64,8 +74,9 @@ public class Selector implements KeyListener {
     }
 
     public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter, List<String> selectorItems) {
-        if (selectorItems == null) { return null; }
-
+        if (selectorItems == null || selectorItems.isEmpty()) {
+            return null;
+        }
         this.originalSelectorItems = selectorItems;
 
         if (selectorItemsLong == null || selectorItemsLong.isEmpty() || !selectorItemsLong.get(0).equals(selectorItems)) {
@@ -99,6 +110,13 @@ public class Selector implements KeyListener {
         return this.result;
     }
 
+    public void disableSelection() {
+        this.commandNumber = 0;
+    }
+
+    public void enableSelection() {
+        this.commandNumber = 0;
+    }
 
     public void draw(Graphics2D graphics2D, int x, int y, int delimiter) {
         graphics2D.setFont(this.customFont);
@@ -127,6 +145,7 @@ public class Selector implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (this.gamePanel.gameState == GameState.PLAY) { return; }
+        if (!this.selectorEnabled) { return; }
         int code = e.getKeyCode();
         if (selectorItems == null || selectorItems.isEmpty()) { return; }
         if (code == KeyEvent.VK_W) {
@@ -134,6 +153,7 @@ public class Selector implements KeyListener {
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             if (this.commandNumber < 0) {
                 this.commandNumber = this.originalSelectorItems.size() - 1;
+                System.out.println(this.commandNumber);
             }
         }
         if (code == KeyEvent.VK_S) {
@@ -141,13 +161,34 @@ public class Selector implements KeyListener {
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             if (this.commandNumber >= this.originalSelectorItems.size()) {
                 this.commandNumber = 0;
+                System.out.println(this.commandNumber);
+            }
+        }
+        if (this.tabSize > 1) {
+            if (code == KeyEvent.VK_A) {
+                this.tabNumber--;
+                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                if (this.tabNumber < 0) {
+                    this.tabNumber = this.originalSelectorItems.size() - 1;
+                    this.commandNumber = 0;
+                }
+            }
+            if (code == KeyEvent.VK_D) {
+                this.tabNumber++;
+                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                if (this.tabNumber > this.tabSize) {
+                    this.tabNumber = 0;
+                    this.commandNumber = 0;
+                }
             }
         }
         if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+            System.out.println(this.commandNumber);
             this.selectedItem = this.originalSelectorItems.get(this.commandNumber);
             this.markedSelectedIndex = this.commandNumber;
             this.result.selected = true;
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+            this.clear();
         }
     }
 

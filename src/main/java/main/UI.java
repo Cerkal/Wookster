@@ -34,6 +34,13 @@ public class UI {
     boolean dialogueDisplay = false;
     public boolean dialoguePrinting = false;
     public boolean dialogueSkip = false;
+    public boolean debug = false;
+
+    private long loadingDotUpdate = 0;
+    private int loadingDotCount = 0;
+    private int inventoryTab = 0;
+
+    private int questSelection = 0;
 
     final static int PADDING_X = 20;
     final static int PADDING_Y = 10;
@@ -42,7 +49,7 @@ public class UI {
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        this.selector = new Selector(gamePanel);
+        this.selector = new Selector(gamePanel, 2);
         this.gamePanel.addKeyListener(selector);
         // Load custom font
         try {
@@ -133,6 +140,31 @@ public class UI {
         }
     }
 
+    public void drawLoadingScreen(Graphics2D graphics2D) {
+
+        long now = System.currentTimeMillis();
+        if (now - this.loadingDotUpdate >= Constants.DOT_UPDATE_INTERVAL) {
+            this.loadingDotCount = (this.loadingDotCount + 1) % 4;
+            this.loadingDotUpdate = now;
+        }
+        
+        String dots = switch (this.loadingDotCount) {
+            case 1 -> ".";
+            case 2 -> "..";
+            case 3 -> "...";
+            default -> "";
+        };
+        String loadingText = Constants.GAME_LOADING + dots;
+        
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        graphics2D.setFont(this.customFontMedium);
+        graphics2D.setColor(Color.WHITE);
+        int x = getXForCenteredText(graphics2D, Constants.GAME_LOADING + "...", this.customFontMedium);
+        int y = getYForCenteredText();
+        graphics2D.drawString(loadingText, x, y);
+    }
+
     public void drawDeathScreen(Graphics2D graphics2D) {
         if (this.gamePanel.gameState == GamePanel.GameState.DEATH) {
             graphics2D.setFont(this.customFontLarge);
@@ -146,45 +178,96 @@ public class UI {
 
     public void drawInventory(Graphics2D graphics2D) {
         if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
+
             graphics2D.setFont(this.customFontLarge);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_INVENTORY, this.customFontLarge);
+
+            String inventoryTabText = "";
+            try {
+                inventoryTabText = Constants.INVENTORY_TABS.get(this.inventoryTab);
+            } catch (Exception e) {
+                this.inventoryTab = 0;
+            }
+            int x = getXForCenteredText(graphics2D, inventoryTabText, this.customFontLarge);
             int y = getYForCenteredText();
 
             graphics2D.setColor(Color.BLACK);
             int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
             int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRoundRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height, 15, 15);
+            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
             graphics2D.setColor(Color.WHITE);
 
-            y = y - 160;
-            graphics2D.drawString(Constants.GAME_INVENTORY, Constants.TILE_SIZE * 2, y);
-            y += Constants.TILE_SIZE;
+            this.inventoryTab = selector.tabNumber;
 
-            // Selector
-            try {
-                HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
-                List<String> inventory = this.gamePanel.player.getInventoryString();
-                for (int i = 0; i < inventory.size() - 1; i++) {
-                    if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                        selector.markedSelected(i);
+            switch (this.inventoryTab) {
+                case 0:
+                    // Selector
+                    try {
+                        HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
+                        List<String> inventory = this.gamePanel.player.getInventoryString();
+                        for (int i = 0; i < inventory.size() - 1; i++) {
+                            if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
+                                selector.markedSelected(i);
+                            }
+                        }
+                        
+                        SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
+                        
+                        System.out.println(selectedItem.selectedName);
+                        System.out.println(selectedItem.selectedIndex);
+
+                        if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
+                            InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                            inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
+                        }
+                        if (selectedItem != null && selectedItem.selected) {
+                            InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                            inventoryItem.select();
+                            this.gamePanel.gameState = GameState.PLAY;
+                            selector.clear();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        this.selector = new Selector(this.gamePanel);
                     }
-                }
-                SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
-                
-                if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                    inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
-                }
-                if (selectedItem != null && selectedItem.selected) {
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                    inventoryItem.select();
-                    this.gamePanel.gameState = GameState.PLAY;
-                    selector.clear();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                this.selector = new Selector(this.gamePanel);
+                    break;
+                case 1:
+                    HashMap<String, Quest> completedQuestMap = this.gamePanel.questManager.getCompletedQuests();
+                    List<String> completedQuestList = new ArrayList<>(completedQuestMap.keySet());
+                    List<String> allQuests = new ArrayList<>();
+                    for (String quest : completedQuestList) {
+                        quest += " [X]";
+                        allQuests.add(quest);
+                    }
+                    HashMap<String, Quest> currentQuestMap = this.gamePanel.questManager.getCurrentQuests();
+                    List<String> currentQuestList = new ArrayList<>(currentQuestMap.keySet());
+                    allQuests.addAll(currentQuestList);
+
+                    selector.markedSelected(questSelection);
+                    SelectionResult selectedItem = selector.selector(
+                        graphics2D,
+                        Constants.TILE_SIZE * 2 + 20,
+                        Constants.TILE_SIZE * 5 - 30,
+                        Constants.NEW_LINE_SIZE,
+                        allQuests
+                    );
+                    break;
+                default:
+                    break;
             }
+
+            y = y - 160;
+            String arrowLeft  = "<";
+            String arrowRight = ">";
+            
+            graphics2D.setFont(this.customFontMedium);
+            int textWidth = graphics2D.getFontMetrics(this.customFontLarge).stringWidth(inventoryTabText);
+            graphics2D.drawString(arrowLeft, x - Constants.TILE_SIZE - 15, y - 5);
+            graphics2D.drawString(arrowRight, x + textWidth + Constants.TILE_SIZE, y - 5);
+
+            graphics2D.setFont(this.customFontLarge);
+            graphics2D.drawString(inventoryTabText, x, y);
+            y += Constants.TILE_SIZE;
+            
         }
     }
 
@@ -217,6 +300,7 @@ public class UI {
     }
 
     private void drawDebug(Graphics2D graphics2D) {
+        if (!this.debug) { return; }
         String playerLocation = locationToString(
             this.gamePanel.player.worldX/Constants.TILE_SIZE,
             this.gamePanel.player.worldY/Constants.TILE_SIZE
