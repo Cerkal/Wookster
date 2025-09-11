@@ -53,7 +53,7 @@ public class KeyHandler implements KeyListener {
                     this.enterPressed = true;
                 }
                 if (code == KeyEvent.VK_I) {
-                    this.gamePanel.ui.selector.commandNumber = 0;
+                    // this.gamePanel.ui.screenSelector.commandNumber = 0;
                     this.gamePanel.gameState = GameState.INVENTORY;
                 }
                 if (code == KeyEvent.VK_BACK_QUOTE) {

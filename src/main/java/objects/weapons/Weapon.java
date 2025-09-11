@@ -104,8 +104,8 @@ public abstract class Weapon {
             this.icon = ImageIO.read(getClass().getResourceAsStream(this.iconImages.get(this.weaponType)));
             this.icon = Utils.scaleImage(
                 this.icon,
-                Constants.GAME_INVENTORY_ICON_SIZE,
-                Constants.GAME_INVENTORY_ICON_SIZE
+                Constants.INVENTORY_ICON_SIZE,
+                Constants.INVENTORY_ICON_SIZE
             );
         } catch (Exception e) {
             e.printStackTrace();

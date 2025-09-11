@@ -15,6 +15,7 @@ import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
 import main.Quest;
+import main.QuestDescriptions;
 import main.QuestManager;
 import objects.CarryPotionObject;
 import objects.DoorObject;
@@ -33,10 +34,6 @@ public class Level00 extends LevelBase {
     Entity oldmanPigs;
     Entity oldmanInventory;
     Entity oldmanDad;
-
-    private static String QUEST_PIGS = "Pigs";
-    private static String QUEST_INVENTORY = "Inventory";
-    private static String QUEST_MOM = "Find Mom";
 
     List<Entity> pigs = Arrays.asList(
         new Animal(gamePanel, 20, 8),
@@ -59,7 +56,7 @@ public class Level00 extends LevelBase {
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
             @Override
             public void postDialogAction() {
-                this.gamePanel.questManager.addQuest(new Quest(QUEST_PIGS));
+                this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.PIGS));
             }
         };
         this.oldmanPigs.invincable = true;
@@ -69,7 +66,7 @@ public class Level00 extends LevelBase {
         this.oldmanDad = new NPCGeneric(gamePanel, 16, 27) {
             @Override
             public void postDialogAction() {
-                this.gamePanel.questManager.addQuest(new Quest(QUEST_MOM));
+                this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.MOM));
                 this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
                 this.gamePanel.levelManager.loadNextLevel();
             }
@@ -112,7 +109,7 @@ public class Level00 extends LevelBase {
                 }
             }
         }
-        if (inPen.size() == pigCount && this.questManager.isActiveQuest(QUEST_PIGS)) {
+        if (inPen.size() == pigCount && this.questManager.isActiveQuest(QuestDescriptions.PIGS)) {
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -135,10 +132,10 @@ public class Level00 extends LevelBase {
             this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
                 @Override
                 public void postDialogAction() {
-                    Quest quest = this.gamePanel.questManager.getQuest(QUEST_PIGS);
+                    Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
                     if (quest != null) {
                         quest.completeQuest(this.gamePanel);
-                        this.gamePanel.questManager.addQuest(new Quest(QUEST_INVENTORY));
+                        this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.INVENTORY));
                     } else {
                         String[] lines = Dialogue.TUTORIAL_PIGS_END;
                         this.setDialogue(lines);
@@ -150,15 +147,15 @@ public class Level00 extends LevelBase {
             this.gamePanel.npcs.add(this.oldmanPigs);
         }
 
-        if (this.gamePanel.questManager.isCompletedQuest(QUEST_PIGS)) {
+        if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {
                 this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
                     @Override
                     public void postDialogAction() {
-                        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
-                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
+                        if (this.gamePanel.questManager.isActiveQuest(QuestDescriptions.INVENTORY)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.INVENTORY);
                             if (inventoryQuest.getProgress() == 0) {
                                 this.gamePanel.objects.add(
                                     new CarryPotionObject(
@@ -178,22 +175,22 @@ public class Level00 extends LevelBase {
                 this.gamePanel.npcs.add(this.oldmanInventory);
             }
 
-            if (this.gamePanel.questManager.getProgress(QUEST_INVENTORY) == 25) {
+            if (this.gamePanel.questManager.getProgress(QuestDescriptions.INVENTORY) == 25) {
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_REMINDER);
             }
 
             if (
                 this.gamePanel.player.spells.containsKey(SuperSpell.SpellType.SPEED_SPELL) &&
-                this.gamePanel.questManager.getProgress(QUEST_INVENTORY) < 50
+                this.gamePanel.questManager.getProgress(QuestDescriptions.INVENTORY) < 50
             ){
-                Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
+                Quest inventoryQuest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.INVENTORY);
                 inventoryQuest.setProgress(50);
                 this.gamePanel.npcs.remove(this.oldmanInventory);
                 this.oldmanInventory = new NPCGeneric(gamePanel, 36, 25) {
                     @Override
                     public void postDialogAction() {
-                        if (this.gamePanel.questManager.isActiveQuest(QUEST_INVENTORY)) {
-                            Quest inventoryQuest = this.gamePanel.questManager.getQuest(QUEST_INVENTORY);
+                        if (this.gamePanel.questManager.isActiveQuest(QuestDescriptions.INVENTORY)) {
+                            Quest inventoryQuest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.INVENTORY);
                             if (inventoryQuest.getProgress() == 50) {
                                 inventoryQuest.completeQuest(this.gamePanel);
                             }
@@ -206,7 +203,7 @@ public class Level00 extends LevelBase {
             }
         }
 
-        if (this.gamePanel.questManager.isCompletedQuest(QUEST_INVENTORY)) {
+        if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.INVENTORY)) {
             this.gamePanel.objects.remove(this.potionDoor);
         }
     }

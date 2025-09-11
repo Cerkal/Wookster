@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import main.GamePanel.GameState;
-import main.Selector.SelectionResult;
 import spells.SuperSpell.SpellType;
 
 public class UI {
     
     GamePanel gamePanel;
     Selector selector;
+    ScreenSelector screenSelector;
 
     boolean messageDisplay = false;
     long messageStartTime = 0;
@@ -45,11 +45,20 @@ public class UI {
     final static int PADDING_Y = 10;
 
     int commandNumber = 0;
+    int currentTab = 0;
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        this.selector = new Selector(gamePanel);
-        this.gamePanel.addKeyListener(selector);
+
+        // Screen Selector Test
+        this.screenSelector = new ScreenSelector(this.gamePanel);
+
+        for (int i = 0; i < Constants.INVENTORY_TABS.size(); i++) {
+            screenSelector.addScreen(new ArrayList<>());
+        }
+        // Register KeyListener
+        this.gamePanel.addKeyListener(screenSelector);
+
         // Load custom font
         try {
             this.customFontSmall = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_SMALL);
@@ -229,48 +238,126 @@ public class UI {
         }
     }
 
+    private void drawInventoryBox(Graphics2D graphics2D, String screen) {
+        graphics2D.setFont(this.customFontMedium);
+        int x = getXForCenteredText(graphics2D, screen, this.customFontMedium);
+        int y = getYForCenteredText();
+
+        graphics2D.setColor(Color.BLACK);
+        int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
+        int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
+        graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
+        graphics2D.setColor(Color.WHITE);
+
+        y = y - 160;
+        graphics2D.drawString(screen, x, y);
+        y += Constants.TILE_SIZE;
+    }
+
     public void drawInventory(Graphics2D graphics2D) {
+        
         if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
-            graphics2D.setFont(this.customFontLarge);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_INVENTORY, this.customFontLarge);
-            int y = getYForCenteredText();
 
-            graphics2D.setColor(Color.BLACK);
-            int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
-            int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
-            graphics2D.setColor(Color.WHITE);
+            String inventoryTitle = Constants.INVENTORY_TABS.get(this.currentTab);
 
-            y = y - 160;
-            graphics2D.drawString(Constants.GAME_INVENTORY, Constants.TILE_SIZE * 2, y);
-            y += Constants.TILE_SIZE;
+            drawInventoryBox(graphics2D, inventoryTitle);
 
-            // Selector
-            try {
-                HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
-                List<String> inventory = this.gamePanel.player.getInventoryString();
-                for (int i = 0; i < inventory.size() - 1; i++) {
-                    if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                        selector.markedSelected(i);
+            // Set Inventory Items
+            HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
+            List<String> inventory = this.gamePanel.player.getInventoryString();
+            for (int i = 0; i < inventory.size() - 1; i++) {
+                if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
+                    screenSelector.markedSelected(i);
+                }
+            }
+
+            // Inventory Items Index
+            screenSelector.set(Constants.INVENTORY_INDEX, inventory);
+
+            // Set Quests
+            HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
+            List<String> allQuests = this.gamePanel.questManager.getAllQuestsString();
+
+            screenSelector.set(Constants.QUEST_INDEX, allQuests);
+
+            ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
+                graphics2D,
+                Constants.TILE_SIZE * 2 + 20,
+                Constants.TILE_SIZE * 5 - 30,
+                Constants.NEW_LINE_SIZE
+            );
+
+            this.currentTab = selectedItem.selectedScreenIndex;
+
+            System.out.println("Selected Item: " + selectedItem);
+
+            // Handle extra display
+            if (selectedItem != null && !selectedItem.selected) {
+
+                int x = 450 + Constants.TILE_SIZE * 4;
+                int y = Constants.TILE_SIZE * 5 - 20;
+                            
+                // Handle Inventory Item
+                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
+                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    inventoryItem.drawInfo(graphics2D, x, y);
+                }
+
+                // Handle Quest Item
+                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
+                    Quest quest = questMap.get(selectedItem.selectedName);
+                    if (quest != null) {
+                        quest.drawInfo(this.gamePanel, graphics2D, 450, y);
                     }
                 }
-                SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
-                
-                if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                    inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
-                }
-                if (selectedItem != null && selectedItem.selected) {
+            }
+
+            // Handle selected item
+            if (selectedItem != null && selectedItem.selected) {
+
+                // Handle Inventory Item
+                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
                     InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
                     inventoryItem.select();
                     this.gamePanel.gameState = GameState.PLAY;
-                    selector.clear();
+                    screenSelector.clearSelection();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                this.selector = new Selector(this.gamePanel);
+
+                // Handle Quest Item
+                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
+                    this.gamePanel.gameState = GameState.PLAY;
+                    screenSelector.clearSelection();
+                }
             }
+            return;
         }
+
+            
+
+            // // Selector
+            // try {
+            //     HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
+            //     List<String> inventory = this.gamePanel.player.getInventoryString();
+            //     for (int i = 0; i < inventory.size() - 1; i++) {
+            //         if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
+            //             selector.markedSelected(i);
+            //         }
+            //     }
+            //     SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
+                
+            //     if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
+            //         InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+            //         inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
+            //     }
+            //     if (selectedItem != null && selectedItem.selected) {
+            //         InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+            //         inventoryItem.select();
+            //         this.gamePanel.gameState = GameState.PLAY;
+            //         selector.clear();
+            //     }
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
     }
 
     public void deathScreen(Graphics2D graphics2D) {
