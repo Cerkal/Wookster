@@ -135,10 +135,14 @@ public class Level00 extends LevelBase {
             this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
                 @Override
                 public void postDialogAction() {
-                    this.gamePanel.questManager
-                        .getQuest(QUEST_PIGS)
-                        .completeQuest(this.gamePanel);
-                    this.gamePanel.questManager.addQuest(new Quest(QUEST_INVENTORY));
+                    Quest quest = this.gamePanel.questManager.getQuest(QUEST_PIGS);
+                    if (quest != null) {
+                        quest.completeQuest(this.gamePanel);
+                        this.gamePanel.questManager.addQuest(new Quest(QUEST_INVENTORY));
+                    } else {
+                        String[] lines = Dialogue.TUTORIAL_PIGS_END;
+                        this.setDialogue(lines);
+                    }
                 }
             };
             this.oldmanPigs.invincable = true;

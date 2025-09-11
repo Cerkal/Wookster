@@ -28,7 +28,7 @@ public class KeyHandler implements KeyListener {
 
         switch (this.gamePanel.gameState) {
             case GameState.TITLE:
-                gameTileKeys(code);
+                gameTitleKeys(code);
                 break;
             case GameState.PLAY:
                 if (code == KeyEvent.VK_W) {
@@ -75,7 +75,7 @@ public class KeyHandler implements KeyListener {
                 }
                 break;
             case GameState.PAUSE:
-                gameTileKeys(code);
+                gameTitleKeys(code);
                 if (code == KeyEvent.VK_ESCAPE) {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
@@ -136,18 +136,33 @@ public class KeyHandler implements KeyListener {
     public void keyTyped(KeyEvent e) {
     }
 
-    private void gameTileKeys(int code) {
+    private void gameTitleKeys(int code) {
+        int optionCount = Constants.GAME_TITLE_MENU.size() - 1;
+        // if (this.gamePanel.ui.currentScreen != null) {
+        //     switch (this.gamePanel.ui.currentScreen) {
+        //         case Constants.GAME_TITLE_SCREEN_CONTROLS:
+        //             optionCount = Constants.GAME_CONTROLS_LIST.size() - 1;
+        //             this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_CONTROLS;
+        //             break;
+        //         case Constants.GAME_TITLE_SCREEN_OPTIONS:
+        //             optionCount = Constants.GAME_OPTIONS_LIST.size() - 1;
+        //             this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_OPTIONS;
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
         if (code == KeyEvent.VK_W) {
             this.gamePanel.ui.commandNumber--;
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
             if (this.gamePanel.ui.commandNumber < 0) {
-                this.gamePanel.ui.commandNumber = Constants.GAME_TITLE_MENU.size() - 1;
+                this.gamePanel.ui.commandNumber = optionCount;
             }
         }
         if (code == KeyEvent.VK_S) {
             this.gamePanel.ui.commandNumber++;
             this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            if (this.gamePanel.ui.commandNumber >= Constants.GAME_TITLE_MENU.size()) {
+            if (this.gamePanel.ui.commandNumber >= optionCount) {
                 this.gamePanel.ui.commandNumber = 0;
             }
         }
@@ -165,6 +180,22 @@ public class KeyHandler implements KeyListener {
                 case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
                     this.gamePanel.startGame();
                     break;
+                // case Constants.GAME_TITLE_SCREEN_CONTROLS:
+                //     this.gamePanel.ui.commandNumber = 0;
+                //     if (this.gamePanel.ui.currentScreen == Constants.GAME_TITLE_SCREEN_CONTROLS) {
+                //         this.gamePanel.ui.currentScreen = null;
+                //     } else {
+                //         this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_CONTROLS;
+                //     }
+                //     break;
+                // case Constants.GAME_TITLE_SCREEN_OPTIONS:
+                //     this.gamePanel.ui.commandNumber = 0;
+                //     if (this.gamePanel.ui.currentScreen == Constants.GAME_TITLE_SCREEN_OPTIONS) {
+                //         this.gamePanel.ui.currentScreen = null;
+                //     } else {
+                //         this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_OPTIONS;
+                //     }
+                //     break;
                 case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
                     System.exit(0);
                     break;

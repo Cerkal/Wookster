@@ -11,7 +11,8 @@ public class Dialogue {
         "Can you help me with these pigs?",
         "Just deal with them...",
         "Sometimes they just need a good punch.",
-        "Press and hold the " + KeyHandler.SPACEBAR + " to punch."
+        "Press and hold the " + KeyHandler.SPACEBAR + " to punch.",
+        "Come back when you are done."
     };
 
     public static final String[] TUTORIAL_PIGS_POSITIVE = {
@@ -33,6 +34,10 @@ public class Dialogue {
         "Don't know why they all had to die...",
         "Pretty grim...",
         "I don't want to talk to you anymore..."
+    };
+    
+    public static final String[] TUTORIAL_PIGS_END = {
+        "Leave me alone."
     };
 
     public static final String[] TUTORIAL_INVENTORY_START = {
@@ -67,8 +72,8 @@ public class Dialogue {
         "I'm your dad by the way."
     };
 
-    // Level 00
-    public static final String[] LEVEL_00_MOM = {
+    // Level 01
+    public static final String[] LEVEL_01_MOM = {
         "Trees hu?",
         "It's easy to get lost in here.",
         "I was going to make this my home.",

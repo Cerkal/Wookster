@@ -110,6 +110,16 @@ public abstract class LevelBase {
         }
     }
 
+    protected void generateRandomObjects(boolean carry, int number) {
+        for (int i = 0; i < number; i++) {
+            if (carry) {
+                addGameObject(new CarryPotionObject(this.gamePanel));
+            } else {
+                addGameObject(new PotionObject(this.gamePanel));
+            }
+        }
+    }
+
     protected void generateRandomPotions() {
         List<SpellType> spellList = Arrays.asList(SpellType.values());
         for (int i = 0; i < 3; i++) {

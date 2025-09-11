@@ -30,7 +30,7 @@ public class Level02 extends LevelBase {
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 36, 32));
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9);
-        mom.setDialogue(Dialogue.LEVEL_00_MOM);
+        mom.setDialogue(Dialogue.LEVEL_01_MOM);
         this.gamePanel.npcs.add(mom);
 
         this.gamePanel.eventHandler.setRandomDamageTile(5);

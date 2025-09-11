@@ -32,8 +32,14 @@ public class UI {
 
     String currentDialogue = "";
     boolean dialogueDisplay = false;
+
+    public String currentScreen;
     public boolean dialoguePrinting = false;
     public boolean dialogueSkip = false;
+    public boolean debug = false;
+
+    private long loadingDotUpdate = 0;
+    private int loadingDotCount = 0;
 
     final static int PADDING_X = 20;
     final static int PADDING_Y = 10;
@@ -105,16 +111,26 @@ public class UI {
     }
 
     public void titleScreen(Graphics2D graphics2D) {
+        if (currentScreen == Constants.GAME_TITLE_SCREEN_CONTROLS) {
+            drawControllsScreen(graphics2D);
+            return;
+        }
+        if (currentScreen == Constants.GAME_TITLE_SCREEN_OPTIONS) {
+            drawOptionsScreen(graphics2D);
+            return;
+        }
         graphics2D.setColor(Color.BLACK);
         graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         graphics2D.setFont(this.customFontLarge);
         graphics2D.setColor(Color.WHITE);
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
         int y = getYForCenteredText();
-        graphics2D.drawString(Constants.GAME_TITLE, x, y - 100);
+        y = 160;
+        graphics2D.drawString(Constants.GAME_TITLE, x, y);
         graphics2D.setFont(this.customFontMedium);
 
         int i = 0;
+        y += 50;
         for (String menuOption : Constants.GAME_TITLE_MENU) {
             x = getXForCenteredText(graphics2D, menuOption, this.customFontMedium);
             y = y + 50;
@@ -127,10 +143,79 @@ public class UI {
         }
     }
 
+    public void drawControllsScreen(Graphics2D graphics2D) {
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        graphics2D.setFont(this.customFontLarge);
+        graphics2D.setColor(Color.WHITE);
+        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE_SCREEN_CONTROLS, this.customFontLarge);
+        int y = getYForCenteredText();
+        y = 160;
+        graphics2D.drawString(Constants.GAME_TITLE_SCREEN_CONTROLS, x, y);
+        graphics2D.setFont(this.customFontMedium);
+
+        y += 50;
+        for (String control : Constants.GAME_CONTROLS_LIST.keySet()) {
+            String value = Constants.GAME_CONTROLS_LIST.get(control);
+            x = 200;
+            y = y + 50;
+            graphics2D.setColor(Color.WHITE);
+            graphics2D.drawString(control, x, y);
+            graphics2D.drawString(value, 600, y);
+        }
+    }
+
+    public void drawOptionsScreen(Graphics2D graphics2D) {
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        graphics2D.setFont(this.customFontLarge);
+        graphics2D.setColor(Color.WHITE);
+        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE_SCREEN_OPTIONS, this.customFontLarge);
+        int y = getYForCenteredText();
+        y = 160;
+        graphics2D.drawString(Constants.GAME_TITLE_SCREEN_OPTIONS, x, y);
+        graphics2D.setFont(this.customFontMedium);
+
+        y += 50;
+        for (String control : Constants.GAME_OPTIONS_LIST.keySet()) {
+            int value = Constants.GAME_OPTIONS_LIST.get(control);
+            x = 200;
+            y = y + 50;
+            graphics2D.setColor(Color.WHITE);
+            graphics2D.drawString(control, x, y);
+            graphics2D.drawString(String.valueOf(value), 600, y);
+        }
+    }
+
     public void drawPauseScreen(Graphics2D graphics2D) {
         if (this.gamePanel.gameState == GamePanel.GameState.PAUSE) {
             titleScreen(graphics2D);
         }
+    }
+
+    public void drawLoadingScreen(Graphics2D graphics2D) {
+
+        long now = System.currentTimeMillis();
+        if (now - this.loadingDotUpdate >= Constants.DOT_UPDATE_INTERVAL) {
+            this.loadingDotCount = (this.loadingDotCount + 1) % 4;
+            this.loadingDotUpdate = now;
+        }
+        
+        String dots = switch (this.loadingDotCount) {
+            case 1 -> ".";
+            case 2 -> "..";
+            case 3 -> "...";
+            default -> "";
+        };
+        String loadingText = Constants.GAME_LOADING + dots;
+        
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        graphics2D.setFont(this.customFontMedium);
+        graphics2D.setColor(Color.WHITE);
+        int x = getXForCenteredText(graphics2D, Constants.GAME_LOADING + "...", this.customFontMedium);
+        int y = getYForCenteredText();
+        graphics2D.drawString(loadingText, x, y);
     }
 
     public void drawDeathScreen(Graphics2D graphics2D) {
@@ -153,7 +238,7 @@ public class UI {
             graphics2D.setColor(Color.BLACK);
             int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
             int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRoundRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height, 15, 15);
+            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
             graphics2D.setColor(Color.WHITE);
 
             y = y - 160;
@@ -217,30 +302,55 @@ public class UI {
     }
 
     private void drawDebug(Graphics2D graphics2D) {
+        if (!this.debug) { return; }
+
         String playerLocation = locationToString(
             this.gamePanel.player.worldX/Constants.TILE_SIZE,
             this.gamePanel.player.worldY/Constants.TILE_SIZE
         );
+
         List<String> spells = new ArrayList<String>();
         for (SpellType spellType : this.gamePanel.player.spells.keySet()) {
             spells.add(spellType.toString());
         }
+        
         graphics2D.setFont(this.customFontSmall);
         graphics2D.setColor(Color.WHITE);
-
-        int debugLine = Constants.SCREEN_HEIGHT - 10;
-        int debugLineDiff = 20;
-        graphics2D.drawString("Current Quests: " + this.gamePanel.questManager.currentQuests.toString(), 10, debugLine);
-        graphics2D.drawString("Completed Quests: " + this.gamePanel.questManager.completedQuests.toString(), 10, debugLine -= debugLineDiff);
-        graphics2D.drawString("Inv: " + this.gamePanel.player.inventory.toString(), 10, debugLine -= debugLineDiff);
-        graphics2D.drawString("Spell: " + spells.toString(), 10, debugLine -= debugLineDiff);
-
+        
         List<String> strings = Arrays.asList(
             Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND),
             "FPS (" + String.valueOf(this.gamePanel.fps) + ")",
             playerLocation
         );
-        graphics2D.drawString(combineToString(strings), 10, debugLine -= debugLineDiff);
+
+        List<String> inventoryStringList = new ArrayList<>();
+        String inventoryString = "Inv: " + this.gamePanel.player.inventory.toString();
+
+        int textWidth = graphics2D.getFontMetrics(this.customFontSmall).stringWidth(inventoryString);
+        if (textWidth > Constants.SCREEN_WIDTH) {
+            int mid = inventoryString.length() / 2;
+            inventoryStringList.add(inventoryString.substring(mid));
+            inventoryStringList.add(inventoryString.substring(0, mid));
+        } else {
+            inventoryStringList.add(inventoryString);
+        }
+
+        List<String> debugLines = new ArrayList<>();
+        debugLines.addAll(inventoryStringList);
+        debugLines.addAll(Arrays.asList(
+                "Current Quests: " + this.gamePanel.questManager.currentQuests.toString(),
+                "Completed Quests: " + this.gamePanel.questManager.completedQuests.toString(),
+                "Spell: " + spells.toString(),
+                combineToString(strings)
+            )
+        );
+
+        int debugLine = Constants.SCREEN_HEIGHT;
+        int debugLineDiff = 20;
+
+        for (String line : debugLines) {
+            graphics2D.drawString(line, 10, debugLine -= debugLineDiff);
+        }
     }
 
     private String combineToString(List<String> strings) {

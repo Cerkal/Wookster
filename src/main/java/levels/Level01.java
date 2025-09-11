@@ -45,7 +45,7 @@ public class Level01 extends LevelBase {
 
     @Override
     public void setObjects() {
-        this.generateRandomObjects();
+        this.generateRandomObjects(true, 20);
 
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
