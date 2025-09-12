@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import main.GamePanel.GameState;
+
 public class TitleScreen {
 
     GamePanel gamePanel;
@@ -52,6 +54,7 @@ public class TitleScreen {
                             @Override
                             void action(GamePanel gamePanel) {
                                 gamePanel.config.saveConfig();
+                                gamePanel.gameState = GameState.PLAY;
                             }
                         },
                         new Option("Settings") {

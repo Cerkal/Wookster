@@ -23,16 +23,16 @@ public class LevelManager {
         levels.add(level);
     }
 
-    public void loadLevel(int index) {
+    public void loadLevel(int index, boolean loadFromSave) {
         if (index >= 0 && index < levels.size()) {
             currentLevelIndex = index;
-            getCurrentLevel().loading();
+            getCurrentLevel().loading(loadFromSave);
         }
     }
 
     public void loadNextLevel() {
         if (currentLevelIndex + 1 < levels.size()) {
-            loadLevel(currentLevelIndex + 1);
+            loadLevel(currentLevelIndex + 1, false);
         }
     }
 
@@ -58,5 +58,9 @@ public class LevelManager {
         levelWrapper.levelIndex = this.currentLevelIndex;
         levelWrapper.objects = objectWrapper;
         return levelWrapper;
+    }
+
+    public void saveLevelInfo() {
+        this.gamePanel.config.saveConfig();
     }
 }

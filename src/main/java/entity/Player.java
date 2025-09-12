@@ -1,7 +1,6 @@
 package entity;
 
 import main.KeyHandler;
-import main.GamePanel.GameState;
 import main.InventoryItem.InventoryItemWrapper;
 import objects.GameMap;
 import objects.SuperObject;
@@ -297,7 +296,7 @@ public class Player extends Entity {
 
     private void checkDeath() {
         if (this.isDead) {
-            this.gamePanel.gameState = GameState.DEATH;
+            this.gamePanel.death();
         }
     }
 
@@ -496,9 +495,7 @@ public class Player extends Entity {
     }
 
     public void loadPlayerSaveState(PlayerWrapper playerWrapper) {
-        this.worldX = playerWrapper.worldX * Constants.TILE_SIZE;
-        this.worldY = playerWrapper.worldY * Constants.TILE_SIZE;
-        this.speed = playerWrapper.speed;
+        this.speed = DEFAULT_SPEED;
         this.direction = playerWrapper.direction;
         this.maxHealth = playerWrapper.maxHealth;
         this.health = playerWrapper.health;

@@ -42,14 +42,17 @@ public abstract class LevelBase {
     public int levelIndex;
     public Point playerStartLocation = new Point(23, 23);
 
+    boolean loadFromSave = false;
+
     public LevelBase(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.mapPath = Constants.WORLD_00;
         this.gamePanel.objects.clear();
-        this.levelIndex = this.gamePanel.levelManager.currentLevelIndex;
     }
 
-    public void loading() {
+    public void loading(boolean loadFromSave) {
+        if (loadFromSave) this.loadFromSave = loadFromSave;
+        this.levelIndex = this.gamePanel.levelManager.currentLevelIndex;
         this.gamePanel.gameState = GameState.LOADING;
         long loadingStartTime = System.currentTimeMillis();
         new Thread(() -> {
@@ -60,7 +63,6 @@ public abstract class LevelBase {
                     Thread.sleep(Constants.MIN_LOADING - elapsed);
                 } catch (InterruptedException ignored) {}
             }
-
             this.gamePanel.gameState = GameState.PLAY;
         }).start();
     }
@@ -78,7 +80,8 @@ public abstract class LevelBase {
         DataWrapper dataWrapper = this.gamePanel.config.dataWrapper;
         if (
             dataWrapper != null &&
-            dataWrapper.getSavedLevelData(this.levelIndex) != null
+            dataWrapper.getSavedLevelData(this.levelIndex) != null &&
+            loadFromSave
         ){
             loadInventoryItems(dataWrapper);
             loadObjectItems(dataWrapper);
@@ -171,8 +174,10 @@ public abstract class LevelBase {
             for (InventoryItemWrapper item : inventoryItems) {
                 InventoryItem inventoryItem;
                 if (item.object != null) {
-                    SuperObject object = ObjectType.create(gamePanel, item.object);
-                    others.add(object.inventoryItem);
+                    for (int i = 0; i < item.count; i++) {
+                        SuperObject object = ObjectType.create(gamePanel, item.object);
+                        others.add(object.inventoryItem);
+                    }
                 } else if (item.weapon != null) {
                     weapons.add(item.weapon.weaponType);
                 } else {

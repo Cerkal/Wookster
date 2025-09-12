@@ -135,6 +135,7 @@ public class SuperObject {
     }
 
     protected void setImage(String imagePath) {
+        if (imagePath == null) { return; }
         try {
             this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
             this.image = Utils.scaleImage(this.image);
@@ -175,6 +176,7 @@ public class SuperObject {
         ARROWS      ((gamePanel, object) -> new ArrowsObject(gamePanel, object.worldX, object.worldY)),
         CHEST       ((gamePanel, object) -> new ChestObject(gamePanel, object.worldX, object.worldY)),
         DOOR        ((gamePanel, object) -> new DoorObject(gamePanel, object.worldX, object.worldY)),
+        LEVEL_DOOR  ((gamePanel, object) -> new LevelDoorObject(gamePanel, object.worldX, object.worldY)),
         KEY         ((gamePanel, object) -> new KeyObject(gamePanel, object.worldX, object.worldY)),
         LASERS      ((gamePanel, object) -> new LasersObject(gamePanel, object.worldX, object.worldY)),
         SIGN        ((gamePanel, object) -> new SignObject(gamePanel, object.worldX, object.worldY, object.message)),

@@ -94,11 +94,6 @@ public class KeyHandler implements KeyListener {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
                 break;
-            case GameState.DEATH:
-                if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                    this.gamePanel.startGame();
-                }
-                break;
             default:
                 break;
         }

@@ -125,7 +125,10 @@ public class UI {
         HashMap<String, TitleScreen.Option> options = screen.getOptionsMap();
         List<String> optionList = screen.getOptionTitles();
 
-        if (this.gamePanel.gameState == GameState.TITLE) {
+        if (
+            this.gamePanel.gameState == GameState.TITLE ||
+            this.gamePanel.levelManager.currentLevelIndex == 0
+        ){
             options.remove("Save Game");
             optionList.remove(2);
         }

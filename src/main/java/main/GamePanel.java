@@ -97,21 +97,27 @@ public class GamePanel extends Canvas implements Runnable {
         this.loaded = true;
     }
 
-    public void loadGame() {
+    public void loadGame(int levelIndex) {
         this.config.loadConfig();
         this.restartLevel();
-        this.levelManager.loadLevel(this.config.dataWrapper.currentLevelIndex);
-        this.gameState = GameState.PLAY;
+        this.levelManager.loadLevel(
+            levelIndex,
+            true
+        );
         this.stopMusic();
         this.playMusic(Constants.SOUND_BG_01);
         System.out.println("Loaded game.");
+    }
+
+    public void loadGame() {
+        loadGame(this.config.dataWrapper.currentLevelIndex);
     }
 
     public void newGame() {
         this.gameState = GameState.PLAY;
         this.config.dataWrapper = new DataWrapper();
         this.restartLevel();
-        this.levelManager.loadLevel(0);
+        this.levelManager.loadLevel(0, false);
         this.stopMusic();
         this.playMusic(Constants.SOUND_BG_01);
         System.out.println("New game.");
@@ -241,6 +247,20 @@ public class GamePanel extends Canvas implements Runnable {
 
     private void drawLoadingScreen(Graphics2D graphics2D) {
         this.ui.drawLoadingScreen(graphics2D);
+    }
+
+    public void death() {
+        long loadingStartTime = System.currentTimeMillis();
+        this.gameState = GameState.DEATH;
+        new Thread(() -> {
+            long elapsed = System.currentTimeMillis() - loadingStartTime;
+            if (elapsed < Constants.DEAD_LOADING) {
+                try {
+                    Thread.sleep(Constants.DEAD_LOADING - elapsed);
+                } catch (InterruptedException ignored) {}
+            }
+            this.loadGame();
+        }).start();
     }
 
     private void drawGame(Graphics2D graphics2D) {

@@ -59,7 +59,7 @@ public class EventHandler {
         if (distance > Constants.TILE_SIZE) {
             this.canTouchAgain = true;
         }
-        for (TileLocation randomDamageTile : randomDamage) {
+        for (TileLocation randomDamageTile : new ArrayList<>(randomDamage)) {
             if (
                 checkCollision(randomDamageTile.worldX, randomDamageTile.worldY, null) &&
                 this.canTouchAgain

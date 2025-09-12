@@ -25,8 +25,6 @@ public class ScreenSelector implements KeyListener {
 
     private Font customFont;
 
-    private boolean centerText;
-
     class SelectionResult {
         public boolean selected = false;
         public String selectedName;

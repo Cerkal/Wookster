@@ -70,7 +70,7 @@ public class Collision {
     public SuperObject objectCollision(Entity entity, boolean player) {
         SuperObject collisionObject = null;
 
-        for (SuperObject object : gamePanel.objects) {
+        for (SuperObject object : new ArrayList<>(gamePanel.objects)) {
 
             entity.solidArea.x = entity.worldX + entity.solidArea.x;
             entity.solidArea.y = entity.worldY + entity.solidArea.y;

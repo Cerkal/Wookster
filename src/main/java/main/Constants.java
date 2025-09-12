@@ -23,6 +23,7 @@ public class Constants {
     public static final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL;
     public static final int SCREEN_HEIGHT = TILE_SIZE * MAX_SCREEN_ROW;
     public static final int MIN_LOADING = 1000; // ms
+    public static final int DEAD_LOADING = 5000; // ms
     public static final int DOT_UPDATE_INTERVAL = 100; // ms
 
     public static final int MAX_WORLD_COL = 50;

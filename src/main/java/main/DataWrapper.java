@@ -15,7 +15,7 @@ public class DataWrapper {
     public int currentLevelIndex;
     PlayerWrapper player;
     String currentLevel;
-    List<LevelWrapper> levels = new ArrayList<>();
+    List<LevelWrapper> levels  = new ArrayList<>();
     HashMap<String, Quest> currentQuests = new HashMap<>();
     HashMap<String, Quest> completedQuests = new HashMap<>();
 
@@ -37,7 +37,7 @@ public class DataWrapper {
 
     public LevelWrapper getSavedLevelData(int levelIndex) {
         if ((this.levels.size() - 1) >= levelIndex) {
-            return this.levels.get(levelIndex);
+           return this.levels.get(levelIndex);
         }
         return null;
     }
@@ -54,6 +54,7 @@ public class DataWrapper {
         try {
             this.levels.set(levelWrapper.levelIndex, levelWrapper);
         } catch (IndexOutOfBoundsException e) {
+            System.out.println(e.getMessage());
             this.levels.add(levelWrapper);
         }
         this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
