@@ -49,7 +49,7 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugRenderTime = false;
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
-    public boolean debugAllWeapons = true;
+    public boolean debugAllWeapons = false;
 
     public GameState gameState = GameState.TITLE;
     public TileManager tileManager = new TileManager(this);
