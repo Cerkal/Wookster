@@ -20,6 +20,7 @@ import main.QuestManager;
 import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.PotionObject;
+import objects.SignObject;
 import objects.SuperObject;
 import objects.weapons.Weapon.WeaponType;
 import spells.SpeedSpell;
@@ -73,17 +74,16 @@ public class Level00 extends LevelBase {
         };
         this.oldmanDad.invincable = true;
         this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
-        this.gamePanel.npcs.add(this.oldmanDad);
+        this.gamePanel.npcs.add(this.oldmanDad);       
     }
 
     public void setObjects() {
         this.inventoryDoor = new DoorObject(this.gamePanel, 36, 21);
-        this.gamePanel.objects.add(this.inventoryDoor);
-
+        addGameObject(this.inventoryDoor);
         this.potionDoor = new DoorObject(this.gamePanel, 27, 29);
-        this.gamePanel.objects.add(this.potionDoor);
-
-        this.gamePanel.objects.add(new PotionObject(this.gamePanel, 25, 29));
+        addGameObject(this.potionDoor);
+        addGameObject(new PotionObject(this.gamePanel, 25, 29));
+        addGameObject(new SignObject(this.gamePanel, 30, 11, "Pig pen."));
     }
 
     @Override

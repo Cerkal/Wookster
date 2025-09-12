@@ -21,7 +21,7 @@ public class ScreenSelector implements KeyListener {
 
     private boolean markedSelected = false;
     private int markedSelectedIndex = 0;
-    private String selectedItem;
+    private int markedSelectedTab = 0;
 
     private Font customFont;
 
@@ -88,14 +88,12 @@ public class ScreenSelector implements KeyListener {
     public void clearSelection() {
         this.result = new SelectionResult();
         this.commandNumber = 0;
-        this.markedSelectedIndex = 0;
-        this.markedSelected = false;
-        this.selectedItem = null;
     }
 
-    public void markedSelected(int index) {
+    public void markedSelected(int index, int screenIndex) {
         this.markedSelected = true;
         this.markedSelectedIndex = index;
+        this.markedSelectedTab = screenIndex;
     }
 
     public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter) {
@@ -140,17 +138,22 @@ public class ScreenSelector implements KeyListener {
         return pages;
     }
 
-    private void draw(Graphics2D g2d, int x, int y, int delimiter, List<String> items) {
-        g2d.setFont(customFont);
+    private void draw(Graphics2D graphics2D, int x, int y, int delimiter, List<String> items) {
+        graphics2D.setFont(customFont);
+        graphics2D.setColor(Color.WHITE);
+
         for (int i = 0; i < items.size(); i++) {
             if (commandNumber % pageSize == i) {
-                setCursor(g2d, x, y);
+                setCursor(graphics2D, x, y);
             }
-            g2d.setColor(Color.WHITE);
-            if (this.markedSelected && this.markedSelectedIndex - (this.pageNumber * this.pageSize) == i) {
-                g2d.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
+            if (
+                this.markedSelected &&
+                this.markedSelectedIndex - (this.pageNumber * this.pageSize) == i &&
+                this.markedSelectedTab == screenIndex
+            ){
+                graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
             }
-            g2d.drawString(items.get(i), x + Constants.TILE_SIZE, y);
+            graphics2D.drawString(items.get(i), x + Constants.TILE_SIZE, y);
             y += delimiter;
         }
     }
@@ -161,40 +164,63 @@ public class ScreenSelector implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (this.gamePanel.gameState != GameState.INVENTORY) return;
+        
         if (screens.isEmpty()) return;
 
         int code = e.getKeyCode();
         List<String> currentItems = screens.get(screenIndex);
-
-        switch (code) {
-            case KeyEvent.VK_W -> {
-                commandNumber--;
-                if (commandNumber < 0) commandNumber = currentItems.size() - 1;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            }
-            case KeyEvent.VK_S -> {
-                commandNumber++;
-                if (commandNumber >= currentItems.size()) commandNumber = 0;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            }
-            case KeyEvent.VK_A -> {
-                screenIndex = (screenIndex - 1 + screens.size()) % screens.size();
-                commandNumber = 0;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            }
-            case KeyEvent.VK_D -> {
-                screenIndex = (screenIndex + 1) % screens.size();
-                commandNumber = 0;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            }
-            case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> {
-                this.selectedItem = currentItems.get(commandNumber);
-                this.markedSelectedIndex = commandNumber;
-                this.result.selected = true;
-                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            }
+        
+        switch (this.gamePanel.gameState) {
+            case GameState.INVENTORY:
+                switch (code) {
+                    case KeyEvent.VK_W -> up(currentItems);
+                    case KeyEvent.VK_S -> down(currentItems);
+                    case KeyEvent.VK_A -> left(currentItems);
+                    case KeyEvent.VK_D -> right(currentItems);
+                    case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
+                }
+                break;
+            case GameState.PAUSE:
+            case GameState.TITLE:
+                switch (code) {
+                    case KeyEvent.VK_W -> up(currentItems);
+                    case KeyEvent.VK_S -> down(currentItems);
+                    case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
+                }
+                break;
+            default:
+                return;
         }
+    }
+
+    private void up(List<String> currentItems) {
+        commandNumber--;
+        if (commandNumber < 0) commandNumber = currentItems.size() - 1;
+        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+    }
+
+    private void down(List<String> currentItems) {
+        commandNumber++;
+        if (commandNumber >= currentItems.size()) commandNumber = 0;
+        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+    }
+
+    private void left(List<String> currentItems) {
+        screenIndex = (screenIndex - 1 + screens.size()) % screens.size();
+        commandNumber = 0;
+        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+    }
+
+    private void right(List<String> currentItems) {
+        screenIndex = (screenIndex + 1) % screens.size();
+        commandNumber = 0;
+        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+    }
+
+    private void select() {
+        this.markedSelectedIndex = commandNumber;
+        this.result.selected = true;
+        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     @Override public void keyReleased(KeyEvent e) {}

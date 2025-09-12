@@ -45,7 +45,7 @@ public class Level01 extends LevelBase {
 
     @Override
     public void setObjects() {
-        this.generateRandomObjects(true, 20);
+        this.generateRandomObjects();
 
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
@@ -70,12 +70,12 @@ public class Level01 extends LevelBase {
     public void setStaticObjects() {
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 31, 37, Constants.LEVEL_00_JERMEY_SIGN));
         this.gamePanel.objects.add(new JermeyObject(this.gamePanel, 30, 36, Constants.LEVEL_00_JERMEY_SOUND_START, true));
-        List<List<Integer>> jeremyList = new ArrayList<>();
-            jeremyList.add(Arrays.asList(27, 37));
-            jeremyList.add(Arrays.asList(28, 37));
-            jeremyList.add(Arrays.asList(29, 37));
-            jeremyList.add(Arrays.asList(32, 37));
-            jeremyList.add(Arrays.asList(33, 37));
+        List<Point> jeremyList = new ArrayList<>();
+            jeremyList.add(new Point(27, 37));
+            jeremyList.add(new Point(28, 37));
+            jeremyList.add(new Point(29, 37));
+            jeremyList.add(new Point(32, 37));
+            jeremyList.add(new Point(33, 37));
             List<String> jeremySounds = new ArrayList<>(
                 Arrays.asList(
                     Constants.LEVEL_00_JERMEY_SOUND_00,
@@ -87,9 +87,8 @@ public class Level01 extends LevelBase {
             );
             Collections.shuffle(jeremyList);
             for (int i = 0; i < jeremySounds.size() && i < jeremyList.size(); i++) {
-                List<Integer> coords = jeremyList.get(i);
-                int x = coords.get(0);
-                int y = coords.get(1);
+                int x = jeremyList.get(i).x;
+                int y = jeremyList.get(i).y;
                 String sound = jeremySounds.get(i);
                 this.gamePanel.objects.add(new JermeyObject(this.gamePanel, x, y, sound));
             }

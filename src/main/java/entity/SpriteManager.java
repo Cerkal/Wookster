@@ -37,16 +37,16 @@ public class SpriteManager {
             try {
                 this.direction = direction;
                 this.image = ImageIO.read(getClass().getResourceAsStream(imagePath));
-                this.image = Utils.scaleImage(image);
                 this.frames = frames;
-                this.height = this.image.getHeight();
-                this.width = this.image.getWidth();
+                this.height = this.image.getHeight() * Constants.SCALE;
+                this.width = this.image.getWidth() * Constants.SCALE;
                 if (this.height > Constants.TILE_SIZE && direction == Direction.UP) {
                     this.yAdjust = this.height - Constants.TILE_SIZE;
                 }
                 if (this.width > Constants.TILE_SIZE && direction == Direction.LEFT) {
                     this.xAdjust = this.width - Constants.TILE_SIZE;
                 }
+                this.image = Utils.scaleImage(image, this.width, this.height);
             } catch (IOException e) {
                 e.printStackTrace();
             }

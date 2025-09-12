@@ -27,9 +27,6 @@ public class KeyHandler implements KeyListener {
         int code = e.getKeyCode();
 
         switch (this.gamePanel.gameState) {
-            case GameState.TITLE:
-                gameTitleKeys(code);
-                break;
             case GameState.PLAY:
                 if (code == KeyEvent.VK_W) {
                     this.upPressed = true;
@@ -53,7 +50,6 @@ public class KeyHandler implements KeyListener {
                     this.enterPressed = true;
                 }
                 if (code == KeyEvent.VK_I) {
-                    // this.gamePanel.ui.screenSelector.commandNumber = 0;
                     this.gamePanel.gameState = GameState.INVENTORY;
                 }
                 if (code == KeyEvent.VK_BACK_QUOTE) {
@@ -75,7 +71,6 @@ public class KeyHandler implements KeyListener {
                 }
                 break;
             case GameState.PAUSE:
-                gameTitleKeys(code);
                 if (code == KeyEvent.VK_ESCAPE) {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
@@ -133,73 +128,5 @@ public class KeyHandler implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
-    private void gameTitleKeys(int code) {
-        int optionCount = Constants.GAME_TITLE_MENU.size() - 1;
-        // if (this.gamePanel.ui.currentScreen != null) {
-        //     switch (this.gamePanel.ui.currentScreen) {
-        //         case Constants.GAME_TITLE_SCREEN_CONTROLS:
-        //             optionCount = Constants.GAME_CONTROLS_LIST.size() - 1;
-        //             this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_CONTROLS;
-        //             break;
-        //         case Constants.GAME_TITLE_SCREEN_OPTIONS:
-        //             optionCount = Constants.GAME_OPTIONS_LIST.size() - 1;
-        //             this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_OPTIONS;
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // }
-        if (code == KeyEvent.VK_W) {
-            this.gamePanel.ui.commandNumber--;
-            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            if (this.gamePanel.ui.commandNumber < 0) {
-                this.gamePanel.ui.commandNumber = optionCount;
-            }
-        }
-        if (code == KeyEvent.VK_S) {
-            this.gamePanel.ui.commandNumber++;
-            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            if (this.gamePanel.ui.commandNumber >= optionCount) {
-                this.gamePanel.ui.commandNumber = 0;
-            }
-        }
-        if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-            String selection = Constants.GAME_TITLE_MENU.get(this.gamePanel.ui.commandNumber);
-            this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
-            switch (selection) {
-                case Constants.GAME_TITLE_SCREEN_NEW_GAME:
-                    this.gamePanel.newGame();
-                    break;
-                case Constants.GAME_TITLE_SCREEN_SAVE_GAME:
-                    this.gamePanel.config.saveConfig();
-                    System.out.println("Saved game.");
-                    break;
-                case Constants.GAME_TITLE_SCREEN_LOAD_GAME:
-                    this.gamePanel.startGame();
-                    break;
-                // case Constants.GAME_TITLE_SCREEN_CONTROLS:
-                //     this.gamePanel.ui.commandNumber = 0;
-                //     if (this.gamePanel.ui.currentScreen == Constants.GAME_TITLE_SCREEN_CONTROLS) {
-                //         this.gamePanel.ui.currentScreen = null;
-                //     } else {
-                //         this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_CONTROLS;
-                //     }
-                //     break;
-                // case Constants.GAME_TITLE_SCREEN_OPTIONS:
-                //     this.gamePanel.ui.commandNumber = 0;
-                //     if (this.gamePanel.ui.currentScreen == Constants.GAME_TITLE_SCREEN_OPTIONS) {
-                //         this.gamePanel.ui.currentScreen = null;
-                //     } else {
-                //         this.gamePanel.ui.currentScreen = Constants.GAME_TITLE_SCREEN_OPTIONS;
-                //     }
-                //     break;
-                case Constants.GAME_TITLE_SCREEN_QUIT_GAME:
-                    System.exit(0);
-                    break;
-            }
-        }
-    }
+    public void keyTyped(KeyEvent e) {}
 }

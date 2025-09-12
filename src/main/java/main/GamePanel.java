@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import effects.Effect;
 import entity.Entity;
 import entity.Player;
@@ -52,19 +54,19 @@ public class GamePanel extends Canvas implements Runnable {
     public GameState gameState = GameState.TITLE;
     public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
+    public QuestManager questManager = new QuestManager(this);
+    public Config config = new Config(this);
     public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
     public Collision collision = new Collision(this);
     public Sound sound = new Sound();
-    public Config config = new Config(this);
     public LevelManager levelManager = new LevelManager(this);
     public EventHandler eventHandler = new EventHandler(this);
     public HashMap<String, Quest> quests = new HashMap<>();
-    public QuestManager questManager = new QuestManager(this);
     public long gameTime = 0;
     public int fps;
     public BufferedImage background;
-    public boolean loaded = true;
+    public boolean loaded = false;
 
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
@@ -92,6 +94,7 @@ public class GamePanel extends Canvas implements Runnable {
         } else {
             loadGame();
         }
+        this.loaded = true;
     }
 
     public void loadGame() {
@@ -280,6 +283,14 @@ public class GamePanel extends Canvas implements Runnable {
         this.projectileManager.clear();
         this.effects.clear();
         this.player.setDefaultValues();
+    }
+
+    public void quit() {
+        running = false;
+        if (SwingUtilities.getWindowAncestor(this) != null) {
+            SwingUtilities.getWindowAncestor(this).dispose();
+        }
+        System.exit(0);
     }
 
     private void loadLevels() {

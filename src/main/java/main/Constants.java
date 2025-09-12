@@ -62,31 +62,8 @@ public class Constants {
     public static final String GAME_TITLE_SCREEN_OPTIONS = "Options";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
-    public static final List<String> GAME_TITLE_MENU = new ArrayList<>(
-        List.of(
-            GAME_TITLE_SCREEN_NEW_GAME,
-            GAME_TITLE_SCREEN_SAVE_GAME,
-            GAME_TITLE_SCREEN_LOAD_GAME,
-            // GAME_TITLE_SCREEN_CONTROLS,
-            // GAME_TITLE_SCREEN_OPTIONS,
-            GAME_TITLE_SCREEN_QUIT_GAME
-        )
-    );
-
-    // Testing for controls
-    public static final HashMap<String, String> GAME_CONTROLS_LIST = new HashMap<>() {{
-        put("Move", "[W] [S] [A] [D]");
-        put("Attack / Talk", "[SPACEBAR]");
-        put("Inventory", "[I]");
-        put("Pause", "[ESCAPE]");
-    }};
-    public static final HashMap<String, Integer> GAME_OPTIONS_LIST = new HashMap<>() {{
-        put("Sound", 1);
-    }};
-    
 
     // Inventory Tabs
-
     public static final String INVENTORY = "Inventory";
     public static final String QUESTS = "Quests";
 
