@@ -13,7 +13,7 @@ import tile.Tile;
 
 public class GameMap extends SuperObject {
 
-    static final int MAP_TILE_SIZE = 8;
+    static final int MAP_TILE_SIZE = 7;
 
     public GameMap(GamePanel gamePanel) {
         super(gamePanel, 0, 0);
@@ -35,7 +35,7 @@ public class GameMap extends SuperObject {
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
         Map<Point, Tile> tileMap = this.gamePanel.tileManager.tileMap;
         int mapX = x - Constants.TILE_SIZE * 2;
-        int mapY = (Constants.SCREEN_HEIGHT / 2) - ((MAP_TILE_SIZE * Constants.MAX_WORLD_ROW) / 2);
+        int mapY = (Constants.SCREEN_HEIGHT / 2) - ((MAP_TILE_SIZE * Constants.MAX_WORLD_ROW) / 2) + 60;
         for (Point point : tileMap.keySet()) {
             x = (int) point.getX();
             y = (int) point.getY();

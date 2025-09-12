@@ -83,6 +83,16 @@ public class Player extends Entity {
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
+
+        giveAllWeapons();
+    }
+
+    private void giveAllWeapons() {
+        if (this.gamePanel.debugAllWeapons) {
+            addWeapon(WeaponType.BLASTER);
+            addWeapon(WeaponType.CROSSBOW);
+            addWeapon(WeaponType.SWORD);
+        }
     }
 
     public void update() {

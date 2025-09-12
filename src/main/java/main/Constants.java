@@ -62,34 +62,18 @@ public class Constants {
     public static final String GAME_TITLE_SCREEN_OPTIONS = "Options";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
-    public static final List<String> GAME_TITLE_MENU = new ArrayList<>(
-        List.of(
-            GAME_TITLE_SCREEN_NEW_GAME,
-            GAME_TITLE_SCREEN_SAVE_GAME,
-            GAME_TITLE_SCREEN_LOAD_GAME,
-            GAME_TITLE_SCREEN_CONTROLS,
-            GAME_TITLE_SCREEN_OPTIONS,
-            GAME_TITLE_SCREEN_QUIT_GAME
-        )
-    );
-    public static final HashMap<String, String> GAME_CONTROLS_LIST = new HashMap<>() {{
-        put("Move", "[W] [S] [A] [D]");
-        put("Attack / Talk", "[SPACEBAR]");
-        put("Inventory", "[I]");
-        put("Pause", "[ESCAPE]");
-    }};
-    public static final HashMap<String, Integer> GAME_OPTIONS_LIST = new HashMap<>() {{
-        put("Sound", 1);
-    }};
-    public static final String GAME_INVENTORY = "Inventory";
-    public static final String GAME_QUESTS = "Quests";
-    
-    public static final int GAME_INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
+
+    // Inventory Tabs
+    public static final String INVENTORY = "Inventory";
+    public static final String QUESTS = "Quests";
 
     public static final List<String> INVENTORY_TABS = Arrays.asList(
-        GAME_INVENTORY,
-        GAME_QUESTS
+        INVENTORY,
+        QUESTS
     );
+    public static final int INVENTORY_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.INVENTORY);
+    public static final int QUEST_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.QUESTS);
+    public static final int INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
 
     // Files
     public static final String SAVE_FILE = "save.json";

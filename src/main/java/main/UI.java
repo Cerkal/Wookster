@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import main.GamePanel.GameState;
-import main.Selector.SelectionResult;
+import main.TitleScreen.Screen;
 import spells.SuperSpell.SpellType;
 
 public class UI {
     
     GamePanel gamePanel;
-    Selector selector;
+    ScreenSelector screenSelector;
 
     boolean messageDisplay = false;
     long messageStartTime = 0;
@@ -44,24 +44,24 @@ public class UI {
     final static int PADDING_X = 20;
     final static int PADDING_Y = 10;
 
+    TitleScreen titleScreen;
+
     int commandNumber = 0;
+    int currentTab = 0;
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        this.selector = new Selector(gamePanel);
-        this.gamePanel.addKeyListener(selector);
-        // Load custom font
-        try {
-            this.customFontSmall = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_SMALL);
-            this.customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE);
-            this.customFontMedium = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_MEDIUM);
-            this.customFontLarge = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_LARGE);
-        } catch (FontFormatException | IOException e) {
-            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
-            this.customFontMedium = new Font(Constants.FONT_ARIAL, Font.PLAIN, 35);
-            this.customFontLarge = new Font(Constants.FONT_ARIAL, Font.PLAIN, 50);
-            e.printStackTrace();
+
+        this.screenSelector = new ScreenSelector(this.gamePanel);
+
+        for (int i = 0; i < Constants.INVENTORY_TABS.size(); i++) {
+            screenSelector.addScreen(new ArrayList<>());
         }
+        this.gamePanel.addKeyListener(screenSelector);
+
+        this.titleScreen = new TitleScreen(this.gamePanel);
+
+        loadFonts();
     }
 
     public void draw(Graphics2D graphics2D) {
@@ -111,79 +111,45 @@ public class UI {
     }
 
     public void titleScreen(Graphics2D graphics2D) {
-        if (currentScreen == Constants.GAME_TITLE_SCREEN_CONTROLS) {
-            drawControllsScreen(graphics2D);
-            return;
-        }
-        if (currentScreen == Constants.GAME_TITLE_SCREEN_OPTIONS) {
-            drawOptionsScreen(graphics2D);
-            return;
-        }
-        graphics2D.setColor(Color.BLACK);
+
+        graphics2D.setColor(Color.black);
         graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+
         graphics2D.setFont(this.customFontLarge);
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(Color.white);
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
         int y = getYForCenteredText();
-        y = 160;
-        graphics2D.drawString(Constants.GAME_TITLE, x, y);
-        graphics2D.setFont(this.customFontMedium);
+        graphics2D.drawString(Constants.GAME_TITLE, x, Constants.TILE_SIZE * 3);
 
-        int i = 0;
-        y += 50;
-        for (String menuOption : Constants.GAME_TITLE_MENU) {
-            x = getXForCenteredText(graphics2D, menuOption, this.customFontMedium);
-            y = y + 50;
-            if (this.commandNumber == i) {
-                setTitleCursor(graphics2D, y);
+        Screen screen = titleScreen.currentScreen;
+        HashMap<String, TitleScreen.Option> options = screen.getOptionsMap();
+        List<String> optionList = screen.getOptionTitles();
+
+        if (this.gamePanel.gameState == GameState.TITLE) {
+            options.remove("Save Game");
+            optionList.remove(2);
+        }
+
+        screenSelector.set(0, optionList);
+
+        ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
+            graphics2D,
+            Constants.SCREEN_WIDTH / 2 - (Constants.TILE_SIZE * 2) - 10,
+            y,
+            Constants.NEW_LINE_SIZE
+        );
+
+        System.out.println(selectedItem);
+
+        // Handle selected item
+        if (selectedItem != null && selectedItem.selected) {
+            if (selectedItem.selectedScreenIndex == 0) {
+                TitleScreen.Option option = options.get(selectedItem.selectedName);
+                if (option != null) {
+                    option.action(this.gamePanel);
+                }
+                screenSelector.clearSelection();
             }
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.drawString(menuOption, x, y);
-            i++;
-        }
-    }
-
-    public void drawControllsScreen(Graphics2D graphics2D) {
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
-        graphics2D.setFont(this.customFontLarge);
-        graphics2D.setColor(Color.WHITE);
-        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE_SCREEN_CONTROLS, this.customFontLarge);
-        int y = getYForCenteredText();
-        y = 160;
-        graphics2D.drawString(Constants.GAME_TITLE_SCREEN_CONTROLS, x, y);
-        graphics2D.setFont(this.customFontMedium);
-
-        y += 50;
-        for (String control : Constants.GAME_CONTROLS_LIST.keySet()) {
-            String value = Constants.GAME_CONTROLS_LIST.get(control);
-            x = 200;
-            y = y + 50;
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.drawString(control, x, y);
-            graphics2D.drawString(value, 600, y);
-        }
-    }
-
-    public void drawOptionsScreen(Graphics2D graphics2D) {
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
-        graphics2D.setFont(this.customFontLarge);
-        graphics2D.setColor(Color.WHITE);
-        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE_SCREEN_OPTIONS, this.customFontLarge);
-        int y = getYForCenteredText();
-        y = 160;
-        graphics2D.drawString(Constants.GAME_TITLE_SCREEN_OPTIONS, x, y);
-        graphics2D.setFont(this.customFontMedium);
-
-        y += 50;
-        for (String control : Constants.GAME_OPTIONS_LIST.keySet()) {
-            int value = Constants.GAME_OPTIONS_LIST.get(control);
-            x = 200;
-            y = y + 50;
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.drawString(control, x, y);
-            graphics2D.drawString(String.valueOf(value), 600, y);
         }
     }
 
@@ -229,68 +195,96 @@ public class UI {
         }
     }
 
+    private void drawInventoryBox(Graphics2D graphics2D, String title) {
+        graphics2D.setFont(this.customFontMedium);
+        int x = getXForCenteredText(graphics2D, title, this.customFontMedium);
+        int y = getYForCenteredText();
+
+        graphics2D.setColor(Color.BLACK);
+        int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
+        int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
+        graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
+        graphics2D.setColor(Color.WHITE);
+
+        y = y - 160;
+        graphics2D.drawString(title, x, y);
+        y += Constants.TILE_SIZE;
+    }
+
     public void drawInventory(Graphics2D graphics2D) {
+        
         if (this.gamePanel.gameState == GamePanel.GameState.INVENTORY) {
-            graphics2D.setFont(this.customFontLarge);
-            int x = getXForCenteredText(graphics2D, Constants.GAME_INVENTORY, this.customFontLarge);
-            int y = getYForCenteredText();
 
-            graphics2D.setColor(Color.BLACK);
-            int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
-            int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
-            graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
-            graphics2D.setColor(Color.WHITE);
+            String inventoryTitle = Constants.INVENTORY_TABS.get(this.currentTab);
 
-            y = y - 160;
-            graphics2D.drawString(Constants.GAME_INVENTORY, Constants.TILE_SIZE * 2, y);
-            y += Constants.TILE_SIZE;
+            drawInventoryBox(graphics2D, inventoryTitle);
 
-            // Selector
-            try {
-                HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
-                List<String> inventory = this.gamePanel.player.getInventoryString();
-                for (int i = 0; i < inventory.size() - 1; i++) {
-                    if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                        selector.markedSelected(i);
+            // Set Inventory Items
+            HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
+            List<String> inventory = this.gamePanel.player.getInventoryString();
+            for (int i = 0; i < inventory.size() - 1; i++) {
+                if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
+                    screenSelector.markedSelected(i, Constants.INVENTORY_INDEX);
+                }
+            }
+
+            // Inventory Items Index
+            screenSelector.set(Constants.INVENTORY_INDEX, inventory);
+
+            // Set Quests
+            HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
+            List<String> allQuests = this.gamePanel.questManager.getAllQuestsString();
+
+            screenSelector.set(Constants.QUEST_INDEX, allQuests);
+
+            ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
+                graphics2D,
+                Constants.TILE_SIZE * 2 + 20,
+                Constants.TILE_SIZE * 5 - 30,
+                Constants.NEW_LINE_SIZE
+            );
+
+            this.currentTab = selectedItem.selectedScreenIndex;
+
+            // Handle extra display
+            if (selectedItem != null && !selectedItem.selected) {
+
+                int x = Constants.SCREEN_WIDTH / 2;
+                int y = Constants.TILE_SIZE * 5 - 30;
+                            
+                // Handle Inventory Item
+                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
+                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    inventoryItem.drawInfo(graphics2D, x + Constants.INVENTORY_ICON_SIZE, y);
+                }
+
+                // Handle Quest Item
+                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
+                    Quest quest = questMap.get(selectedItem.selectedName);
+                    if (quest != null) {
+                        quest.drawInfo(this.gamePanel, graphics2D, x, y);
                     }
                 }
-                SelectionResult selectedItem = selector.selector(graphics2D, Constants.TILE_SIZE * 2 + 20, Constants.TILE_SIZE * 5 - 30, Constants.NEW_LINE_SIZE, inventory);
-                
-                if (selectedItem != null && !selectedItem.selectedName.isEmpty()) {
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                    inventoryItem.drawInfo(graphics2D, x + Constants.TILE_SIZE * 4, Constants.TILE_SIZE * 5 - 20);
-                }
-                if (selectedItem != null && selectedItem.selected) {
+            }
+
+            // Handle selected item
+            if (selectedItem != null && selectedItem.selected) {
+
+                // Handle Inventory Item
+                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
                     InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
                     inventoryItem.select();
                     this.gamePanel.gameState = GameState.PLAY;
-                    selector.clear();
+                    screenSelector.clearSelection();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                this.selector = new Selector(this.gamePanel);
-            }
-        }
-    }
 
-    public void deathScreen(Graphics2D graphics2D) {
-        graphics2D.setFont(this.customFontLarge);
-        graphics2D.setColor(Color.WHITE);
-        int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
-        int y = getYForCenteredText();
-        graphics2D.drawString(Constants.GAME_TITLE, x, y - 100);
-        graphics2D.setFont(this.customFontMedium);
-
-        int i = 0;
-        for (String menuOption : Constants.GAME_TITLE_MENU) {
-            x = getXForCenteredText(graphics2D, menuOption, this.customFontMedium);
-            y = y + 50;
-            if (this.commandNumber == i) {
-                setTitleCursor(graphics2D, y);
+                // Handle Quest Item
+                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
+                    this.gamePanel.gameState = GameState.PLAY;
+                    screenSelector.clearSelection();
+                }
             }
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.drawString(menuOption, x, y);
-            i++;
+            return;
         }
     }
 
@@ -416,19 +410,13 @@ public class UI {
         return System.currentTimeMillis() - this.messageStartTime > Constants.MESSAGE_DISPLAY_TIME;
     }
 
-    private int getXForCenteredText(Graphics2D graphics2D, String text, Font font) {
+    public int getXForCenteredText(Graphics2D graphics2D, String text, Font font) {
         int textWidth = graphics2D.getFontMetrics(font).stringWidth(text);
         return (Constants.SCREEN_WIDTH - textWidth) / 2;
     }
 
-    private int getYForCenteredText() {
+    public int getYForCenteredText() {
         return Constants.SCREEN_HEIGHT / 2;
-    }
-
-    private void setTitleCursor(Graphics2D graphics2D, int y) {
-        graphics2D.setColor(Color.RED);
-        int x = 8 * Constants.TILE_SIZE;
-        graphics2D.drawString(Constants.GAME_TITLE_SELECTOR, x-Constants.TILE_SIZE/2, y);
     }
 
     private void drawHealth(Graphics2D graphics2D) {
@@ -462,5 +450,19 @@ public class UI {
 
     private static String locationToString(int x, int y) {
         return "(" + x + ", " + y + ") ";
+    }
+
+    private void loadFonts() {
+        try {
+            this.customFontSmall = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_SMALL);
+            this.customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE);
+            this.customFontMedium = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_MEDIUM);
+            this.customFontLarge = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(Constants.FONT_DOS)).deriveFont(Font.PLAIN, Constants.FONT_SIZE_LARGE);
+        } catch (FontFormatException | IOException e) {
+            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
+            this.customFontMedium = new Font(Constants.FONT_ARIAL, Font.PLAIN, 35);
+            this.customFontLarge = new Font(Constants.FONT_ARIAL, Font.PLAIN, 50);
+            e.printStackTrace();
+        }
     }
 }

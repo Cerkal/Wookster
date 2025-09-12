@@ -7,6 +7,7 @@ import java.io.InputStream;
 public class Sound {
 
     public boolean mute = false;
+    public boolean muteMusic = false;
     private Clip musicClip;
     private FloatControl musicVolumeControl;
     private float originalMusicVolume;
@@ -71,8 +72,19 @@ public class Sound {
         }).start();
     }
 
+    public void toggleMusic() {
+        this.muteMusic = !this.muteMusic;
+        if (this.muteMusic) {
+            stopMusic();
+        }
+    }
+
+    public void toogleEffects() {
+        this.mute = true;
+    }
+
     public void playMusic(String soundName) {
-        if (this.mute) { return; }
+        if (this.muteMusic) { return; }
         stopMusic();
         if (soundName == null) {
             System.err.println("Music not found: " + soundName);
