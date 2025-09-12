@@ -136,7 +136,8 @@ public class UI {
             graphics2D,
             Constants.SCREEN_WIDTH / 2 - (Constants.TILE_SIZE * 2) - 10,
             y,
-            Constants.NEW_LINE_SIZE
+            Constants.NEW_LINE_SIZE,
+            true
         );
 
         System.out.println(selectedItem);
@@ -241,7 +242,8 @@ public class UI {
                 graphics2D,
                 Constants.TILE_SIZE * 2 + 20,
                 Constants.TILE_SIZE * 5 - 30,
-                Constants.NEW_LINE_SIZE
+                Constants.NEW_LINE_SIZE,
+                false
             );
 
             this.currentTab = selectedItem.selectedScreenIndex;

@@ -25,6 +25,8 @@ public class ScreenSelector implements KeyListener {
 
     private Font customFont;
 
+    private boolean centerText;
+
     class SelectionResult {
         public boolean selected = false;
         public String selectedName;
@@ -96,7 +98,8 @@ public class ScreenSelector implements KeyListener {
         this.markedSelectedTab = screenIndex;
     }
 
-    public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter) {
+    public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter, boolean center) {
+
         if (screens.isEmpty()) return null;
 
         List<String> items = screens.get(screenIndex);
@@ -107,7 +110,7 @@ public class ScreenSelector implements KeyListener {
         result.selectedScreenIndex = screenIndex;
 
         if (items == null || items.isEmpty()) {
-            draw(graphics2D, x, y, delimiter, new ArrayList<>());
+            draw(graphics2D, x, y, delimiter, new ArrayList<>(), center);
             return result;
         }
 
@@ -124,11 +127,9 @@ public class ScreenSelector implements KeyListener {
         result.selectedName = items.get(commandNumber);
         result.selectedIndex = commandNumber;
 
-        draw(graphics2D, x, y, delimiter, pageItems);
+        draw(graphics2D, x, y, delimiter, pageItems, center);
         return result;
     }
-
-
 
     private List<List<String>> chunk(List<String> items) {
         List<List<String>> pages = new ArrayList<>();
@@ -138,7 +139,7 @@ public class ScreenSelector implements KeyListener {
         return pages;
     }
 
-    private void draw(Graphics2D graphics2D, int x, int y, int delimiter, List<String> items) {
+    private void draw(Graphics2D graphics2D, int x, int y, int delimiter, List<String> items, boolean center) {
         graphics2D.setFont(customFont);
         graphics2D.setColor(Color.WHITE);
 
@@ -153,7 +154,12 @@ public class ScreenSelector implements KeyListener {
             ){
                 graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
             }
-            graphics2D.drawString(items.get(i), x + Constants.TILE_SIZE, y);
+            if (!center) {
+                graphics2D.drawString(items.get(i), x + Constants.TILE_SIZE, y);
+            } else {
+                int centerX = this.gamePanel.ui.getXForCenteredText(graphics2D, items.get(i), customFont);
+                graphics2D.drawString(items.get(i), centerX, y);
+            }
             y += delimiter;
         }
     }
