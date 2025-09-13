@@ -1,10 +1,12 @@
 package objects;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.KeyHandler;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
@@ -68,6 +70,16 @@ public class CarryPotionObject extends SuperObject {
             boolean clarity = this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL);
             y = this.spell.drawDescription(graphics2D, x, y, clarity);
         }
-        graphics2D.drawString("Press [r] to drop.", x, y);
+        y += Constants.NEW_LINE_SIZE;
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawString("Press " + KeyHandler.R + " to drop.", x, y);
+        graphics2D.setColor(Color.YELLOW);
+        graphics2D.drawString(" ".repeat(6) + KeyHandler.R, x, y);
+        
+        y += Constants.NEW_LINE_SIZE;
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawString("Press " + KeyHandler.SPACEBAR + " to use.", x, y);
+        graphics2D.setColor(Color.YELLOW);
+        graphics2D.drawString(" ".repeat(6) + KeyHandler.SPACEBAR, x, y);
     }
 }

@@ -31,6 +31,14 @@ public class LevelManager {
     }
 
     public void loadNextLevel() {
+        System.out.println("------------------");
+        System.out.println("Completed level.");
+        System.out.println("Current Level Index: " + this.currentLevelIndex);
+        System.out.println("Objects: " + this.gamePanel.objects);
+        System.out.println("Loading next level.");
+        System.out.println("Saving config...");
+        this.gamePanel.config.saveConfig();
+        System.out.println("------------------");
         if (currentLevelIndex + 1 < levels.size()) {
             loadLevel(currentLevelIndex + 1, false);
         }
@@ -58,9 +66,5 @@ public class LevelManager {
         levelWrapper.levelIndex = this.currentLevelIndex;
         levelWrapper.objects = objectWrapper;
         return levelWrapper;
-    }
-
-    public void saveLevelInfo() {
-        this.gamePanel.config.saveConfig();
     }
 }

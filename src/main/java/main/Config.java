@@ -2,6 +2,9 @@ package main;
 
 import java.io.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import main.GamePanel.GameState;
 import main.TitleScreen.Option;
@@ -51,7 +54,15 @@ public class Config {
             System.err.println("An error occurred while writing to the save file: " + saveFile.getAbsolutePath());
             e.printStackTrace();
         }
+        printPrettyString(data);
         this.gamePanel.gameState = currentState;
+    }
+
+    public void printPrettyString(String jsonData) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement jsonElement = JsonParser.parseString(jsonData);
+        String prettyJsonString = gson.toJson(jsonElement);
+        System.out.println(prettyJsonString);
     }
 
     public void loadConfig() {

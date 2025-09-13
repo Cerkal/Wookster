@@ -56,11 +56,6 @@ public class Level01 extends LevelBase {
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 10, 12));
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 8, 27));
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
-        this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, Constants.LEVEL_00_SIGN));
-
-        LevelDoorObject levelDoor = new LevelDoorObject(this.gamePanel, 10, 7);
-        levelDoor.setDifferentImage(Constants.TILE_CLEAR);
-        this.gamePanel.objects.add(levelDoor);
 
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
@@ -68,6 +63,10 @@ public class Level01 extends LevelBase {
     }
 
     public void setStaticObjects() {
+        LevelDoorObject levelDoor = new LevelDoorObject(this.gamePanel, 10, 7);
+        levelDoor.setDifferentImage(Constants.TILE_CLEAR);
+        this.gamePanel.objects.add(levelDoor);
+        this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 22, Constants.LEVEL_00_SIGN));
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 31, 37, Constants.LEVEL_00_JERMEY_SIGN));
         this.gamePanel.objects.add(new JermeyObject(this.gamePanel, 30, 36, Constants.LEVEL_00_JERMEY_SOUND_START, true));
         List<Point> jeremyList = new ArrayList<>();

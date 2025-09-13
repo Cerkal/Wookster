@@ -64,6 +64,15 @@ public abstract class LevelBase {
                 } catch (InterruptedException ignored) {}
             }
             this.gamePanel.gameState = GameState.PLAY;
+            System.out.println("------------------");
+            System.out.println("Loaded.");
+            System.out.println("Current Level Index: " + this.gamePanel.levelManager.currentLevelIndex);
+            System.out.println("Objects: " + this.gamePanel.objects);
+            System.out.println("Saving config...");
+            System.out.println("");
+            this.gamePanel.config.saveConfig();
+            System.out.println("------------------");
+            
         }).start();
     }
 

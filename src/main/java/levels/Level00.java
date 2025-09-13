@@ -14,6 +14,7 @@ import entity.NPCGeneric;
 import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
+import main.KeyHandler;
 import main.Quest;
 import main.QuestDescriptions;
 import main.QuestManager;
@@ -52,6 +53,8 @@ public class Level00 extends LevelBase {
 
     public void init() {
         super.init();
+
+        this.gamePanel.ui.displayDialog("Move using [w] [s] [a] [d] keys. Press " + KeyHandler.SPACEBAR + " to talk.");
         this.gamePanel.npcs.addAll(pigs);
 
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
@@ -82,7 +85,17 @@ public class Level00 extends LevelBase {
         addGameObject(this.inventoryDoor);
         this.potionDoor = new DoorObject(this.gamePanel, 27, 29);
         addGameObject(this.potionDoor);
-        addGameObject(new PotionObject(this.gamePanel, 25, 29));
+
+        addGameObject(new PotionObject(this.gamePanel, 25, 29) {
+            @Override
+            public void setSpell() {
+                super.setSpell();
+                gamePanel.ui.displayDialog(Constants.TUTORIAL_NOTE_KEYSPELL);
+            }
+        });
+    }
+
+    public void setStaticObjects() {
         addGameObject(new SignObject(this.gamePanel, 30, 11, "Pig pen."));
     }
 
@@ -120,14 +133,6 @@ public class Level00 extends LevelBase {
                     }
                 }
             }
-            String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
-            if (deadCount > 0) {
-                lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
-            }
-            if (pigs.size() == deadCount) {
-                lines = Dialogue.TUTORIAL_PIGS_NEGITIVE;
-            }
-
             this.gamePanel.npcs.remove(this.oldmanPigs);
             this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
                 @Override
@@ -142,6 +147,13 @@ public class Level00 extends LevelBase {
                     }
                 }
             };
+            String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
+            if (deadCount > 0) {
+                lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
+            }
+            if (pigs.size() == deadCount) {
+                lines = Dialogue.TUTORIAL_PIGS_NEGITIVE;
+            }
             this.oldmanPigs.invincable = true;
             this.oldmanPigs.setDialogue(lines);
             this.gamePanel.npcs.add(this.oldmanPigs);

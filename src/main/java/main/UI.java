@@ -119,6 +119,7 @@ public class UI {
 
         graphics2D.setFont(this.customFontLarge);
         graphics2D.setColor(Color.white);
+        
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
         int y = getYForCenteredText();
         graphics2D.drawString(Constants.GAME_TITLE, x, Constants.TILE_SIZE * 3);
@@ -148,7 +149,9 @@ public class UI {
 
         // Handle selected item
         if (selectedItem != null && selectedItem.selected) {
-            if (selectedItem.selectedScreenIndex == 0) {
+            if (selectedItem.selectedScreenIndex == 0 &&
+                selectedItem.customKeyPress == -1
+            ){
                 TitleScreen.Option option = options.get(selectedItem.selectedName);
                 if (option != null) { option.action(this.gamePanel); }
 
@@ -214,18 +217,27 @@ public class UI {
     }
 
     private void drawInventoryBox(Graphics2D graphics2D, String title) {
-        graphics2D.setFont(this.customFontMedium);
-        int x = getXForCenteredText(graphics2D, title, this.customFontMedium);
-        int y = getYForCenteredText();
 
+        graphics2D.setFont(this.customFontMedium);
+        int x = getXForCenteredText(graphics2D, Constants.INVENTORY, this.customFontMedium);
+        int y = getYForCenteredText();
+        
         graphics2D.setColor(Color.BLACK);
         int width = Constants.SCREEN_WIDTH - Constants.TILE_SIZE * 2;
         int height = Constants.SCREEN_HEIGHT - Constants.TILE_SIZE * 2;
         graphics2D.fillRect(Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(Color.GRAY);
 
         y = y - 160;
-        graphics2D.drawString(title, x, y);
+        x -= Constants.TILE_SIZE * 5;
+        for (String grayTitle : Constants.INVENTORY_TABS) {
+            graphics2D.setColor(new Color(30, 30, 30));
+            if (title == grayTitle) {
+                graphics2D.setColor(Color.WHITE);
+            }
+            graphics2D.drawString(grayTitle, x, y);
+            x += Constants.TILE_SIZE * 5;
+        }
         y += Constants.TILE_SIZE;
     }
 
@@ -286,13 +298,18 @@ public class UI {
                 // Handle Effects Item
                 if (selectedItem.selectedScreenIndex == Constants.EFFECTS_INDEX) {
                     SuperSpell spell = spellsMap.get(selectedItem.selectedName);
-                    if (spell != null) spell.drawDescription(graphics2D, x, y - Constants.NEW_LINE_SIZE, true);
+                    if (spell != null) spell.drawDescription(
+                        graphics2D,
+                        x - Constants.TILE_SIZE,
+                        y - Constants.NEW_LINE_SIZE,
+                        true
+                    );
                 }
 
                 // Handle Quest Item
                 if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
                     Quest quest = questMap.get(selectedItem.selectedName);
-                    if (quest != null) quest.drawInfo(this.gamePanel, graphics2D, x, y);
+                    if (quest != null) quest.drawInfo(this.gamePanel, graphics2D, x - Constants.TILE_SIZE, y);
                 }
             }
 

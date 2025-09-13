@@ -80,13 +80,16 @@ public class Constants {
     // Inventory Tabs
     public static final List<String> INVENTORY_TABS = Arrays.asList(
         INVENTORY,
-        EFFECTS,
-        QUESTS
+        QUESTS,
+        EFFECTS
     );
     public static final int INVENTORY_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.INVENTORY);
     public static final int EFFECTS_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.EFFECTS);
     public static final int QUEST_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.QUESTS);
     public static final int INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
+
+    // Tutorial Notes
+    public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";
 
     // Files
     public static final String SAVE_FILE = "save.json";

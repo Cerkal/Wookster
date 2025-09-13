@@ -46,7 +46,7 @@ public class Dialogue {
         "Here, take one.",
         "You can find them all over the place.",
         "I'm not sure why but people leave them laying around.",
-        "Press [i] to open your inventory.",
+        "Press " + KeyHandler.I + " to open your inventory.",
     };
 
     public static final String[] TUTORIAL_INVENTORY_REMINDER = {
@@ -66,9 +66,9 @@ public class Dialogue {
     public static final String[] TUTORIAL_COMPLETE = {
         PLAYER_NAME + ", about your mom...",
         "She went out for berries or something.",
-        "I'm worried about her.",
-        "Please find her.",
+        "I'm worried about her. Please find her.",
         "Take this crossbow.",
+        "Press and hold " + KeyHandler.SPACEBAR + " to shoot.",
         "I'm your dad by the way."
     };
 
@@ -77,6 +77,7 @@ public class Dialogue {
         "Trees hu?",
         "It's easy to get lost in here.",
         "I was going to make this my home.",
-        "Thank God you found me."
+        "Thank God you found me.",
+        "Lead the way. I'll follow you."
     };
 }

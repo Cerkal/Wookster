@@ -8,6 +8,7 @@ public class SignObject extends SuperObject {
     public SignObject(GamePanel gamePanel, int worldX, int worldY, String message) {
         super(gamePanel, worldX, worldY);
         this.message = message;
+        this.isSpecial = true;
         this.objectType = ObjectType.SIGN;
         init();
     }

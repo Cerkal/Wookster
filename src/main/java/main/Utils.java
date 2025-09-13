@@ -55,4 +55,8 @@ public class Utils {
         graphics2D.dispose();
         return newImage;
     }
+
+    public static String removeUnderscore(String string) {
+        return string.replace("_", " ");
+    }
 }

@@ -32,6 +32,7 @@ public class LevelDoorObject extends SuperObject {
         this.objectType = ObjectType.LEVEL_DOOR;
         this.name = this.objectType.name();
         this.collision = true;
+        this.isSpecial = true;
         this.soundPrimary = Constants.SOUND_UNLOCK;
         this.soundSecondary = Constants.SOUND_LOCK;
     }

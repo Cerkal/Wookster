@@ -1,6 +1,5 @@
 package spells;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -34,7 +33,7 @@ public class KeySpell extends SuperSpell {
     public int drawDescription(Graphics2D graphics2D, int x, int y, boolean clarity) {
         y = super.drawDescription(graphics2D, x, y, clarity);
         if (!clarity) return y;
-         y += Constants.NEW_LINE_SIZE;
+        y += Constants.NEW_LINE_SIZE;
         return y;
     }
 }

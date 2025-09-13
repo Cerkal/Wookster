@@ -5,9 +5,9 @@ import java.util.List;
 
 public class QuestDescriptions {
 
-    public static final String PIGS = "Pigs";
-    public static final String INVENTORY = "Inventory";
-    public static final String MOM = "Find mom.";
+    public static final String PIGS = "PIG HELPER";
+    public static final String INVENTORY = "INVENTORY PRO";
+    public static final String MOM = "MISSING MOM";
 
     public static final HashMap<String, List<String>> DESCRIPTIONS = new HashMap<>(){{
         put(
@@ -16,11 +16,17 @@ public class QuestDescriptions {
         );
         put(
             INVENTORY,
-            List.of("Do that inventory thing.")
+            List.of(
+                "Learn how to use your inventory.",
+                "Its not that hard."
+            )
         );
         put(
             MOM,
-            List.of("Find your mom.")
+            List.of(
+                "Your mom went to look for berries",
+                "and is missing. Find her."
+            )
         );
     }};
 }

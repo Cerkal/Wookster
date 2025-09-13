@@ -15,6 +15,7 @@ public class KeyHandler implements KeyListener {
 
     public static String SPACEBAR = "[spacebar]";
     public static String I = "[i]";
+    public static String R = "[r]";
 
     public KeyHandler(GamePanel gamePanel) {
         this.gamePanel = gamePanel;

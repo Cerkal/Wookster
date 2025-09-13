@@ -79,8 +79,10 @@ public class QuestManager {
         List<String> completedQuestList = new ArrayList<>(completedQuestMap.keySet());
         List<String> currentQuestList = new ArrayList<>(currentQuestMap.keySet());
         List<String> allQuests = new ArrayList<>();
-        allQuests.addAll(completedQuestList);
         allQuests.addAll(currentQuestList);
+        for (String quest : completedQuestList) {
+            allQuests.add("x " + quest);
+        }
         return allQuests;
     }
 }
