@@ -64,14 +64,7 @@ public abstract class LevelBase {
                 } catch (InterruptedException ignored) {}
             }
             this.gamePanel.gameState = GameState.PLAY;
-            System.out.println("------------------");
-            System.out.println("Loaded.");
-            System.out.println("Current Level Index: " + this.gamePanel.levelManager.currentLevelIndex);
-            System.out.println("Objects: " + this.gamePanel.objects);
-            System.out.println("Saving config...");
-            System.out.println("");
             this.gamePanel.config.saveConfig();
-            System.out.println("------------------");
             
         }).start();
     }
@@ -96,13 +89,14 @@ public abstract class LevelBase {
             loadObjectItems(dataWrapper);
             loadPlayerSaveState(dataWrapper);
             loadQuestData(dataWrapper);
-            System.out.println("Loading level " + levelIndex);
         } else {
             setObjects();
         }
+        setStaticObjects();
     }
 
     public abstract void setObjects();
+    public abstract void setStaticObjects();
     public abstract void update();
     public abstract void draw(Graphics2D graphics2d);
     public abstract void reset();

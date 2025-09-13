@@ -36,8 +36,6 @@ public class Level01 extends LevelBase {
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);
-        this.setStaticObjects();
-
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
         this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
@@ -62,6 +60,7 @@ public class Level01 extends LevelBase {
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
     }
 
+    @Override
     public void setStaticObjects() {
         LevelDoorObject levelDoor = new LevelDoorObject(this.gamePanel, 10, 7);
         levelDoor.setDifferentImage(Constants.TILE_CLEAR);

@@ -41,11 +41,12 @@ public class Level02 extends LevelBase {
     @Override
     public void setObjects() {
         this.gamePanel.objects.add(new DoorObject(this.gamePanel, 27, 38));
-
         this.gamePanel.objects.add(new KeyObject(this.gamePanel, 30, 30));
-
         this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new InvincibilitySpell(), 10, 10));
+    }
 
+    @Override
+    public void setStaticObjects() {
         this.gamePanel.objects.add(new SignObject(this.gamePanel, 13, 6, "You don't want to go back that way."));
     }
 

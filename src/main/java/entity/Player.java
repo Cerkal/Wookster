@@ -16,6 +16,7 @@ import spells.SuperSpell.SpellType;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -247,6 +248,34 @@ public class Player extends Entity {
         Collections.sort(weaponList);
         Collections.sort(otherList);
         List<String> selectableList = new ArrayList<>();
+        selectableList.addAll(weaponList);
+        selectableList.addAll(otherList);
+        return selectableList;
+    }
+
+    public List<InventoryItem> getInventoryItems() {
+        List<InventoryItem> weaponList = new ArrayList<>();
+        List<InventoryItem> otherList = new ArrayList<>();
+        for (String key : this.inventory.keySet()) {
+            List<InventoryItem> items = this.inventory.get(key);
+            int totalCount = 0;
+            for (InventoryItem item : items) {
+                totalCount += item.count;
+            }
+            InventoryItem first = items.get(0);
+            InventoryItem item = new InventoryItem(first);
+            item.count = totalCount;
+            if (item.usable || item.visibility) {
+                if (item.weapon != null) {
+                    weaponList.add(item);
+                } else {
+                    otherList.add(item);
+                }
+            }
+        }
+        weaponList.sort(Comparator.comparing(weapon -> weapon.name));
+        otherList.sort(Comparator.comparing(other -> other.name));
+        List<InventoryItem> selectableList = new ArrayList<>();
         selectableList.addAll(weaponList);
         selectableList.addAll(otherList);
         return selectableList;

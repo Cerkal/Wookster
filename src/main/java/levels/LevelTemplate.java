@@ -17,7 +17,10 @@ public class LevelTemplate extends LevelBase {
     }
 
     @Override
-    public void setObjects() { }
+    public void setObjects() {}
+
+    @Override
+    public void setStaticObjects() {}
 
     @Override
     public void update() {}

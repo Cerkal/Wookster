@@ -141,9 +141,6 @@ public class Level00 extends LevelBase {
                     if (quest != null) {
                         quest.completeQuest(this.gamePanel);
                         this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.INVENTORY));
-                    } else {
-                        String[] lines = Dialogue.TUTORIAL_PIGS_END;
-                        this.setDialogue(lines);
                     }
                 }
             };
@@ -160,6 +157,7 @@ public class Level00 extends LevelBase {
         }
 
         if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
+            this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_END);
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {

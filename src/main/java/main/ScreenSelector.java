@@ -13,20 +13,27 @@ public class ScreenSelector implements KeyListener {
 
     private final GamePanel gamePanel;
 
-    private final List<List<String>> screens = new ArrayList<>();
+    private final List<List<SelectionItem>> screens = new ArrayList<>();
     private int screenIndex = 0;
     private int commandNumber = 0;
     private int pageSize = 6;
     private int pageNumber = 0;
 
-    private boolean markedSelected = false;
-    private int markedSelectedIndex = 0;
-    private String markedSelectedName = "";
-
     private Font customFont;
+
+    static class SelectionItem {
+        public String displayName;
+        public Object displayValue;
+        public boolean selected;
+        public SelectionItem(String displayName, Object displayValue) {
+            this.displayName = displayName;
+            this.displayValue = displayValue;
+        }
+    }
 
     class SelectionResult {
         public boolean selected = false;
+        public Object selectedObject;
         public String selectedName;
         public int selectedIndex = 0;
         public int selectedScreenIndex = 0;
@@ -57,19 +64,7 @@ public class ScreenSelector implements KeyListener {
         loadFonts();
     }
 
-    private void loadFonts() {
-        try {
-            this.customFont = Font
-                .createFont(Font.TRUETYPE_FONT,
-                    getClass()
-                        .getResourceAsStream(Constants.FONT_DOS))
-                        .deriveFont(Font.PLAIN, Constants.FONT_SIZE);
-        } catch (FontFormatException | IOException e) {
-            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
-        }
-    }
-
-    public void addScreen(List<String> items) {
+    public void addScreen(List<SelectionItem> items) {
         screens.add(new ArrayList<>(items));
     }
 
@@ -79,7 +74,7 @@ public class ScreenSelector implements KeyListener {
         clearSelection();
     }
 
-    public void set(int index, List<String> list) {
+    public void set(int index, List<SelectionItem> list) {
         if (index >= 0 && index < screens.size()) {
             screens.set(index, list);
         } else {
@@ -96,20 +91,14 @@ public class ScreenSelector implements KeyListener {
         this.result = new SelectionResult();
     }
 
-    public void markedSelected(int index, String name) {
-        this.markedSelected = true;
-        this.markedSelectedIndex = index;
-        this.markedSelectedName = name;
-    }
-
     public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter, boolean center) {
 
         if (screens.isEmpty()) return null;
 
-        List<String> items = screens.get(screenIndex);
+        List<SelectionItem> items = screens.get(screenIndex);
 
         // Default
-        result.selectedName = null;
+        result.selectedObject = null;
         result.selectedIndex = -1;
         result.selectedScreenIndex = screenIndex;
 
@@ -118,7 +107,7 @@ public class ScreenSelector implements KeyListener {
             return result;
         }
 
-        List<List<String>> pages = chunk(items);
+        List<List<SelectionItem>> pages = chunk(items);
 
         // Clamp commandNumber within bounds
         if (commandNumber < 0) commandNumber = 0;
@@ -127,23 +116,23 @@ public class ScreenSelector implements KeyListener {
         pageNumber = commandNumber / pageSize;
         if (pageNumber >= pages.size()) pageNumber = pages.size() - 1;
 
-        List<String> pageItems = pages.get(pageNumber);
-        result.selectedName = items.get(commandNumber);
+        List<SelectionItem> pageItems = pages.get(pageNumber);
+        result.selectedObject = items.get(commandNumber).displayValue;
         result.selectedIndex = commandNumber;
 
         draw(graphics2D, x, y, delimiter, pageItems, center);
         return result;
     }
 
-    private List<List<String>> chunk(List<String> items) {
-        List<List<String>> pages = new ArrayList<>();
+    private List<List<SelectionItem>> chunk(List<SelectionItem> items) {
+        List<List<SelectionItem>> pages = new ArrayList<>();
         for (int i = 0; i < items.size(); i += pageSize) {
             pages.add(items.subList(i, Math.min(i + pageSize, items.size())));
         }
         return pages;
     }
 
-    private void draw(Graphics2D graphics2D, int x, int y, int delimiter, List<String> items, boolean center) {
+    private void draw(Graphics2D graphics2D, int x, int y, int delimiter, List<SelectionItem> items, boolean center) {
         graphics2D.setFont(customFont);
         graphics2D.setColor(Color.WHITE);
 
@@ -151,18 +140,14 @@ public class ScreenSelector implements KeyListener {
             if (commandNumber % pageSize == i) {
                 setCursor(graphics2D, x, y);
             }
-            if (
-                this.markedSelected &&
-                this.markedSelectedIndex - (this.pageNumber * this.pageSize) == i &&
-                this.markedSelectedName == items.get(i)
-            ){
+            if (items.get(i).selected) {
                 graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
             }
             if (!center) {
-                graphics2D.drawString(items.get(i), x + Constants.TILE_SIZE, y);
+                graphics2D.drawString(items.get(i).displayName, x + Constants.TILE_SIZE, y);
             } else {
-                int centerX = this.gamePanel.ui.getXForCenteredText(graphics2D, items.get(i), customFont);
-                graphics2D.drawString(items.get(i), centerX, y);
+                int centerX = this.gamePanel.ui.getXForCenteredText(graphics2D, items.get(i).displayName, customFont);
+                graphics2D.drawString(items.get(i).displayName, centerX, y);
             }
             y += delimiter;
         }
@@ -182,7 +167,7 @@ public class ScreenSelector implements KeyListener {
         if (screens.isEmpty()) return;
 
         int code = e.getKeyCode();
-        List<String> currentItems = screens.get(screenIndex);
+        List<SelectionItem> currentItems = screens.get(screenIndex);
 
         switch (this.gamePanel.gameState) {
             case GameState.INVENTORY:
@@ -221,31 +206,42 @@ public class ScreenSelector implements KeyListener {
         }
     }
 
-    private void up(List<String> currentItems) {
+    private void up(List<SelectionItem> currentItems) {
         commandNumber--;
         if (commandNumber < 0) commandNumber = currentItems.size() - 1;
     }
 
-    private void down(List<String> currentItems) {
+    private void down(List<SelectionItem> currentItems) {
         commandNumber++;
         if (commandNumber >= currentItems.size()) commandNumber = 0;
     }
 
-    private void left(List<String> currentItems) {
+    private void left(List<SelectionItem> currentItems) {
         screenIndex = (screenIndex - 1 + screens.size()) % screens.size();
         commandNumber = 0;
     }
 
-    private void right(List<String> currentItems) {
+    private void right(List<SelectionItem> currentItems) {
         screenIndex = (screenIndex + 1) % screens.size();
         commandNumber = 0;
     }
 
     private void select() {
-        this.markedSelectedIndex = commandNumber;
         this.result.selected = true;
     }
 
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
+
+    private void loadFonts() {
+        try {
+            this.customFont = Font
+                .createFont(Font.TRUETYPE_FONT,
+                    getClass()
+                        .getResourceAsStream(Constants.FONT_DOS))
+                        .deriveFont(Font.PLAIN, Constants.FONT_SIZE);
+        } catch (FontFormatException | IOException e) {
+            this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
+        }
+    }
 }

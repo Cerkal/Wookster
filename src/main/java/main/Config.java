@@ -45,6 +45,7 @@ public class Config {
     }
 
     public void saveConfig() {
+        System.out.println("Saving...");
         GameState currentState = this.gamePanel.gameState;
         this.gamePanel.gameState = GameState.SAVING;
         String data = this.dataWrapper.getDataForSave(this.gamePanel);
@@ -54,7 +55,7 @@ public class Config {
             System.err.println("An error occurred while writing to the save file: " + saveFile.getAbsolutePath());
             e.printStackTrace();
         }
-        printPrettyString(data);
+        // printPrettyString(data);
         this.gamePanel.gameState = currentState;
     }
 

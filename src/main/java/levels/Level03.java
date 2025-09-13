@@ -21,6 +21,9 @@ public class Level03 extends LevelBase {
     public void setObjects() {}
 
     @Override
+    public void setStaticObjects() {}
+
+    @Override
     public void update() {}
 
     @Override

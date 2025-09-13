@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import main.GamePanel.GameState;
+import main.ScreenSelector.SelectionItem;
 import main.TitleScreen.Screen;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
@@ -127,16 +128,19 @@ public class UI {
         Screen screen = titleScreen.currentScreen;
         HashMap<String, TitleScreen.Option> options = screen.getOptionsMap();
         List<String> optionList = screen.getOptionTitles();
+        List<SelectionItem> optionSelectionList = new ArrayList<>();
+        for (String option : optionList) {
+            optionSelectionList.add(new SelectionItem(option, option));
+        }
 
         if ((this.gamePanel.gameState == GameState.TITLE ||
              this.gamePanel.levelManager.currentLevelIndex == 0
             ) && screen.title == TitleScreen.DEFAULT_SCREEN
         ){
-            options.remove("Save Game");
-            optionList.remove(2);
+            optionSelectionList.remove(2);
         }
 
-        screenSelector.set(0, optionList);
+        screenSelector.set(0, optionSelectionList);
         screenSelector.setScreen(0);
 
         ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
@@ -152,7 +156,7 @@ public class UI {
             if (selectedItem.selectedScreenIndex == 0 &&
                 selectedItem.customKeyPress == -1
             ){
-                TitleScreen.Option option = options.get(selectedItem.selectedName);
+                TitleScreen.Option option = options.get(selectedItem.selectedObject);
                 if (option != null) { option.action(this.gamePanel); }
 
                 // Handle Slider
@@ -250,28 +254,38 @@ public class UI {
             drawInventoryBox(graphics2D, inventoryTitle);
 
             // Set Inventory Items
-            HashMap<String, InventoryItem> inventoryMap = this.gamePanel.player.getInventory();
-            List<String> inventory = this.gamePanel.player.getInventoryString();
-            for (int i = 0; i < inventory.size() - 1; i++) {
-                if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                    screenSelector.markedSelected(i, this.gamePanel.player.weapon.weaponType.name());
+            List<InventoryItem> inventoryList = this.gamePanel.player.getInventoryItems();
+            List<SelectionItem> inventory = new ArrayList<>();
+            for (InventoryItem item : inventoryList) {
+                String displayName = item.name;
+                if (item.count > 1) displayName = item.name + " (" + item.count + ")"; 
+                SelectionItem selectionItem = new SelectionItem(displayName, item);
+                if (this.gamePanel.player.weapon != null && item.name == this.gamePanel.player.weapon.weaponType.name()) {
+                    selectionItem.selected = true;
                 }
+                inventory.add(selectionItem);
             }
             screenSelector.set(Constants.INVENTORY_INDEX, inventory);
 
             // Set Effects
-            HashMap<String, SuperSpell> spellsMap = new HashMap<>();
-            List<String> spellList = new ArrayList<>();
+            List<SelectionItem> spellList = new ArrayList<>();
             for (SuperSpell spell : this.gamePanel.player.spells.values()) {
-                spellsMap.put(spell.spellType.name(), spell);
-                spellList.add(spell.spellType.name());
+                spellList.add(
+                    new SelectionItem(
+                        Utils.removeUnderscore(spell.spellType.name()),
+                        spell
+                    )
+                );
             }
             screenSelector.set(Constants.EFFECTS_INDEX, spellList);
 
             // Set Quests
             HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
-            List<String> allQuests = this.gamePanel.questManager.getAllQuestsString();
-            screenSelector.set(Constants.QUEST_INDEX, allQuests);
+            List<SelectionItem> questList = new ArrayList<>();
+            for (Quest quest : questMap.values()) {
+                questList.add(new SelectionItem(quest.name, quest));
+            }
+            screenSelector.set(Constants.QUEST_INDEX, questList);
 
             ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
                 graphics2D,
@@ -291,13 +305,13 @@ public class UI {
                             
                 // Handle Inventory Item
                 if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    InventoryItem inventoryItem = (InventoryItem) selectedItem.selectedObject;
                     inventoryItem.drawInfo(graphics2D, x + Constants.INVENTORY_ICON_SIZE, y);
                 }
 
                 // Handle Effects Item
                 if (selectedItem.selectedScreenIndex == Constants.EFFECTS_INDEX) {
-                    SuperSpell spell = spellsMap.get(selectedItem.selectedName);
+                    SuperSpell spell = (SuperSpell) selectedItem.selectedObject;
                     if (spell != null) spell.drawDescription(
                         graphics2D,
                         x - Constants.TILE_SIZE,
@@ -308,7 +322,7 @@ public class UI {
 
                 // Handle Quest Item
                 if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
-                    Quest quest = questMap.get(selectedItem.selectedName);
+                    Quest quest = (Quest) selectedItem.selectedObject;
                     if (quest != null) quest.drawInfo(this.gamePanel, graphics2D, x - Constants.TILE_SIZE, y);
                 }
             }
@@ -320,7 +334,7 @@ public class UI {
                 if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX &&
                     (selectedItem.customKeyPress == -1 || selectedItem.customKeyPress == KeyEvent.VK_R)
                 ){
-                    InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
+                    InventoryItem inventoryItem = (InventoryItem) selectedItem.selectedObject;
                     if (selectedItem.customKeyPress == -1) {
                         inventoryItem.select();
                     }
