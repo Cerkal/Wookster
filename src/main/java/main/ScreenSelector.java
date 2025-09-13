@@ -21,7 +21,7 @@ public class ScreenSelector implements KeyListener {
 
     private boolean markedSelected = false;
     private int markedSelectedIndex = 0;
-    private int markedSelectedTab = 0;
+    private String markedSelectedName = "";
 
     private Font customFont;
 
@@ -30,6 +30,7 @@ public class ScreenSelector implements KeyListener {
         public String selectedName;
         public int selectedIndex = 0;
         public int selectedScreenIndex = 0;
+        public int customKeyPress = -1;
 
         @Override
         public String toString() {
@@ -38,6 +39,7 @@ public class ScreenSelector implements KeyListener {
                 "selectedName: " + this.selectedName + ", " +
                 "selectedIndex: " + this.selectedIndex + ", " +
                 "selectedScreenIndex: " + this.selectedScreenIndex +
+                "customKeyPress: " + this.customKeyPress +
             "}";
         }
 
@@ -90,10 +92,14 @@ public class ScreenSelector implements KeyListener {
         this.commandNumber = 0;
     }
 
-    public void markedSelected(int index, int screenIndex) {
+    public void clearSelectionLeaveHighlight() {
+        this.result = new SelectionResult();
+    }
+
+    public void markedSelected(int index, String name) {
         this.markedSelected = true;
         this.markedSelectedIndex = index;
-        this.markedSelectedTab = screenIndex;
+        this.markedSelectedName = name;
     }
 
     public SelectionResult selector(Graphics2D graphics2D, int x, int y, int delimiter, boolean center) {
@@ -148,7 +154,7 @@ public class ScreenSelector implements KeyListener {
             if (
                 this.markedSelected &&
                 this.markedSelectedIndex - (this.pageNumber * this.pageSize) == i &&
-                this.markedSelectedTab == screenIndex
+                this.markedSelectedName == items.get(i)
             ){
                 graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
             }
@@ -162,6 +168,10 @@ public class ScreenSelector implements KeyListener {
         }
     }
 
+    public void setScreen(int screenIndex) {
+        this.screenIndex = screenIndex;
+    }
+
     private void setCursor(Graphics2D g2d, int x, int y) {
         g2d.drawString(Constants.GAME_TITLE_SELECTOR, x, y);
     }
@@ -173,22 +183,36 @@ public class ScreenSelector implements KeyListener {
 
         int code = e.getKeyCode();
         List<String> currentItems = screens.get(screenIndex);
-        
+
         switch (this.gamePanel.gameState) {
             case GameState.INVENTORY:
+                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                 switch (code) {
                     case KeyEvent.VK_W -> up(currentItems);
                     case KeyEvent.VK_S -> down(currentItems);
                     case KeyEvent.VK_A -> left(currentItems);
                     case KeyEvent.VK_D -> right(currentItems);
+                    case KeyEvent.VK_R -> {
+                        this.result.selected = true;
+                        this.result.customKeyPress = KeyEvent.VK_R;
+                    }
                     case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
                 }
                 break;
             case GameState.PAUSE:
             case GameState.TITLE:
+                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
                 switch (code) {
                     case KeyEvent.VK_W -> up(currentItems);
                     case KeyEvent.VK_S -> down(currentItems);
+                    case KeyEvent.VK_A -> {
+                        this.result.selected = true;
+                        this.result.customKeyPress = KeyEvent.VK_A;
+                    }
+                    case KeyEvent.VK_D -> {
+                        this.result.selected = true;
+                        this.result.customKeyPress = KeyEvent.VK_D;
+                    }
                     case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
                 }
                 break;
@@ -200,31 +224,26 @@ public class ScreenSelector implements KeyListener {
     private void up(List<String> currentItems) {
         commandNumber--;
         if (commandNumber < 0) commandNumber = currentItems.size() - 1;
-        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     private void down(List<String> currentItems) {
         commandNumber++;
         if (commandNumber >= currentItems.size()) commandNumber = 0;
-        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     private void left(List<String> currentItems) {
         screenIndex = (screenIndex - 1 + screens.size()) % screens.size();
         commandNumber = 0;
-        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     private void right(List<String> currentItems) {
         screenIndex = (screenIndex + 1) % screens.size();
         commandNumber = 0;
-        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     private void select() {
         this.markedSelectedIndex = commandNumber;
         this.result.selected = true;
-        this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
     }
 
     @Override public void keyReleased(KeyEvent e) {}

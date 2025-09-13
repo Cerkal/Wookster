@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import entity.Entity.Direction;
+import main.Constants;
 import main.Utils;
 
 public class KeySpell extends SuperSpell {
@@ -19,7 +20,9 @@ public class KeySpell extends SuperSpell {
     public KeySpell() {
         super(SpellType.KEY_SPELL);
         this.brokeDirection = randomDirection();
-        this.descriptionText.add("Breaks move key in certain direction.");
+        this.descriptionText.add("Breaks move key in certain direction");
+        this.descriptionText.add("until all other directional keys");
+        this.descriptionText.add("have been pushed.");
     }
 
     private static Direction randomDirection() {
@@ -31,9 +34,7 @@ public class KeySpell extends SuperSpell {
     public int drawDescription(Graphics2D graphics2D, int x, int y, boolean clarity) {
         y = super.drawDescription(graphics2D, x, y, clarity);
         if (!clarity) return y;
-        graphics2D.setColor(Color.YELLOW);
-        graphics2D.drawString("Key Spell", x, y);
-        graphics2D.setColor(Color.WHITE);
+         y += Constants.NEW_LINE_SIZE;
         return y;
     }
 }

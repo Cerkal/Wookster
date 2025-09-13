@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.FontFormatException;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import main.GamePanel.GameState;
 import main.TitleScreen.Screen;
+import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
 public class UI {
@@ -125,34 +127,39 @@ public class UI {
         HashMap<String, TitleScreen.Option> options = screen.getOptionsMap();
         List<String> optionList = screen.getOptionTitles();
 
-        if (
-            this.gamePanel.gameState == GameState.TITLE ||
-            this.gamePanel.levelManager.currentLevelIndex == 0
+        if ((this.gamePanel.gameState == GameState.TITLE ||
+             this.gamePanel.levelManager.currentLevelIndex == 0
+            ) && screen.title == TitleScreen.DEFAULT_SCREEN
         ){
             options.remove("Save Game");
             optionList.remove(2);
         }
 
         screenSelector.set(0, optionList);
+        screenSelector.setScreen(0);
 
         ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
             graphics2D,
-            Constants.SCREEN_WIDTH / 2 - (Constants.TILE_SIZE * 2) - 10,
+            screen.xAlign,
             y,
             Constants.NEW_LINE_SIZE,
-            true
+            screen.centerText
         );
-
-        System.out.println(selectedItem);
 
         // Handle selected item
         if (selectedItem != null && selectedItem.selected) {
             if (selectedItem.selectedScreenIndex == 0) {
                 TitleScreen.Option option = options.get(selectedItem.selectedName);
-                if (option != null) {
-                    option.action(this.gamePanel);
+                if (option != null) { option.action(this.gamePanel); }
+
+                // Handle Slider
+                if (option instanceof TitleScreen.SettingSlider) {
+                    switch (selectedItem.customKeyPress) {
+                        case KeyEvent.VK_A -> { ((TitleScreen.SettingSlider) option).decrease(); }
+                        case KeyEvent.VK_D -> { ((TitleScreen.SettingSlider) option).increase(); }
+                    }
                 }
-                screenSelector.clearSelection();
+                screenSelector.clearSelectionLeaveHighlight();
             }
         }
     }
@@ -164,7 +171,14 @@ public class UI {
     }
 
     public void drawLoadingScreen(Graphics2D graphics2D) {
+        drawDotScreen(graphics2D, Constants.GAME_LOADING);
+    }
 
+    public void drawSavingScreen(Graphics2D graphics2D) {
+        drawDotScreen(graphics2D, Constants.GAME_SAVING);
+    }
+
+    private void drawDotScreen(Graphics2D graphics2D, String title) {
         long now = System.currentTimeMillis();
         if (now - this.loadingDotUpdate >= Constants.DOT_UPDATE_INTERVAL) {
             this.loadingDotCount = (this.loadingDotCount + 1) % 4;
@@ -177,13 +191,13 @@ public class UI {
             case 3 -> "...";
             default -> "";
         };
-        String loadingText = Constants.GAME_LOADING + dots;
+        String loadingText = title + dots;
         
         graphics2D.setColor(Color.BLACK);
         graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         graphics2D.setFont(this.customFontMedium);
         graphics2D.setColor(Color.WHITE);
-        int x = getXForCenteredText(graphics2D, Constants.GAME_LOADING + "...", this.customFontMedium);
+        int x = getXForCenteredText(graphics2D, title + "...", this.customFontMedium);
         int y = getYForCenteredText();
         graphics2D.drawString(loadingText, x, y);
     }
@@ -228,17 +242,23 @@ public class UI {
             List<String> inventory = this.gamePanel.player.getInventoryString();
             for (int i = 0; i < inventory.size() - 1; i++) {
                 if (this.gamePanel.player.weapon != null && inventory.get(i) == this.gamePanel.player.weapon.weaponType.name()) {
-                    screenSelector.markedSelected(i, Constants.INVENTORY_INDEX);
+                    screenSelector.markedSelected(i, this.gamePanel.player.weapon.weaponType.name());
                 }
             }
-
-            // Inventory Items Index
             screenSelector.set(Constants.INVENTORY_INDEX, inventory);
+
+            // Set Effects
+            HashMap<String, SuperSpell> spellsMap = new HashMap<>();
+            List<String> spellList = new ArrayList<>();
+            for (SuperSpell spell : this.gamePanel.player.spells.values()) {
+                spellsMap.put(spell.spellType.name(), spell);
+                spellList.add(spell.spellType.name());
+            }
+            screenSelector.set(Constants.EFFECTS_INDEX, spellList);
 
             // Set Quests
             HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
             List<String> allQuests = this.gamePanel.questManager.getAllQuestsString();
-
             screenSelector.set(Constants.QUEST_INDEX, allQuests);
 
             ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
@@ -263,12 +283,16 @@ public class UI {
                     inventoryItem.drawInfo(graphics2D, x + Constants.INVENTORY_ICON_SIZE, y);
                 }
 
+                // Handle Effects Item
+                if (selectedItem.selectedScreenIndex == Constants.EFFECTS_INDEX) {
+                    SuperSpell spell = spellsMap.get(selectedItem.selectedName);
+                    if (spell != null) spell.drawDescription(graphics2D, x, y - Constants.NEW_LINE_SIZE, true);
+                }
+
                 // Handle Quest Item
                 if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
                     Quest quest = questMap.get(selectedItem.selectedName);
-                    if (quest != null) {
-                        quest.drawInfo(this.gamePanel, graphics2D, x, y);
-                    }
+                    if (quest != null) quest.drawInfo(this.gamePanel, graphics2D, x, y);
                 }
             }
 
@@ -276,15 +300,24 @@ public class UI {
             if (selectedItem != null && selectedItem.selected) {
 
                 // Handle Inventory Item
-                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX) {
+                if (selectedItem.selectedScreenIndex == Constants.INVENTORY_INDEX &&
+                    (selectedItem.customKeyPress == -1 || selectedItem.customKeyPress == KeyEvent.VK_R)
+                ){
                     InventoryItem inventoryItem = inventoryMap.get(selectedItem.getSelectedName());
-                    inventoryItem.select();
+                    if (selectedItem.customKeyPress == -1) {
+                        inventoryItem.select();
+                    }
+                    if (selectedItem.customKeyPress == KeyEvent.VK_R) {
+                        inventoryItem.remove();
+                    }
                     this.gamePanel.gameState = GameState.PLAY;
                     screenSelector.clearSelection();
                 }
 
                 // Handle Quest Item
-                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) {
+                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX &&
+                    selectedItem.customKeyPress == -1
+                ){
                     this.gamePanel.gameState = GameState.PLAY;
                     screenSelector.clearSelection();
                 }

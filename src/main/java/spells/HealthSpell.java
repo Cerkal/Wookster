@@ -44,6 +44,7 @@ public class HealthSpell extends SuperSpell {
             " player's health by " + healthDiff, x, y
         );
         graphics2D.setColor(Color.WHITE);
+        y += Constants.NEW_LINE_SIZE;
         return y;
     }
 

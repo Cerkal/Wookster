@@ -18,6 +18,7 @@ public class DataWrapper {
     List<LevelWrapper> levels  = new ArrayList<>();
     HashMap<String, Quest> currentQuests = new HashMap<>();
     HashMap<String, Quest> completedQuests = new HashMap<>();
+    HashMap<String, Integer> settingsMap = new HashMap<>();
 
     public HashMap<String, Quest> getCompletedQuests() {
         return this.completedQuests;
@@ -47,18 +48,25 @@ public class DataWrapper {
     }
 
     public String getDataForSave(GamePanel gamePanel) {
-        this.player = gamePanel.player.getPlayerSaveState();
+        
         this.currentQuests = gamePanel.questManager.getCurrentQuests();
         this.completedQuests = gamePanel.questManager.getCompletedQuests();
-        LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
-        try {
-            this.levels.set(levelWrapper.levelIndex, levelWrapper);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println(e.getMessage());
-            this.levels.add(levelWrapper);
+        this.settingsMap = gamePanel.ui.titleScreen.getSettings();
+
+        // Level Data
+        if (!completedQuests.isEmpty()) {
+            this.player = gamePanel.player.getPlayerSaveState();
+            LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
+            try {
+                this.levels.set(levelWrapper.levelIndex, levelWrapper);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println(e.getMessage());
+                this.levels.add(levelWrapper);
+            }
+            this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
+            this.currentLevelIndex = gamePanel.levelManager.currentLevelIndex;
         }
-        this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
-        this.currentLevelIndex = gamePanel.levelManager.currentLevelIndex;
+
         Gson gson = new Gson();
         String json = gson.toJson(this);
         return json;

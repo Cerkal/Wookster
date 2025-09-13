@@ -56,6 +56,7 @@ public class Constants {
     public static final String GAME_PAUSED = "Game Paused";
     public static final String GAME_DEATH = "Dead";
     public static final String GAME_LOADING = "Loading";
+    public static final String GAME_SAVING = "Saving";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
@@ -63,21 +64,33 @@ public class Constants {
     public static final String GAME_TITLE_SCREEN_OPTIONS = "Options";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
+    public static final String GAME_TITLE_BACK_BUTTON = "Back";
 
-    // Inventory Tabs
+    // Seettings Screen
+    public static final String GAME_SETTINGS_MUSIC_TOGGLE = "Music: ";
+    public static final String GAME_SETTINGS_EFFECTS_TOGGLE = "Sound Effects: ";
+    public static final String GAME_SETTINGS_MUSIC_SLIDER = "Music Volume: ";
+    public static final String GAME_SETTINGS_EFFECTS_SLIDER = "Sound Effects Volume: ";
+    
+    // Inventory Titles
     public static final String INVENTORY = "Inventory";
+    public static final String EFFECTS = "Effects";
     public static final String QUESTS = "Quests";
 
+    // Inventory Tabs
     public static final List<String> INVENTORY_TABS = Arrays.asList(
         INVENTORY,
+        EFFECTS,
         QUESTS
     );
     public static final int INVENTORY_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.INVENTORY);
+    public static final int EFFECTS_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.EFFECTS);
     public static final int QUEST_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.QUESTS);
     public static final int INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
 
     // Files
     public static final String SAVE_FILE = "save.json";
+    public static final String LOG_FILE = "Wookster.log";
 
     // Objects
     public static final String OBJECT_DOOR_IMAGE = "/objects/door.png";

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version = '1.0.0'
@@ -27,36 +28,27 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-// Windows EXE installer
-// tasks.register('jpackageApp', Exec) {
-//     dependsOn build
-//     workingDir "$buildDir/libs"
-//     commandLine 'jpackage',
-//         '--type', 'exe',
-//         '--input', "$buildDir/libs",
-//         '--main-jar', 'Wookster-1.0.0.jar',
-//         '--main-class', 'main.Main',
-//         '--name', 'Wookster',
-//         '--app-version', version,
-//         '--win-dir-chooser',
-//         '--win-shortcut',
-//         '--win-menu',
-//         '--icon', "$projectDir/src/main/resources/icons/icon.ico"
-// }
+// Configure the existing shadowJar task
+shadowJar {
+    archiveBaseName.set('Wookster-all')
+    archiveVersion.set('1.0.0')
+    archiveClassifier.set('')
+}
 
-// Portable build, No installer
+// Portable build with fat jar
 tasks.register("jpackagePortable", Exec) {
-    dependsOn build
+    dependsOn 'shadowJar'
     workingDir "$buildDir/portable"
-    
+
     def inputDir = file("$buildDir/portable/input")
     def outputDir = file("$buildDir/portable/output/Wookster")
+    def fatJar = file("$buildDir/libs/Wookster-all-1.0.0.jar")
 
     doFirst {
         // Clean input folder
         mkdir(inputDir)
         copy {
-            from("$buildDir/libs/Wookster-1.0.0.jar")
+            from(fatJar)
             into(inputDir)
         }
 
@@ -71,11 +63,12 @@ tasks.register("jpackagePortable", Exec) {
         '--type', 'app-image',
         '--input', "$buildDir/portable/input",
         '--dest', "$buildDir/portable/output",
-        '--main-jar', 'Wookster-1.0.0.jar',
+        '--main-jar', fatJar.name,
         '--main-class', 'main.Main',
         '--name', 'Wookster',
         '--app-version', version,
         '--icon', "$projectDir/src/main/resources/icons/icon.ico"
+        // '--win-console'
 
     doLast {
         copy {

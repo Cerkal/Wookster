@@ -66,7 +66,8 @@ public class CarryPotionObject extends SuperObject {
         super.drawDetails(graphics2D, x, y);
         if (this.spell != null) {
             boolean clarity = this.gamePanel.player.spells.containsKey(SpellType.CLARITY_SPELL);
-            this.spell.drawDescription(graphics2D, x, y, clarity);
+            y = this.spell.drawDescription(graphics2D, x, y, clarity);
         }
+        graphics2D.drawString("Press [r] to drop.", x, y);
     }
 }

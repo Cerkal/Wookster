@@ -35,6 +35,7 @@ public class GamePanel extends Canvas implements Runnable {
     
     public enum GameState {
         LOADING,
+        SAVING,
         TITLE,
         PLAY,
         PAUSE,
@@ -55,11 +56,11 @@ public class GamePanel extends Canvas implements Runnable {
     public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
     public QuestManager questManager = new QuestManager(this);
+    public Sound sound = new Sound();
     public Config config = new Config(this);
     public UI ui = new UI(this);
     public Player player = new Player(this, keyHandler);
     public Collision collision = new Collision(this);
-    public Sound sound = new Sound();
     public LevelManager levelManager = new LevelManager(this);
     public EventHandler eventHandler = new EventHandler(this);
     public HashMap<String, Quest> quests = new HashMap<>();
@@ -126,7 +127,7 @@ public class GamePanel extends Canvas implements Runnable {
     public void start() {
         if (this.running) return;
         this.running = true;
-        this.sound.mute = false;
+        this.sound.muteEffects = false;
         this.gameThread = new Thread(this, GAME_THREAD);
         this.gameThread.start();
     }
@@ -228,6 +229,7 @@ public class GamePanel extends Canvas implements Runnable {
                     switch (this.gameState) {
                         case TITLE -> drawTitleScreen(graphics2D);
                         case LOADING -> drawLoadingScreen(graphics2D);
+                        case SAVING -> drawSavingScreen(graphics2D);
                         default -> drawGame(graphics2D);
                     }
 
@@ -247,6 +249,10 @@ public class GamePanel extends Canvas implements Runnable {
 
     private void drawLoadingScreen(Graphics2D graphics2D) {
         this.ui.drawLoadingScreen(graphics2D);
+    }
+
+    private void drawSavingScreen(Graphics2D graphics2D) {
+        this.ui.drawSavingScreen(graphics2D);
     }
 
     public void death() {

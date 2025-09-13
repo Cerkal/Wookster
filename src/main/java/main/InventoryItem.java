@@ -77,6 +77,12 @@ public class InventoryItem {
         }
     }
 
+    public void remove() {
+        if (this.object != null) {
+            this.object.removeInventoryItem();
+        }
+    }
+
     @Override
     public String toString() {
         return String.valueOf(this.count);

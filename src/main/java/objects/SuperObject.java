@@ -110,6 +110,23 @@ public class SuperObject {
         this.gamePanel.player.removeInventoryItem(this.inventoryItem);
     }
 
+    public void removeInventoryItem() {
+        if (this.objectType != SuperObject.ObjectType.POTION) return;
+        for (int x = this.gamePanel.player.getRawX() - 1; x < this.gamePanel.player.getRawX() + 1; x++) {
+            for (int y = this.gamePanel.player.getRawY() - 1; y < this.gamePanel.player.getRawY() + 1; y++) {
+                if (this.gamePanel.tileManager.walkableTiles[x][y]) {
+                    System.out.println(x);
+                    System.out.println(y);
+                    this.worldX = x * Constants.TILE_SIZE;
+                    this.worldY = y * Constants.TILE_SIZE;
+                    this.gamePanel.objects.add(this);
+                    this.gamePanel.player.removeInventoryItem(this.inventoryItem);
+                    return;
+                }
+            }
+        }
+    }
+
     public void drawDetails(Graphics2D graphics2D, int x, int y) {
         if (this.inventoryIcon == null) {
             setIcon();

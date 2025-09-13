@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import entity.Player;
+import main.Constants;
 import main.Utils;
 
 public class SpeedSpell extends SuperSpell {
@@ -72,6 +73,7 @@ public class SpeedSpell extends SuperSpell {
             " player's speed by " + speedDiff, x, y
         );
         graphics2D.setColor(Color.WHITE);
+        y += Constants.NEW_LINE_SIZE;
         return y;
     }
 }

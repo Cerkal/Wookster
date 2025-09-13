@@ -34,7 +34,7 @@ public class JermeyObject extends SuperObject {
         long elapsed = currentTime - lastPlayTime;
 
         if (elapsed > Constants.NANO_SECOND * 2.5) {
-            this.gamePanel.sound.playSoundEffectDamp(this.soundPrimary);
+            this.gamePanel.sound.playSoundEffect(this.soundPrimary);
             lastPlayTime = currentTime;
         }
 
