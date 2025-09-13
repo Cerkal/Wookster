@@ -1,16 +1,34 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.HashMap;
 import java.util.List;
 
 public class Quest {
 
+    String name;
+    int progress;
+    ResolutionLevel resolution = ResolutionLevel.DEFAULT;
+    HashMap<ResolutionLevel, Integer> paymentMap;
 
-    public String name;
-    public int progress;
+    public static enum ResolutionLevel {
+        POSTIVE,
+        NEUTRAL,
+        NEGATIVE,
+        DEFAULT
+    }
     
     public Quest(String name) {
         this.name = name;
+        this.paymentMap = new HashMap<>(){{
+            put(ResolutionLevel.DEFAULT, 0);
+        }};
+    }
+
+    public Quest(String name, HashMap<ResolutionLevel, Integer> paymentMap) {
+        this(name);
+        this.paymentMap = paymentMap;
     }
 
     public void completeQuest(GamePanel gamePanel) {
@@ -18,6 +36,16 @@ public class Quest {
         gamePanel.questManager.completedQuests.put(this.name, this);
         gamePanel.questManager.removeQuest(this.name);
         gamePanel.sound.playSoundEffect(Constants.SOUND_QUEST_COMPLETE);
+        if (this.paymentMap.containsKey(resolution) &&
+            this.paymentMap.get(resolution) > 0
+        ){
+            gamePanel.player.addCoins(this.paymentMap.get(resolution));
+            gamePanel.sound.playSoundEffect(Constants.SOUND_COIN);
+        }
+    }
+
+    public void setResolution(ResolutionLevel resolution) {
+        this.resolution = resolution;
     }
 
     public void setProgress(int progress) {
@@ -40,6 +68,12 @@ public class Quest {
         if (details == null) { return; }
         for (String line : details) {
             graphics2D.drawString(line, x, y);
+            y += Constants.NEW_LINE_SIZE;
+        }
+        if (getProgress() == 100) {
+            graphics2D.setColor(Color.YELLOW);
+            graphics2D.drawString("Completed", x, y);
+            graphics2D.setColor(Color.WHITE);
             y += Constants.NEW_LINE_SIZE;
         }
     }

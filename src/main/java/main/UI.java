@@ -283,7 +283,9 @@ public class UI {
             HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
             List<SelectionItem> questList = new ArrayList<>();
             for (Quest quest : questMap.values()) {
-                questList.add(new SelectionItem(quest.name, quest));
+                SelectionItem selectionItem = new SelectionItem(quest.name, quest);
+                if (quest.getProgress() == 100) selectionItem.color = Color.DARK_GRAY;
+                questList.add(selectionItem);
             }
             screenSelector.set(Constants.QUEST_INDEX, questList);
 
@@ -345,8 +347,9 @@ public class UI {
                     screenSelector.clearSelection();
                 }
 
-                // Handle Quest Item
-                if (selectedItem.selectedScreenIndex == Constants.QUEST_INDEX &&
+                // Handle Quest / Effects Item
+                if ((selectedItem.selectedScreenIndex == Constants.EFFECTS_INDEX ||
+                    selectedItem.selectedScreenIndex == Constants.QUEST_INDEX) &&
                     selectedItem.customKeyPress == -1
                 ){
                     this.gamePanel.gameState = GameState.PLAY;

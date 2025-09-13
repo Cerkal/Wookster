@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import main.KeyHandler;
 import main.Quest;
 import main.QuestDescriptions;
 import main.QuestManager;
+import main.Quest.ResolutionLevel;
 import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.PotionObject;
@@ -60,7 +62,16 @@ public class Level00 extends LevelBase {
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
             @Override
             public void postDialogAction() {
-                this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.PIGS));
+                this.gamePanel.questManager.addQuest(
+                    new Quest(
+                        QuestDescriptions.PIGS,
+                        new HashMap<>(){{
+                            put(ResolutionLevel.POSTIVE, 10);
+                            put(ResolutionLevel.NEUTRAL, 7);
+                            put(ResolutionLevel.NEGATIVE, 5);
+                        }}
+                    )
+                );
             }
         };
         this.oldmanPigs.invincable = true;
@@ -144,12 +155,16 @@ public class Level00 extends LevelBase {
                     }
                 }
             };
+            Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
             String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
+            quest.setResolution(ResolutionLevel.POSTIVE);
             if (deadCount > 0) {
                 lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
+                quest.setResolution(ResolutionLevel.NEUTRAL);
             }
             if (pigs.size() == deadCount) {
-                lines = Dialogue.TUTORIAL_PIGS_NEGITIVE;
+                lines = Dialogue.TUTORIAL_PIGS_NEGATIVE;
+                quest.setResolution(ResolutionLevel.NEGATIVE);
             }
             this.oldmanPigs.invincable = true;
             this.oldmanPigs.setDialogue(lines);

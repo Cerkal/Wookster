@@ -118,7 +118,7 @@ public class GamePanel extends Canvas implements Runnable {
         this.gameState = GameState.PLAY;
         this.config.dataWrapper = new DataWrapper();
         this.restartLevel();
-        this.levelManager.loadLevel(0, false);
+        this.levelManager.loadLevel(3, false);
         this.stopMusic();
         this.playMusic(Constants.SOUND_BG_01);
         System.out.println("New game.");

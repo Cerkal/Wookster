@@ -49,6 +49,9 @@ public class HealthSpell extends SuperSpell {
     }
 
     private void randomHealth() {
-        this.healthAmount = Utils.generateRandomInt(-30, 30);
+        this.healthAmount = Utils.generateRandomInt(10, 30);
+        if (Utils.generateRandomInt(0, 1) == 0) {
+            this.healthAmount *= -1;
+        }
     }
 }

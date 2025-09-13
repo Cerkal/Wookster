@@ -12,6 +12,7 @@ import main.GamePanel.GameState;
 public class ScreenSelector implements KeyListener {
 
     private final GamePanel gamePanel;
+    private final Color DEFAULT_COLOR = Color.WHITE;
 
     private final List<List<SelectionItem>> screens = new ArrayList<>();
     private int screenIndex = 0;
@@ -25,6 +26,7 @@ public class ScreenSelector implements KeyListener {
         public String displayName;
         public Object displayValue;
         public boolean selected;
+        public Color color = Color.WHITE;
         public SelectionItem(String displayName, Object displayValue) {
             this.displayName = displayName;
             this.displayValue = displayValue;
@@ -144,11 +146,14 @@ public class ScreenSelector implements KeyListener {
                 graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
             }
             if (!center) {
+                graphics2D.setColor(items.get(i).color);
                 graphics2D.drawString(items.get(i).displayName, x + Constants.TILE_SIZE, y);
             } else {
                 int centerX = this.gamePanel.ui.getXForCenteredText(graphics2D, items.get(i).displayName, customFont);
+                graphics2D.setColor(items.get(i).color);
                 graphics2D.drawString(items.get(i).displayName, centerX, y);
             }
+            graphics2D.setColor(DEFAULT_COLOR);
             y += delimiter;
         }
     }

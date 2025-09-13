@@ -154,6 +154,11 @@ public class Player extends Entity {
         this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
     }
 
+    public void addCoins(int amount) {
+        InventoryItem item = new InventoryItem("Coins", amount, false, true);
+        addInventoryItem(item);
+    }
+
     public void removeInventoryItem(InventoryItem item) {
         if (this.inventory.containsKey(item.name)) {
             List<InventoryItem> list = this.inventory.get(item.name);

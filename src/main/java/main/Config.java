@@ -46,8 +46,6 @@ public class Config {
 
     public void saveConfig() {
         System.out.println("Saving...");
-        GameState currentState = this.gamePanel.gameState;
-        this.gamePanel.gameState = GameState.SAVING;
         String data = this.dataWrapper.getDataForSave(this.gamePanel);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(saveFile))) {
             writer.write(data);
@@ -56,7 +54,6 @@ public class Config {
             e.printStackTrace();
         }
         // printPrettyString(data);
-        this.gamePanel.gameState = currentState;
     }
 
     public void printPrettyString(String jsonData) {

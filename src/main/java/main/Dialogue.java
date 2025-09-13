@@ -28,7 +28,7 @@ public class Dialogue {
         "He was my favorite...",
     };
 
-    public static final String[] TUTORIAL_PIGS_NEGITIVE = {
+    public static final String[] TUTORIAL_PIGS_NEGATIVE = {
         "Oof. Well...",
         "I guess that solves the problem.",
         "Don't know why they all had to die...",
