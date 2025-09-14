@@ -52,6 +52,8 @@ public class SuperObject {
     public boolean isSpecial;
     public String message;
     public boolean carriable;
+    public boolean sellable;
+    public int price = 3;
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
     private BufferedImage inventoryIcon;
@@ -137,6 +139,20 @@ public class SuperObject {
             e.printStackTrace();
         }
         graphics2D.drawString(this.name, x, y);
+    }
+
+    public SuperObject shallowCopy() {
+        SuperObject copy = new SuperObject(this.gamePanel);
+        copy.name = this.name;
+        copy.worldX = this.worldX;
+        copy.worldY = this.worldY;
+        copy.objectType = this.objectType;
+        copy.spell = this.spell != null ? this.spell.copy() : null;
+        copy.carriable = this.carriable;
+        copy.sellable = this.sellable;
+        copy.price = this.price;
+        copy.inventoryItem = null;
+        return copy;
     }
 
     protected void setIcon() {

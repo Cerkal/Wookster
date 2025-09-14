@@ -104,6 +104,22 @@ public abstract class Weapon {
         return inventoryWeaponWrapper;
     }
 
+    public Weapon copy() {
+        if (this.weaponType == null) return null;
+        Weapon copyWeapon = WeaponType.create(this.gamePanel, this.weaponType, this.entity);
+        copyWeapon.hold = this.hold;
+        copyWeapon.ammo = this.ammo;
+        copyWeapon.range = this.range;
+        copyWeapon.longSprite = this.longSprite;
+        copyWeapon.maxDamage = this.maxDamage;
+        copyWeapon.lastShot = this.lastShot;
+        copyWeapon.speed = this.speed;
+        copyWeapon.sellable = this.sellable;
+        copyWeapon.price = this.price;
+        copyWeapon.icon = this.icon;
+        return copyWeapon;
+    }
+
     protected void setWeaponIcon() {
         try {
             this.icon = ImageIO.read(getClass().getResourceAsStream(this.iconImages.get(this.weaponType)));

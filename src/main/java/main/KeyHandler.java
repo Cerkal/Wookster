@@ -3,6 +3,7 @@ package main;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import main.GamePanel.GameState;
 import spells.SuperSpell.SpellType;
@@ -51,6 +52,10 @@ public class KeyHandler implements KeyListener {
                     this.enterPressed = true;
                 }
                 if (code == KeyEvent.VK_I) {
+                    this.gamePanel.ui.screenSelector.clearScreens();
+                    for (int i = 0; i < Constants.INVENTORY_TABS.size(); i++) {
+                        this.gamePanel.ui.screenSelector.addScreen(new ArrayList<>());
+                    }
                     this.gamePanel.gameState = GameState.INVENTORY;
                 }
                 if (code == KeyEvent.VK_BACK_QUOTE) {

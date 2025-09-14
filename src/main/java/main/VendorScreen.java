@@ -27,17 +27,16 @@ public class VendorScreen {
         screenSelector = gamePanel.ui.screenSelector;
 
         screenSelector.clearScreens();
-        screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItems()));
-        screenSelector.addScreen(getSelectionItems(entity.getInventoryItems()));
+        screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
+        screenSelector.addScreen(getSelectionItems(entity.getInventoryItemsForSale()));
         screenSelector.setScreen(0);
-
     }
 
     public void drawScreens(Graphics2D graphics2D) {
         drawBoxes(graphics2D);
         
-        screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItems()));
-        screenSelector.set(1, getSelectionItems(entity.getInventoryItems()));
+        screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
+        screenSelector.set(1, getSelectionItems(entity.getInventoryItemsForSale()));
 
         int active = screenSelector.getScreenIndex();
         int passive = active == 0 ? 1 : 0;
@@ -68,21 +67,33 @@ public class VendorScreen {
         // Handle Inventory Vending
         if (selectedItem.selected && selectedItem.customKeyPress == -1) {
             InventoryItem inventoryItem = (InventoryItem) selectedItem.selectedObject;
+
             if (selectedItem.selectedScreenIndex == Constants.VENDOR_PLAYER_INDEX) {
-                this.gamePanel.player.removeInventoryItem(inventoryItem.name);
-                InventoryItem singleItem = new InventoryItem(inventoryItem);
-                singleItem.count = 1;
-                entity.addInventoryItem(singleItem);
+                // Selling to vendor
+                System.out.println("Selling to vendor");
+                System.out.println(selectedItem);
+                if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                    InventoryItem singleItem = new InventoryItem(inventoryItem);
+                    System.out.println(singleItem.object.spell.price);
+                    singleItem.count = 1;
+                    singleItem.sellable = true;
+                    entity.addInventoryItemFromVendor(singleItem);
+                }
             } else {
-                entity.removeInventoryItem(inventoryItem);
-                InventoryItem singleItem = new InventoryItem(inventoryItem);
-                singleItem.count = 1;
-                this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                // Buying from vendor
+                System.out.println("Buying from vendor");
+                System.out.println(selectedItem);
+                if (entity.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                    InventoryItem singleItem = new InventoryItem(inventoryItem);
+                    System.out.println(singleItem.object.spell.price);
+                    singleItem.count = 1;
+                    singleItem.sellable = true;
+                    this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                }
             }
-            
-            System.out.println(inventoryItem.name);
-            screenSelector.clearSelection();
+            screenSelector.clearSelectionLeaveHighlight();
         }
+
     }
 
     private void drawBoxes(Graphics2D graphics2D) {

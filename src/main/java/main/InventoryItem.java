@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics2D;
+import java.util.Objects;
 
 import objects.SuperObject;
 import objects.SuperObject.SuperObjectWrapper;
@@ -47,6 +48,8 @@ public class InventoryItem {
         this.name = weapon.weaponType.name();
         this.count = count;
         this.usable = usable;
+        this.sellable = weapon.sellable;
+        this.price = weapon.price;
     }
 
     public InventoryItem(SuperObject object, int count, boolean usable) {
@@ -54,20 +57,28 @@ public class InventoryItem {
         this.count = count;
         this.usable = usable;
         this.name = object.name;
+        this.sellable = object.sellable;
+        this.price = object.price;
     }
 
     public InventoryItem(InventoryItem other) {
-        this.weapon = other.weapon;
-        this.object = other.object;
-        this.projectile = other.projectile;
         this.name = other.name;
         this.count = other.count;
         this.usable = other.usable;
         this.visibility = other.visibility;
+        this.sellable = other.sellable;
+        this.price = other.price;
+        this.weapon = other.weapon != null ? other.weapon.copy() : null;
+        this.object = other.object != null ? other.object.shallowCopy() : null;
+        this.projectile = other.projectile; 
     }
 
-    public InventoryItem copy() {
-        return new InventoryItem(this);
+    public boolean canStackWith(InventoryItem other) {
+        if (other == null) return false;
+        return this.name.equals(other.name)
+            && this.sellable == other.sellable
+            && this.usable == other.usable
+            && (this.weapon == null ? other.weapon == null : this.weapon.equals(other.weapon));
     }
 
     public void updateCount(int count) {
@@ -109,6 +120,8 @@ public class InventoryItem {
         inventoryItemWrapper.itemName = this.name;
         inventoryItemWrapper.usable = this.usable;
         inventoryItemWrapper.visibility = this.visibility;
+        inventoryItemWrapper.sellable = this.sellable;
+        inventoryItemWrapper.price = this.price;
         if (this.object != null) {
             inventoryItemWrapper.object = this.object.getSuperObjectWrapper();
         }

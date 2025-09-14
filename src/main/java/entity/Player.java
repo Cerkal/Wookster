@@ -210,7 +210,7 @@ public class Player extends Entity {
             for (InventoryItem item : items) {
                 totalCount += item.count;
             }
-            InventoryItem firstCopy = items.get(0).copy();
+            InventoryItem firstCopy = new InventoryItem(items.get(0));
             firstCopy.count = totalCount;
             if (firstCopy.usable || firstCopy.visibility) {
                 selectableMap.put(key, firstCopy);

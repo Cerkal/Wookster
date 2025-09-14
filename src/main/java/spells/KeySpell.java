@@ -22,6 +22,9 @@ public class KeySpell extends SuperSpell {
         this.descriptionText.add("Breaks move key in certain direction");
         this.descriptionText.add("until all other directional keys");
         this.descriptionText.add("have been pushed.");
+        this.positiveSpell = false;
+        this.sellable = false;
+        this.price = 0;
     }
 
     private static Direction randomDirection() {

@@ -20,6 +20,9 @@ public class SuperSpell {
     public double healthAmount;
     public int speed = Player.DEFAULT_SPEED;
 
+    public boolean sellable = false;
+    public int price;
+
     public SuperSpell(SpellType spellType) {
         this.spellType = spellType;
     }
@@ -70,6 +73,27 @@ public class SuperSpell {
         }
         y += Constants.NEW_LINE_SIZE;
         return y;
+    }
+    
+    public void setPriceDescription() {
+        if (this.positiveSpell) {
+            // this.descriptionText.add("Price: " + this.price);
+        }
+    }
+
+    public SuperSpell copy() {
+        if (this.spellType == null) return null;
+        SuperSpell copySpell = SpellType.create(this);
+        copySpell.startTime = this.startTime;
+        copySpell.spellTime = this.spellTime;
+        copySpell.positiveSpell = this.positiveSpell;
+        copySpell.message = this.message;
+        copySpell.healthAmount = this.healthAmount;
+        copySpell.speed = this.speed;
+        copySpell.sellable = this.sellable;
+        copySpell.price = this.price;
+        copySpell.descriptionText = new ArrayList<>(this.descriptionText);
+        return copySpell;
     }
 
     public enum SpellType {

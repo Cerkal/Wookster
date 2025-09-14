@@ -266,6 +266,7 @@ public class ScreenSelector implements KeyListener {
                     case KeyEvent.VK_A -> left(currentItems);
                     case KeyEvent.VK_D -> right(currentItems);
                     case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
+                    case KeyEvent.VK_ESCAPE -> { this.gamePanel.gameState = GameState.PLAY; }
                 }
                 break;
             default:

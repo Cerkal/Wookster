@@ -54,6 +54,10 @@ public class CarryPotionObject extends SuperObject {
         this.name = getPotionType();
         this.setImage(Constants.OBJECT_PURPLE_POTION_IMAGE);
         this.soundPrimary = Constants.SOUND_LOCK;
+        if (this.spell.sellable) {
+            this.sellable = this.spell.sellable;
+            this.price = this.spell.price;
+        }
         this.inventoryItem = new InventoryItem(this, 1, true);
     }
 
@@ -61,6 +65,7 @@ public class CarryPotionObject extends SuperObject {
         super.activateObject();
         this.removeObject();
         this.gamePanel.player.addInventoryItem(this.inventoryItem);
+        System.out.println(inventoryItem);
     }
 
     @Override
