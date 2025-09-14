@@ -93,7 +93,6 @@ public class VendorScreen {
             }
             screenSelector.clearSelectionLeaveHighlight();
         }
-
     }
 
     private void drawBoxes(Graphics2D graphics2D) {
