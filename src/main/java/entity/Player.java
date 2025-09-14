@@ -1,6 +1,7 @@
 package entity;
 
 import main.KeyHandler;
+import main.Utils;
 import main.InventoryItem.InventoryItemWrapper;
 import objects.GameMap;
 import objects.SuperObject;
@@ -47,11 +48,7 @@ public class Player extends Entity {
     public final int screenY;
     public static final int DEFAULT_SPEED = 4;
 
-    // Weapons
-    public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
-
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    // public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
 
@@ -83,7 +80,7 @@ public class Player extends Entity {
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
-        addCredits(50);
+        addCredits(Utils.generateRandomInt(10, 30));
         giveAllWeapons();
     }
 
@@ -157,10 +154,6 @@ public class Player extends Entity {
                 this.inventory.remove(item.name);
             }
         }
-    }
-
-    public void addInventoryItemFromVendor(InventoryItem item) {
-        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
     }
 
     public void removeInventoryItem(String name) {

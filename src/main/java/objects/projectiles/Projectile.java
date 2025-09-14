@@ -29,6 +29,7 @@ public class Projectile {
     public int solidAreaDefaultX = solidArea.x;
     public int solidAreaDefaultY = solidArea.y;
 
+    public double npcDamage = .8;
     public int speed = 14;
     public int damage = 10;
 
@@ -138,6 +139,13 @@ public class Projectile {
     }
 
     protected void handleEntityCollision(Entity entity) {
+        if (entity instanceof Player) {
+            adjustDamage(this.npcDamage);
+        }
         entity.takeDamage(this.damage);
+    }
+
+    public void adjustDamage(double amount) {
+        this.damage *= amount;
     }
 }

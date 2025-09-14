@@ -18,6 +18,7 @@ import main.GamePanel.GameState;
 import main.Screen.Option;
 import main.Screen.Screen;
 import main.Screen.SettingSlider;
+import main.Screen.Toggle;
 import main.ScreenSelector.SelectionItem;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
@@ -157,11 +158,19 @@ public class UI {
 
         // Handle selected item
         if (selectedItem != null && selectedItem.selected) {
-            if (selectedItem.selectedScreenIndex == 0 &&
-                selectedItem.customKeyPress == -1
-            ){
+            if (selectedItem.selectedScreenIndex == 0) {
+
                 Option option = options.get(selectedItem.selectedObject);
-                if (option != null) { option.action(this.gamePanel); }
+
+                // Handle Regular Option
+                if (selectedItem.customKeyPress == -1) {
+                    if (option != null) { option.action(this.gamePanel); }
+                }
+
+                // Handle Toggle Option
+                if (selectedItem.customKeyPress != -1 && option instanceof Toggle) {
+                    if (option != null) { option.action(this.gamePanel); }
+                }
 
                 // Handle Slider
                 if (option instanceof SettingSlider) {

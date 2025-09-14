@@ -76,7 +76,8 @@ public abstract class Weapon {
     }
 
     public int getAmmoCount() {
-        return this.gamePanel.player.getInventoryItem(this.projectileType.name());
+        this.ammo = this.gamePanel.player.getInventoryItem(this.projectileType.name());
+        return this.ammo;
     }
 
     public void select() {
@@ -91,7 +92,7 @@ public abstract class Weapon {
         graphics2D.drawString(this.weaponType.name(), x, y);
         if (this.range) {
             y += Constants.NEW_LINE_SIZE;
-            graphics2D.drawString("Ammo: " + String.valueOf(this.ammo) + " " + this.projectileType.name(), x, y);
+            graphics2D.drawString("Ammo: " + String.valueOf(getAmmoCount()) + " " + this.projectileType.name(), x, y);
         }
         y += Constants.NEW_LINE_SIZE;
         graphics2D.drawString("Max Damage: " + String.valueOf(this.maxDamage), x, y);

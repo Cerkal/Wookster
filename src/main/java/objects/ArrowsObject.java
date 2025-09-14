@@ -11,6 +11,8 @@ public class ArrowsObject extends SuperObject {
     static final int MIN_RANDOM_ARROW_AMOUNT = 10;
     static final int MAX_RANDOM_ARROW_AMOUNT = 20;
 
+    static final int PRICE = ArrowProjectile.PRICE;
+
     public ArrowsObject(GamePanel gamePanel) {
         super(gamePanel);
         init();
@@ -32,13 +34,15 @@ public class ArrowsObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_AMMO_ARROWS_IMAGE);
         this.collision = true;
+        this.sellable = true;
+        this.price = PRICE;
         this.inventoryItem = new InventoryItem(
             this.name,
             Utils.generateRandomInt(MIN_RANDOM_ARROW_AMOUNT, MAX_RANDOM_ARROW_AMOUNT),
             false,
             false,
-            true,
-            ArrowProjectile.PRICE
+            this.sellable,
+            this.price
         );
     }
 }

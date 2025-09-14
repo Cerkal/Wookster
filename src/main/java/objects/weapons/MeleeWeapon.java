@@ -13,7 +13,7 @@ public abstract class MeleeWeapon extends Weapon {
     protected int delay = 500;
     protected int holdCountMin = 10;
     protected int holdCountMax = 30;
-    protected int speedModifier = 3;
+    protected double speedModifier = 3;
 
     protected MeleeProjectile projectile;
 
@@ -76,12 +76,12 @@ public abstract class MeleeWeapon extends Weapon {
 
     protected int getSpeed() {
         if (this.hold > this.holdCountMax) {
-            return this.holdCountMax / this.speedModifier;
+            return (int) (this.holdCountMax / this.speedModifier);
         }
         if (this.hold < this.holdCountMin) {
             return this.holdCountMin / this.holdCountMax;
         }
-        return this.hold / this.speedModifier;
+        return (int) (this.hold / this.speedModifier);
     }
 
     public void drawWeaponInfo(Graphics2D graphics2D, int y) {

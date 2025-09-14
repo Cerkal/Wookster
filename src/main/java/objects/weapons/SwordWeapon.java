@@ -14,11 +14,11 @@ import objects.projectiles.SwordProjectile;
 public class SwordWeapon extends MeleeWeapon {
 
     // In milliseconds
-    static final int FIST_DELAY = 250;
+    static final int DELAY = 250;
 
     static final int HOLD_COUNT_MIN = 20;
     static final int HOLD_COUNT_MAX = 50;
-    static final int SPEED_MODIFIER = 3;
+    static final double SPEED_MODIFIER = 2.5;
 
     public static final int PRICE = 10;
 
@@ -27,6 +27,34 @@ public class SwordWeapon extends MeleeWeapon {
     public SwordWeapon(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);
         init();
+        addToInventory();
+    }
+
+    public SwordWeapon(GamePanel gamePanel, Entity entity, boolean addToInventory) {
+        super(gamePanel, entity);
+        init();
+        if (addToInventory) addToInventory();
+    }
+
+    private void init() {
+        this.weaponType = WeaponType.SWORD;
+        this.sound = Constants.SOUND_SWORD;
+        this.holdCountMin = HOLD_COUNT_MIN;
+        this.holdCountMax = HOLD_COUNT_MAX;
+        this.speedModifier = SPEED_MODIFIER;
+        this.range = false;
+        this.longSprite = true;
+        this.maxDamage = (int) (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
+        this.ammo = 0;
+        this.price = PRICE;
+        this.sellable = true;
+    }
+
+    @Override
+    protected void addToInventory() {
+        if (this.gamePanel.player != null) {
+            this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
+        }
     }
 
     public void shoot() {
@@ -45,7 +73,7 @@ public class SwordWeapon extends MeleeWeapon {
         return new SwordProjectile(
             this.gamePanel,
             entity,
-            Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER
+            (int) (Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER)
         );
     }
 
@@ -72,22 +100,8 @@ public class SwordWeapon extends MeleeWeapon {
         graphics2D.drawString(this.weaponType.name(), x, y - 10);
     }
 
-    private void init() {
-        this.weaponType = WeaponType.SWORD;
-        this.sound = Constants.SOUND_SWORD;
-        this.range = false;
-        this.longSprite = true;
-        this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
-        this.ammo = 0;
-        this.price = PRICE;
-        this.sellable = true;
-        if (this.gamePanel.player != null) {
-            this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
-        }
-    }
-
     private void swing() {
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > FIST_DELAY) {
+        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > DELAY) {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();
@@ -102,7 +116,7 @@ public class SwordWeapon extends MeleeWeapon {
         if (this.entity.attacking) {
             Long time = (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND;
             try {
-                if (time > FIST_DELAY/2) {
+                if (time > DELAY/2) {
                     this.gamePanel.player.attacking = false;
                     this.entity.attacking = false;
                     this.gamePanel.projectileManager.toRemove.add(this.swing);

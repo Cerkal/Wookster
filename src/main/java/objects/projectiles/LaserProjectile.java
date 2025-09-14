@@ -7,8 +7,8 @@ import objects.weapons.BlasterWeapon;
 
 public class LaserProjectile extends Projectile {
 
-    public static final int DAMAGE = 15;
-    public static final int PRICE = 2;
+    public static final int DAMAGE = 25;
+    public static final int PRICE = 1;
 
     public LaserProjectile(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);

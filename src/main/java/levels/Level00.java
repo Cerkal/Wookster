@@ -39,11 +39,7 @@ public class Level00 extends LevelBase {
     Entity oldmanInventory;
     Entity oldmanDad;
 
-    List<Entity> pigs = Arrays.asList(
-        new Animal(gamePanel, 20, 8),
-        new Animal(gamePanel, 20, 12),
-        new Animal(gamePanel, 20, 16)
-    );
+    List<Entity> pigs;
 
     public Level00(GamePanel gamePanel) {
         super(gamePanel);
@@ -57,7 +53,12 @@ public class Level00 extends LevelBase {
         super.init();
 
         this.gamePanel.ui.displayDialog("Move using [w] [s] [a] [d] keys. Press " + KeyHandler.SPACEBAR + " to talk.");
-        this.gamePanel.npcs.addAll(pigs);
+        this.pigs = Arrays.asList(
+            new Animal(gamePanel, 20, 8),
+            new Animal(gamePanel, 20, 12),
+            new Animal(gamePanel, 20, 16)
+        );
+        addNPC(this.pigs);
 
         this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
             @Override
@@ -76,7 +77,7 @@ public class Level00 extends LevelBase {
         };
         this.oldmanPigs.invincable = true;
         this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
-        this.gamePanel.npcs.add(oldmanPigs);
+        addNPC(oldmanPigs);
 
         this.oldmanDad = new NPCGeneric(gamePanel, 16, 27) {
             @Override
@@ -88,7 +89,7 @@ public class Level00 extends LevelBase {
         };
         this.oldmanDad.invincable = true;
         this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
-        this.gamePanel.npcs.add(this.oldmanDad);       
+        addNPC(this.oldmanDad);       
     }
 
     public void setObjects() {
@@ -168,7 +169,7 @@ public class Level00 extends LevelBase {
             }
             this.oldmanPigs.invincable = true;
             this.oldmanPigs.setDialogue(lines);
-            this.gamePanel.npcs.add(this.oldmanPigs);
+            addNPC(this.oldmanPigs);
         }
 
         if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
@@ -197,7 +198,7 @@ public class Level00 extends LevelBase {
                 };
                 this.oldmanInventory.invincable = true;
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_START);
-                this.gamePanel.npcs.add(this.oldmanInventory);
+                addNPC(this.oldmanInventory);
             }
 
             if (this.gamePanel.questManager.getProgress(QuestDescriptions.INVENTORY) == 25) {
@@ -224,7 +225,7 @@ public class Level00 extends LevelBase {
                 };
                 this.oldmanInventory.invincable = true;
                 this.oldmanInventory.setDialogue(Dialogue.TUTORIAL_INVENTORY_COMPLETE);
-                this.gamePanel.npcs.add(this.oldmanInventory);
+                addNPC(this.oldmanInventory);
             }
         }
 

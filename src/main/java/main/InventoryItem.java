@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Graphics2D;
-import java.util.Objects;
 
 import objects.SuperObject;
 import objects.SuperObject.SuperObjectWrapper;

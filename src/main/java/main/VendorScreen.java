@@ -34,7 +34,7 @@ public class VendorScreen {
 
     public void drawScreens(Graphics2D graphics2D) {
         drawBoxes(graphics2D);
-        
+
         screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
         screenSelector.set(1, getSelectionItems(entity.getInventoryItemsForSale()));
 
@@ -79,9 +79,6 @@ public class VendorScreen {
 
             if (selectedItem.selectedScreenIndex == Constants.VENDOR_PLAYER_INDEX) {
                 // Selling to vendor
-                System.out.println("Selling to vendor");
-                System.out.println(selectedItem);
-
                 if (entity.getCredits() - inventoryItem.price < 0) { return; }
                 if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
                     InventoryItem singleItem = new InventoryItem(inventoryItem);
@@ -93,8 +90,6 @@ public class VendorScreen {
                 }
             } else {
                 // Buying from vendor
-                System.out.println("Buying from vendor");
-                System.out.println(selectedItem);
                 if (this.gamePanel.player.getCredits() - inventoryItem.price < 0) { return; }
                 if (entity.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
                     InventoryItem singleItem = new InventoryItem(inventoryItem);

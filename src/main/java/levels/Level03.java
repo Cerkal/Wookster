@@ -5,67 +5,82 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import entity.Animal;
 import entity.Entity;
 import entity.NPCMom;
+import entity.NPCTrooper;
 import entity.NPCVendor;
+import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
 import objects.ArrowsObject;
-import objects.CarryPotionObject;
+import objects.FoodObject;
 import objects.LasersObject;
-import objects.weapons.Weapon;
-import objects.weapons.Weapon.WeaponType;
+import objects.SuperObject;
+import objects.weapons.BlasterWeapon;
+import objects.weapons.CrossbowWeapon;
+import objects.weapons.SwordWeapon;
 import spells.HealthSpell;
-import spells.SpeedSpell;
 
 public class Level03 extends LevelBase {
 
     Entity vendor;
-    Entity mom;
+    Entity trooper;
 
     public Level03(GamePanel gamePanel) {
         super(gamePanel);
-        this.mapPath = "/maps/world_03.txt";
-        this.playerStartLocation = new Point(26, 13);
+        this.mapPath = Constants.WORLD_03;
+        this.playerStartLocation = new Point(15, 44);
     }
 
     public void init() {
         super.init();
 
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(10), 26, 15));
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(10), 26, 16));
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(10), 26, 17));
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(-10), 26, 18));
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(-10), 26, 19));
-        addGameObject(new CarryPotionObject(gamePanel, new HealthSpell(-10), 26, 20));
-
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(10), 26, 15));
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(10), 26, 16));
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(10), 26, 17));
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(2), 26, 18));
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(2), 26, 19));
-        addGameObject(new CarryPotionObject(gamePanel, new SpeedSpell(2), 26, 20));
+        addNPC(new Animal(this.gamePanel, 23, 24));
+        addNPC(new Animal(this.gamePanel, 23, 27));
+        addNPC(new Animal(this.gamePanel, 23, 29));
         
-        this.vendor = new NPCVendor(gamePanel, 15, 12);
+        this.vendor = new NPCVendor(gamePanel, 25, 12);
         this.vendor.setDialogue(Dialogue.LEVEL_03_VENDOR_INTRO);
         this.vendor.addCredits(50);
+        this.vendor.name = "Bucket Head";
         this.vendor.setVendor(
             new ArrayList<>(
                 List.of(
-                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.BLASTER, this.vendor), 3, true),
-                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.CROSSBOW, this.vendor), 3, true),
-                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.SWORD, this.vendor), 3, true),
-                    new InventoryItem(new ArrowsObject(gamePanel), 20, true),
-                    new InventoryItem(new LasersObject(gamePanel), 20, true)
+                    new InventoryItem(new CrossbowWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
+                    new InventoryItem(new SwordWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
+                    new InventoryItem(new BlasterWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
+                    new InventoryItem(new ArrowsObject(this.gamePanel), 20, false),
+                    new InventoryItem(new LasersObject(this.gamePanel), 20, false)
                 )
             )
         );
-        this.gamePanel.npcs.add(this.vendor);
+        addNPC(this.vendor);
 
-        // this.mom = new NPCMom(gamePanel, 25, 12);
-        // this.mom.setDialogue(Dialogue.LEVEL_01_MOM);
-        // this.gamePanel.npcs.add(this.mom);
+        this.trooper = new NPCTrooper(this.gamePanel, 15, 12);
+        addNPC(this.trooper);
+
+        NPCMom mom = new NPCMom(this.gamePanel, 14, 46) {
+            @Override
+            public void postDialogAction() {
+                this.willChase = true;
+                FoodObject berries = new FoodObject(this.gamePanel, new HealthSpell(10), "BERRIES");
+                if (this.gamePanel.player.getInventoryItem("BERRIES") == 0) {
+                    this.gamePanel.player.addInventoryItem(new InventoryItem(berries, 1, true));
+                    String[] lines = {"Take me home."};
+                    this.setDialogue(lines);
+                }
+            }
+        };
+        String[] lines = {"Take me home."};
+        if (this.gamePanel.player.getInventoryItem("BERRIES") == 0) {
+            String[] berries = {"You look hungry dear. Take some berries.", "Now take me home."};
+            lines = berries;
+        }
+        mom.setDialogue(lines);
+        addNPC(mom);
+
     }
 
     @Override
