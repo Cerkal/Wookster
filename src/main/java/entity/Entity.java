@@ -493,6 +493,7 @@ public abstract class Entity {
             handlePlayerCollision(this.gamePanel.player);
         }
 
+        // TODO: Fix collison with pigs, mom stops
         if (isFrenzy && (collidedWithEntity || collidedWithPlayer)) {
             collisionCounter++;
             if (collisionCounter > this.speed * 2) {
