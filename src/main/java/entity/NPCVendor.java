@@ -40,7 +40,7 @@ public class NPCVendor extends Entity {
 
     @Override
     public void postDialogAction() {
-        this.willChase = true;
+        this.gamePanel.gameState = GameState.VENDOR;
     }
 
     @Override

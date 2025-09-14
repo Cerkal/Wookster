@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import entity.Entity;
 import main.GamePanel.GameState;
+import main.Screen.Option;
+import main.Screen.Screen;
+import main.Screen.SettingSlider;
 import main.ScreenSelector.SelectionItem;
-import main.TitleScreen.Screen;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
@@ -36,7 +39,6 @@ public class UI {
     String currentDialogue = "";
     boolean dialogueDisplay = false;
 
-    public String currentScreen;
     public boolean dialoguePrinting = false;
     public boolean dialogueSkip = false;
     public boolean debug = false;
@@ -47,7 +49,8 @@ public class UI {
     final static int PADDING_X = 20;
     final static int PADDING_Y = 10;
 
-    TitleScreen titleScreen;
+    public TitleScreen titleScreen;
+    public VendorScreen vendorScreen;
 
     int commandNumber = 0;
     int currentTab = 0;
@@ -88,6 +91,7 @@ public class UI {
         drawPauseScreen(graphics2D);
         drawDeathScreen(graphics2D);
         drawInventory(graphics2D);
+        drawVendor(graphics2D);
     }
 
     public void displayMessage(String message) {
@@ -126,7 +130,7 @@ public class UI {
         graphics2D.drawString(Constants.GAME_TITLE, x, Constants.TILE_SIZE * 3);
 
         Screen screen = titleScreen.currentScreen;
-        HashMap<String, TitleScreen.Option> options = screen.getOptionsMap();
+        HashMap<String, Option> options = screen.getOptionsMap();
         List<String> optionList = screen.getOptionTitles();
         List<SelectionItem> optionSelectionList = new ArrayList<>();
         for (String option : optionList) {
@@ -156,14 +160,14 @@ public class UI {
             if (selectedItem.selectedScreenIndex == 0 &&
                 selectedItem.customKeyPress == -1
             ){
-                TitleScreen.Option option = options.get(selectedItem.selectedObject);
+                Option option = options.get(selectedItem.selectedObject);
                 if (option != null) { option.action(this.gamePanel); }
 
                 // Handle Slider
-                if (option instanceof TitleScreen.SettingSlider) {
+                if (option instanceof SettingSlider) {
                     switch (selectedItem.customKeyPress) {
-                        case KeyEvent.VK_A -> { ((TitleScreen.SettingSlider) option).decrease(); }
-                        case KeyEvent.VK_D -> { ((TitleScreen.SettingSlider) option).increase(); }
+                        case KeyEvent.VK_A -> { ((SettingSlider) option).decrease(); }
+                        case KeyEvent.VK_D -> { ((SettingSlider) option).increase(); }
                     }
                 }
                 screenSelector.clearSelectionLeaveHighlight();
@@ -365,6 +369,18 @@ public class UI {
         int iconY = y - 14;
         graphics2D.drawImage(icon, iconX + 12, iconY + 12, null);
         graphics2D.drawRect(iconX - 3, iconY- 3, Constants.TILE_SIZE * 2 + 26, Constants.TILE_SIZE * 2 + 26);
+    }
+
+    public void drawVendor(Graphics2D graphics2D) {
+        if (this.gamePanel.gameState == GameState.VENDOR &&
+            this.gamePanel.player.collisionEntity.isVendor()
+        ){
+            Entity vendor = this.gamePanel.player.collisionEntity;
+            if (this.vendorScreen == null) {
+                this.vendorScreen = new VendorScreen(gamePanel, vendor);
+            }
+            this.vendorScreen.drawScreens(graphics2D);
+        }
     }
 
     private void drawDebug(Graphics2D graphics2D) {

@@ -19,6 +19,8 @@ public class InventoryItem {
         public InventoryWeaponWrapper weapon;
         public boolean usable;
         public boolean visibility;
+        public boolean sellable;
+        public int price;
     }
 
     public Weapon weapon;
@@ -28,12 +30,16 @@ public class InventoryItem {
     public int count;
     public boolean usable;
     public boolean visibility;
+    public boolean sellable;
+    public int price;
 
-    public InventoryItem(String name, int count, boolean usable, boolean visibility) {
+    public InventoryItem(String name, int count, boolean usable, boolean visibility, boolean sellable, int price) {
         this.name = name;
         this.count = count;
         this.usable = usable;
         this.visibility = visibility;
+        this.sellable = sellable;
+        this.price = price;
     }
 
     public InventoryItem(Weapon weapon, int count, boolean usable) {

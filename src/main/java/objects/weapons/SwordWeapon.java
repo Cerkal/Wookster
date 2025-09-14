@@ -20,6 +20,8 @@ public class SwordWeapon extends MeleeWeapon {
     static final int HOLD_COUNT_MAX = 50;
     static final int SPEED_MODIFIER = 3;
 
+    public static final int PRICE = 10;
+
     SwordProjectile swing;
 
     public SwordWeapon(GamePanel gamePanel, Entity entity) {
@@ -77,6 +79,8 @@ public class SwordWeapon extends MeleeWeapon {
         this.longSprite = true;
         this.maxDamage = (HOLD_COUNT_MAX / SPEED_MODIFIER) * MeleeProjectile.DAMAGE_MODIFIER;
         this.ammo = 0;
+        this.price = PRICE;
+        this.sellable = true;
         if (this.gamePanel.player != null) {
             this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
         }

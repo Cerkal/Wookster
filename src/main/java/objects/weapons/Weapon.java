@@ -12,6 +12,8 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import objects.projectiles.ArrowProjectile;
+import objects.projectiles.LaserProjectile;
 import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
@@ -38,6 +40,9 @@ public abstract class Weapon {
     public int initilizedAmmo = 10;
     public long lastShot = 0;
     public int speed = 10;
+
+    public boolean sellable = true;
+    public int price = 10;
 
     public HashMap<WeaponType, String> iconImages = Constants.WEAPON_ICONS;
 
@@ -141,8 +146,17 @@ public abstract class Weapon {
             this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
             if (this.projectileType == null) { return; }
             if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
+                int price = 1;
+                switch (this.projectileType) {
+                    case ARROWS:
+                        price = ArrowProjectile.PRICE;
+                        break;
+                    case LASERS:
+                        price = LaserProjectile.PRICE;
+                        break;
+                }
                 this.gamePanel.player.addInventoryItem(new InventoryItem(
-                    this.projectileType.name(), this.initilizedAmmo, false, false)
+                    this.projectileType.name(), this.initilizedAmmo, false, false, true, price)
                 );
             }
         }

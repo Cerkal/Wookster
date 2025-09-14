@@ -80,4 +80,11 @@ public class Dialogue {
         "Thank God you found me.",
         "Lead the way. I'll follow you."
     };
+
+    // Level 03
+    public static final String[] LEVEL_03_VENDOR_INTRO = {
+        "I sell stuff, if you want stuff I got it.",
+        "If you don't then you should.",
+        "Do you want stuff or not?",
+    };
 }

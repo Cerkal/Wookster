@@ -18,6 +18,7 @@ import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
+import main.InventoryItem;
 import main.Utils;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
@@ -82,6 +83,10 @@ public abstract class Entity {
 
     // Sounds
     protected String damageSound;
+
+    // Inventory Items
+    public boolean isVendor = false;
+    public HashMap<String, InventoryItem> inventoryItems = new HashMap<>();
 
     protected Point frenzyTarget = null;
 
@@ -248,6 +253,44 @@ public abstract class Entity {
 
     protected void getSpiteImage() {
         this.sprite = this.spriteManager.getSprite(this);
+    }
+
+    public void setVendor(List<InventoryItem> items) {
+        this.isVendor = true;
+        for (InventoryItem item : items) {
+            this.inventoryItems.put(item.name, item);
+        }
+    }
+
+    public boolean isVendor() {
+        return this.isVendor;
+    }
+
+    public void addInventoryItem(InventoryItem item) {
+        if (this.inventoryItems.containsKey(item.name)) {
+            InventoryItem itemHolder = this.inventoryItems.get(item.name);
+            itemHolder.count++;
+        } else {
+            this.inventoryItems.put(item.name, item);
+        }
+    }
+
+    public void removeInventoryItem(InventoryItem item) {
+        if (this.inventoryItems.containsKey(item.name)) {
+            if (this.inventoryItems.get(item.name).count > 1) {
+                this.inventoryItems.get(item.name).count--;
+            } else {
+                this.inventoryItems.remove(item.name);
+            }
+        }
+    }
+
+    public List<InventoryItem> getInventoryItems() {
+        List<InventoryItem> items = new ArrayList<>();
+        for (InventoryItem item : this.inventoryItems.values()) {
+            items.add(item);
+        }
+        return items;
     }
 
     protected abstract void loadSprites();

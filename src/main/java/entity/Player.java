@@ -145,6 +145,10 @@ public class Player extends Entity {
         this.gamePanel.eventHandler.checkEvent();
     }
 
+    public void addInventoryItemFromVendor(InventoryItem item) {
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
+    }
+
     public void addInventoryItem(InventoryItem item) {
         if (item.count > 1) {
             this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
@@ -155,17 +159,18 @@ public class Player extends Entity {
     }
 
     public void addCoins(int amount) {
-        InventoryItem item = new InventoryItem("Coins", amount, false, true);
+        InventoryItem item = new InventoryItem("Coins", amount, false, true, false, 1);
         addInventoryItem(item);
     }
 
     public void removeInventoryItem(InventoryItem item) {
+        System.out.println(this.inventory.containsKey(item.name));
         if (this.inventory.containsKey(item.name)) {
             List<InventoryItem> list = this.inventory.get(item.name);
             if (item.count > 1) {
                 item.count--;
             } else {
-                list.remove(item);
+                list.remove(0);
             }
             if (list.isEmpty()) {
                 this.inventory.remove(item.name);

@@ -35,6 +35,8 @@ public class Projectile {
     public int dispose;
     public long lastShot;
 
+    public int price = 1;
+
     public enum ProjectileType {
         ARROWS,
         LASERS

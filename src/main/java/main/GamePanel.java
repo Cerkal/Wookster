@@ -41,6 +41,7 @@ public class GamePanel extends Canvas implements Runnable {
         PAUSE,
         DIALOGUE,
         INVENTORY,
+        VENDOR,
         DEATH
     }
 

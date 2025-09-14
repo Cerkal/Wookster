@@ -18,6 +18,8 @@ public class BlasterWeapon extends Weapon {
     public static final int BLASTER_SPEED = 20;
     static final int INITALIZED_LASERS = 50;
 
+    public static final int PRICE = 20;
+
     public BlasterWeapon(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);
         this.weaponType = WeaponType.BLASTER;
@@ -25,6 +27,8 @@ public class BlasterWeapon extends Weapon {
         this.sound = Constants.SOUND_LASER;
         this.initilizedAmmo = INITALIZED_LASERS;
         this.maxDamage = LaserProjectile.DAMAGE;
+        this.sellable = true;
+        this.price = PRICE;
         this.range = true;
         addToInventory();
     }

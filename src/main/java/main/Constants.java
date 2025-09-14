@@ -61,7 +61,7 @@ public class Constants {
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
     public static final String GAME_TITLE_SCREEN_CONTROLS = "Controls";
-    public static final String GAME_TITLE_SCREEN_OPTIONS = "Options";
+    public static final String GAME_TITLE_SCREEN_SETTINGS = "Settings";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
     public static final String GAME_TITLE_BACK_BUTTON = "Back";
@@ -87,6 +87,9 @@ public class Constants {
     public static final int EFFECTS_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.EFFECTS);
     public static final int QUEST_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.QUESTS);
     public static final int INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
+
+    public static final int VENDOR_PLAYER_INDEX = 0;
+    public static final int VENDOR_VENDOR_INDEX = 1;
 
     // Tutorial Notes
     public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";

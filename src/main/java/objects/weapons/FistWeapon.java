@@ -19,6 +19,7 @@ public class FistWeapon extends MeleeWeapon {
         this.holdCountMin = 10;
         this.holdCountMax = 30;
         this.speedModifier = 3;
+        this.sellable = false;
         this.maxDamage = (this.holdCountMax / this.speedModifier) * MeleeProjectile.DAMAGE_MODIFIER;
         addToInventory();
     }
