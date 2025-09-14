@@ -91,6 +91,8 @@ public class Constants {
     public static final int VENDOR_PLAYER_INDEX = 0;
     public static final int VENDOR_VENDOR_INDEX = 1;
 
+    public static final String CREDITS = "Credits";
+
     // Tutorial Notes
     public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";
 

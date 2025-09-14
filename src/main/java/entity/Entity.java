@@ -351,6 +351,34 @@ public abstract class Entity {
         );
     }
 
+    public int getCredits() {
+        return this.inventory.get(Constants.CREDITS).get(0).count;
+    }
+
+    public void addInventoryItem(InventoryItem item) {
+        if (item.count > 1) {
+            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+        } else {
+            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
+        }
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
+    }
+
+    public void addCredits(int amount) {
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count += amount;
+        } else {
+            InventoryItem item = new InventoryItem(Constants.CREDITS, amount, false, true, false, 1);
+            addInventoryItem(item);
+        }
+    }
+
+    public void removeCredits(int amount) {
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count -= amount;
+        }
+    }
+
     private void collision() {
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);

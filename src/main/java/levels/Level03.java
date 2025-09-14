@@ -11,7 +11,11 @@ import entity.NPCVendor;
 import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
+import objects.ArrowsObject;
 import objects.CarryPotionObject;
+import objects.LasersObject;
+import objects.weapons.Weapon;
+import objects.weapons.Weapon.WeaponType;
 import spells.HealthSpell;
 import spells.SpeedSpell;
 
@@ -45,12 +49,15 @@ public class Level03 extends LevelBase {
         
         this.vendor = new NPCVendor(gamePanel, 15, 12);
         this.vendor.setDialogue(Dialogue.LEVEL_03_VENDOR_INTRO);
+        this.vendor.addCredits(50);
         this.vendor.setVendor(
             new ArrayList<>(
                 List.of(
-                    new InventoryItem("Arrows", 2, true, true, true, 1),
-                    new InventoryItem("Blaster", 3, true, true, true, 1),
-                    new InventoryItem("Potion", 4, true, true, true, 1)
+                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.BLASTER, this.vendor), 3, true),
+                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.CROSSBOW, this.vendor), 3, true),
+                    new InventoryItem(Weapon.WeaponType.create(gamePanel, WeaponType.SWORD, this.vendor), 3, true),
+                    new InventoryItem(new ArrowsObject(gamePanel), 20, true),
+                    new InventoryItem(new LasersObject(gamePanel), 20, true)
                 )
             )
         );

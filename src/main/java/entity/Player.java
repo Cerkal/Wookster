@@ -83,7 +83,7 @@ public class Player extends Entity {
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
-
+        addCredits(50);
         giveAllWeapons();
     }
 
@@ -143,20 +143,6 @@ public class Player extends Entity {
         obectCollision();
         entityCollision();
         this.gamePanel.eventHandler.checkEvent();
-    }
-
-    public void addInventoryItem(InventoryItem item) {
-        if (item.count > 1) {
-            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
-        } else {
-            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
-        }
-        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
-    }
-
-    public void addCoins(int amount) {
-        InventoryItem item = new InventoryItem("Coins", amount, false, true, true, 1);
-        addInventoryItem(item);
     }
 
     public void removeInventoryItem(InventoryItem item) {
