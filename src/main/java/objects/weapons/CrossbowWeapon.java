@@ -23,6 +23,8 @@ public class CrossbowWeapon extends Weapon {
     static final int MAX_ARROWS = 50;
     static final int INITALIZED_ARROWS = 20;
 
+    public static final int PRICE = 20;
+
     public CrossbowWeapon(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);
         this.weaponType = WeaponType.CROSSBOW;
@@ -31,6 +33,8 @@ public class CrossbowWeapon extends Weapon {
         this.initilizedAmmo = INITALIZED_ARROWS;
         this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
         this.range = true;
+        this.price = PRICE;
+        this.sellable = true;
         addToInventory();
     }
 

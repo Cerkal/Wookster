@@ -4,6 +4,7 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import objects.projectiles.ArrowProjectile;
 
 public class ArrowsObject extends SuperObject {
 
@@ -35,7 +36,9 @@ public class ArrowsObject extends SuperObject {
             this.name,
             Utils.generateRandomInt(MIN_RANDOM_ARROW_AMOUNT, MAX_RANDOM_ARROW_AMOUNT),
             false,
-            false
+            false,
+            true,
+            ArrowProjectile.PRICE
         );
     }
 }

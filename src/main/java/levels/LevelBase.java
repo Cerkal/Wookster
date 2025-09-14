@@ -188,7 +188,9 @@ public abstract class LevelBase {
                         item.itemName,
                         item.count,
                         item.usable,
-                        item.visibility
+                        item.visibility,
+                        item.sellable,
+                        item.price
                     );
                     others.add(inventoryItem);
                 }

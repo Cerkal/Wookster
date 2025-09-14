@@ -4,6 +4,7 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import objects.projectiles.LaserProjectile;
 
 public class LasersObject extends SuperObject {
 
@@ -35,7 +36,9 @@ public class LasersObject extends SuperObject {
             this.name,
             Utils.generateRandomInt(MIN_RANDOM_LASER_AMOUNT, MAX_RANDOM_LASER_AMOUNT), 
             false,
-            false
+            false,
+            true,
+            LaserProjectile.PRICE
         );
     }
 }

@@ -51,7 +51,7 @@ public class Player extends Entity {
     public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
 
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
+    // public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
 
@@ -155,7 +155,7 @@ public class Player extends Entity {
     }
 
     public void addCoins(int amount) {
-        InventoryItem item = new InventoryItem("Coins", amount, false, true);
+        InventoryItem item = new InventoryItem("Coins", amount, false, true, true, 1);
         addInventoryItem(item);
     }
 
@@ -165,12 +165,16 @@ public class Player extends Entity {
             if (item.count > 1) {
                 item.count--;
             } else {
-                list.remove(item);
+                list.remove(0);
             }
             if (list.isEmpty()) {
                 this.inventory.remove(item.name);
             }
         }
+    }
+
+    public void addInventoryItemFromVendor(InventoryItem item) {
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
     }
 
     public void removeInventoryItem(String name) {
@@ -205,7 +209,7 @@ public class Player extends Entity {
             for (InventoryItem item : items) {
                 totalCount += item.count;
             }
-            InventoryItem firstCopy = items.get(0).copy();
+            InventoryItem firstCopy = new InventoryItem(items.get(0));
             firstCopy.count = totalCount;
             if (firstCopy.usable || firstCopy.visibility) {
                 selectableMap.put(key, firstCopy);
@@ -268,7 +272,7 @@ public class Player extends Entity {
                 totalCount += item.count;
             }
             InventoryItem first = items.get(0);
-            InventoryItem item = new InventoryItem(first);
+            InventoryItem item = first.copy();
             item.count = totalCount;
             if (item.usable || item.visibility) {
                 if (item.weapon != null) {

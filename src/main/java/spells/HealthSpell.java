@@ -7,6 +7,8 @@ import main.Constants;
 import main.Utils;
 
 public class HealthSpell extends SuperSpell {
+
+    static final int PRICE = 2;
     
     public HealthSpell() {
         super(SpellType.HEALTH_SPELL);
@@ -21,13 +23,9 @@ public class HealthSpell extends SuperSpell {
     }
 
     private void init() {
-        if (this.healthAmount > 0) {
-            this.positiveSpell = true;
-            this.message = Constants.MESSAGE_POTION_GOOD;
-        } else {
-            this.message = Constants.MESSAGE_POTION_BAD;
-        }
+        checkPositive();
         this.descriptionText.add("Modify player's health.");
+        setPriceDescription();
     }
 
     public void randomHealthDamage() {
@@ -52,6 +50,17 @@ public class HealthSpell extends SuperSpell {
         this.healthAmount = Utils.generateRandomInt(10, 30);
         if (Utils.generateRandomInt(0, 1) == 0) {
             this.healthAmount *= -1;
+        }
+    }
+
+    private void checkPositive() {
+        if (this.healthAmount > 0) {
+            this.sellable = true;
+            this.price = PRICE;
+            this.positiveSpell = true;
+            this.message = Constants.MESSAGE_POTION_GOOD;
+        } else {
+            this.message = Constants.MESSAGE_POTION_BAD;
         }
     }
 }

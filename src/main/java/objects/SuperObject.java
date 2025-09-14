@@ -52,6 +52,8 @@ public class SuperObject {
     public boolean isSpecial;
     public String message;
     public boolean carriable;
+    public boolean sellable;
+    public int price = 3;
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
     private BufferedImage inventoryIcon;
