@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import entity.Entity;
 import main.Constants;
 import main.DataWrapper;
 import main.GamePanel;
@@ -51,7 +52,7 @@ public abstract class LevelBase {
     }
 
     public void loading(boolean loadFromSave) {
-        if (loadFromSave) this.loadFromSave = loadFromSave;
+        this.loadFromSave = loadFromSave;
         this.levelIndex = this.gamePanel.levelManager.currentLevelIndex;
         this.gamePanel.gameState = GameState.LOADING;
         long loadingStartTime = System.currentTimeMillis();
@@ -151,6 +152,14 @@ public abstract class LevelBase {
         this.gamePanel.objects.add(object);
     }
 
+    public void addNPC(Entity entity) {
+        this.gamePanel.npcs.add(entity);
+    }
+
+    public void addNPC(List<Entity> entities) {
+        this.gamePanel.npcs.addAll(entities);
+    }
+
     public String getLevelName() {
         Class<?> c = this.getClass();
         return c.getName();
@@ -188,7 +197,9 @@ public abstract class LevelBase {
                         item.itemName,
                         item.count,
                         item.usable,
-                        item.visibility
+                        item.visibility,
+                        item.sellable,
+                        item.price
                     );
                     others.add(inventoryItem);
                 }

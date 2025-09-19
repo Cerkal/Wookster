@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import entity.Entity;
+import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import objects.projectiles.LaserProjectile;
@@ -14,19 +15,34 @@ public class BlasterWeapon extends Weapon {
 
     // In milliseconds
     static final int BLASTER_DELAY = 500;
+    static final int BLASTER_NPC_DELAY = 1000;
     static final int MAX_AMMO = 150;
-    public static final int BLASTER_SPEED = 20;
+    public static final int BLASTER_SPEED = 25;
     static final int INITALIZED_LASERS = 50;
+
+    public static final int PRICE = 20;
 
     public BlasterWeapon(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);
+        init();
+        addToInventory();
+    }
+
+    public BlasterWeapon(GamePanel gamePanel, Entity entity, boolean addToInventory) {
+        super(gamePanel, entity);
+        init();
+        if (addToInventory) addToInventory();
+    }
+
+    private void init() {
         this.weaponType = WeaponType.BLASTER;
         this.projectileType = ProjectileType.LASERS;
         this.sound = Constants.SOUND_LASER;
         this.initilizedAmmo = INITALIZED_LASERS;
         this.maxDamage = LaserProjectile.DAMAGE;
+        this.sellable = true;
+        this.price = PRICE;
         this.range = true;
-        addToInventory();
     }
 
     public void shoot() {
@@ -55,9 +71,10 @@ public class BlasterWeapon extends Weapon {
     }
 
     private void shootLaser() {
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > BLASTER_DELAY) {
+        int delay = entity instanceof Player ? BLASTER_DELAY : BLASTER_NPC_DELAY;
+        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > delay) {
             this.lastShot = this.gamePanel.gameTime;
-            this.removeAmmo();
+            if (entity instanceof Player) this.removeAmmo();
             this.playSound();
             this.gamePanel.projectileManager.add(getProjectile(this.entity));
         }

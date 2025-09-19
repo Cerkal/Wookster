@@ -17,6 +17,7 @@ public class ScreenSelector implements KeyListener {
     private final List<List<SelectionItem>> screens = new ArrayList<>();
     private int screenIndex = 0;
     private int commandNumber = 0;
+    private int displayNumber = 0;
     private int pageSize = 6;
     private int pageNumber = 0;
 
@@ -47,7 +48,7 @@ public class ScreenSelector implements KeyListener {
                 "selected: " + this.selected + ", " +
                 "selectedName: " + this.selectedName + ", " +
                 "selectedIndex: " + this.selectedIndex + ", " +
-                "selectedScreenIndex: " + this.selectedScreenIndex +
+                "selectedScreenIndex: " + this.selectedScreenIndex + ", " +
                 "customKeyPress: " + this.customKeyPress +
             "}";
         }
@@ -126,6 +127,32 @@ public class ScreenSelector implements KeyListener {
         return result;
     }
 
+    public SelectionResult display(Graphics2D graphics2D, int x, int y, int delimiter, boolean center, int screenIndex) {
+
+        if (screens.isEmpty()) return null;
+
+        List<SelectionItem> items = screens.get(screenIndex);
+
+        if (items == null || items.isEmpty()) {
+            drawDisplay(graphics2D, x, y, delimiter, new ArrayList<>(), center);
+            return result;
+        }
+
+        List<List<SelectionItem>> pages = chunk(items);
+
+        // Clamp commandNumber within bounds
+        if (displayNumber < 0) displayNumber = 0;
+        if (displayNumber >= items.size()) displayNumber = items.size() - 1;
+
+        pageNumber = displayNumber / pageSize;
+        if (pageNumber >= pages.size()) pageNumber = pages.size() - 1;
+
+        List<SelectionItem> pageItems = pages.get(pageNumber);
+
+        drawDisplay(graphics2D, x, y, delimiter, pageItems, center);
+        return result;
+    }
+
     private List<List<SelectionItem>> chunk(List<SelectionItem> items) {
         List<List<SelectionItem>> pages = new ArrayList<>();
         for (int i = 0; i < items.size(); i += pageSize) {
@@ -158,12 +185,37 @@ public class ScreenSelector implements KeyListener {
         }
     }
 
+    private void drawDisplay(Graphics2D graphics2D, int x, int y, int delimiter, List<SelectionItem> items, boolean center) {
+        graphics2D.setFont(customFont);
+        graphics2D.setColor(Color.WHITE);
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).selected) {
+                graphics2D.fillRoundRect(x + Constants.TILE_SIZE / 2, y - 10, 6, 6, 6, 6);
+            }
+            if (!center) {
+                graphics2D.setColor(items.get(i).color);
+                graphics2D.drawString(items.get(i).displayName, x + Constants.TILE_SIZE, y);
+            } else {
+                int centerX = this.gamePanel.ui.getXForCenteredText(graphics2D, items.get(i).displayName, customFont);
+                graphics2D.setColor(items.get(i).color);
+                graphics2D.drawString(items.get(i).displayName, centerX, y);
+            }
+            graphics2D.setColor(DEFAULT_COLOR);
+            y += delimiter;
+        }
+    }
+
     public void setScreen(int screenIndex) {
         this.screenIndex = screenIndex;
     }
 
     private void setCursor(Graphics2D g2d, int x, int y) {
         g2d.drawString(Constants.GAME_TITLE_SELECTOR, x, y);
+    }
+
+    public int getScreenIndex() {
+        return this.screenIndex;
     }
 
     @Override
@@ -204,6 +256,19 @@ public class ScreenSelector implements KeyListener {
                         this.result.customKeyPress = KeyEvent.VK_D;
                     }
                     case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
+                }
+                break;
+            case GameState.VENDOR:
+                this.gamePanel.playSoundEffect(Constants.SOUND_CURSOR);
+                switch (code) {
+                    case KeyEvent.VK_W -> up(currentItems);
+                    case KeyEvent.VK_S -> down(currentItems);
+                    case KeyEvent.VK_A -> left(currentItems);
+                    case KeyEvent.VK_D -> right(currentItems);
+                    case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> select();
+                    case KeyEvent.VK_E -> {
+                        this.gamePanel.gameState = GameState.PLAY;
+                    }
                 }
                 break;
             default:

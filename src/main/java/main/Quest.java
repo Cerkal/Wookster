@@ -39,7 +39,7 @@ public class Quest {
         if (this.paymentMap.containsKey(resolution) &&
             this.paymentMap.get(resolution) > 0
         ){
-            gamePanel.player.addCoins(this.paymentMap.get(resolution));
+            gamePanel.player.addCredits(this.paymentMap.get(resolution));
             gamePanel.sound.playSoundEffect(Constants.SOUND_COIN);
         }
     }

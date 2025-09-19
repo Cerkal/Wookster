@@ -6,6 +6,11 @@ public class Dialogue {
 
     private static final String PLAYER_NAME = "Wookster";
 
+    // Defalts
+    public static final String[] DEFAULT_WARNING = {
+        "Don't try that again."
+    };
+
     // Tutorial
     public static final String[] TUTORIAL_PIGS_START = {
         "Can you help me with these pigs?",
@@ -79,5 +84,11 @@ public class Dialogue {
         "I was going to make this my home.",
         "Thank God you found me.",
         "Lead the way. I'll follow you."
+    };
+
+    // Level 03
+    public static final String[] LEVEL_03_VENDOR_INTRO = {
+        "I sell stuff, if you want stuff I got it.",
+        "Do you want the stuff or not?",
     };
 }

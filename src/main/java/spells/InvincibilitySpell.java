@@ -15,6 +15,10 @@ public class InvincibilitySpell extends SuperSpell {
     }
 
     private void init() {
+        this.price = 10;
+        this.sellable = true;
+        this.positiveSpell = true;
         this.descriptionText.add("Player does not take damage.");
+        setPriceDescription();
     }
 }

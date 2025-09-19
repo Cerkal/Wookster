@@ -52,9 +52,11 @@ public class SuperObject {
     public boolean isSpecial;
     public String message;
     public boolean carriable;
+    public boolean sellable;
+    public int price = 3;
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
-    private BufferedImage inventoryIcon;
+    protected BufferedImage inventoryIcon;
 
     public SuperObject(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -115,8 +117,6 @@ public class SuperObject {
         for (int x = this.gamePanel.player.getRawX() - 1; x < this.gamePanel.player.getRawX() + 1; x++) {
             for (int y = this.gamePanel.player.getRawY() - 1; y < this.gamePanel.player.getRawY() + 1; y++) {
                 if (this.gamePanel.tileManager.walkableTiles[x][y]) {
-                    System.out.println(x);
-                    System.out.println(y);
                     this.worldX = x * Constants.TILE_SIZE;
                     this.worldY = y * Constants.TILE_SIZE;
                     this.gamePanel.objects.add(this);
@@ -202,6 +202,7 @@ public class SuperObject {
         SWORD       ((gamePanel, object) -> new SwordObject(gamePanel, object.worldX, object.worldY)),
         JERMEY      ((gamePanel, object) -> new JermeyObject(gamePanel, object.worldX, object.worldY, null)),
         MAP         ((gamePanel, object) -> new GameMap(gamePanel)),
+        FOOD        ((gamePanel, object) -> new FoodObject(gamePanel, SpellType.create(object.spell), object.name, object.worldX, object.worldY)),
         POTION      ((gamePanel, object) -> object.carriable
                         ? new CarryPotionObject(gamePanel, SpellType.create(object.spell), object.worldX, object.worldY)
                         : new PotionObject(gamePanel, SpellType.create(object.spell), object.worldX, object.worldY));

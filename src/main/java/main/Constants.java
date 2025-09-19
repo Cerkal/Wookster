@@ -61,7 +61,7 @@ public class Constants {
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
     public static final String GAME_TITLE_SCREEN_CONTROLS = "Controls";
-    public static final String GAME_TITLE_SCREEN_OPTIONS = "Options";
+    public static final String GAME_TITLE_SCREEN_SETTINGS = "Settings";
     public static final String GAME_TITLE_SCREEN_QUIT_GAME = "Quit Game";
     public static final String GAME_TITLE_SELECTOR = ">";
     public static final String GAME_TITLE_BACK_BUTTON = "Back";
@@ -87,6 +87,11 @@ public class Constants {
     public static final int EFFECTS_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.EFFECTS);
     public static final int QUEST_INDEX = Constants.INVENTORY_TABS.indexOf(Constants.QUESTS);
     public static final int INVENTORY_ICON_SIZE = Constants.TILE_SIZE * 2;
+
+    public static final int VENDOR_PLAYER_INDEX = 0;
+    public static final int VENDOR_VENDOR_INDEX = 1;
+
+    public static final String CREDITS = "CREDITS";
 
     // Tutorial Notes
     public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";
@@ -195,6 +200,7 @@ public class Constants {
 
     // Hat
     public static final String WOOKSER_MOM_HAT = "/player/mom_hat.png";
+    public static final String WOOKSER_BUCKET_HAT = "/player/bucket_hat.png";
 
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";
@@ -228,6 +234,7 @@ public class Constants {
     public static final String WORLD_00 = "/maps/world_00.txt";
     public static final String WORLD_01 = "/maps/world_01.txt";
     public static final String WORLD_02 = "/maps/world_02.txt";
+    public static final String WORLD_03 = "/maps/world_03.txt";
 
     // Backrounds
     public static final String DEFAULT_BACKGROUND = "/backgrounds/output_image_test.png";
@@ -404,6 +411,9 @@ public class Constants {
         put(ObjectType.KEY, OBJECT_KEY_ICON);
     }};
 
+    // Food Icons
+    public static final String OBJECT_FOOD_BERRIES_IMAGE = "/objects/food_berries_inverted.png";
+
     public static final String MESSGE_INVENTORY_ADDED = " added to inventory";
     public static final String MESSAGE_INVENTORY_REMOVED = " removed from inventory";
 
@@ -416,6 +426,9 @@ public class Constants {
 
     public static final String MESSAGE_POTION_GOOD = "The potion warms your heart.";
     public static final String MESSAGE_POTION_BAD = "The potion is wet and smelly.";
+    
+    public static final String MESSAGE_BERRIES_GOOD = "The berries make your heart glad.";
+    public static final String MESSAGE_BERRIES_BAD = "Yuck. Poision.";
 
     public static final List<String> RANDOM_HURT_DIALOGUE = new ArrayList<>(
         List.of(

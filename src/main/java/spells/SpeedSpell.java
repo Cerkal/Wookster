@@ -44,8 +44,11 @@ public class SpeedSpell extends SuperSpell {
         }
         if (this.speed > Player.DEFAULT_SPEED) {
             this.positiveSpell = true;
+            this.price = 2;
+            this.sellable = true;
         }
         this.descriptionText.add("Changes player's speed.");
+        setPriceDescription();
     }
     
     public void randomSpeedSlow() {

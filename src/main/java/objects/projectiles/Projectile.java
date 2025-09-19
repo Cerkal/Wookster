@@ -29,11 +29,14 @@ public class Projectile {
     public int solidAreaDefaultX = solidArea.x;
     public int solidAreaDefaultY = solidArea.y;
 
+    public double npcDamage = .8;
     public int speed = 14;
     public int damage = 10;
 
     public int dispose;
     public long lastShot;
+
+    public int price = 1;
 
     public enum ProjectileType {
         ARROWS,
@@ -136,6 +139,13 @@ public class Projectile {
     }
 
     protected void handleEntityCollision(Entity entity) {
-        entity.takeDamage(this.damage);
+        if (entity instanceof Player) {
+            adjustDamage(this.npcDamage);
+        }
+        entity.takeDamage(this.damage, this.entity);
+    }
+
+    public void adjustDamage(double amount) {
+        this.damage *= amount;
     }
 }

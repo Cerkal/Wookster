@@ -7,10 +7,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import main.GamePanel.GameState;
-import main.TitleScreen.Option;
-import main.TitleScreen.Screen;
-import main.TitleScreen.Toggle;
-import main.TitleScreen.ToggleOption;
+import main.Screen.Option;
+import main.Screen.Screen;
+import main.Screen.Toggle;
+import main.Screen.ToggleOption;
 
 public class Config {
 

@@ -87,7 +87,7 @@ public class EventHandler {
     }
 
     private void damagePlayer() {
-        this.gamePanel.player.takeDamage(Utils.generateRandomInt(5, 15));
+        this.gamePanel.player.takeDamage(Utils.generateRandomInt(5, 15), null);
     }
 
     private void spellPlayer() {

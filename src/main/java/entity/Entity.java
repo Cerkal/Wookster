@@ -4,23 +4,33 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import javax.imageio.ImageIO;
 
 import effects.AlertEffect;
 import effects.BloodEffect;
 import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
+import main.Dialogue;
 import main.GamePanel;
+import main.InventoryItem;
 import main.Utils;
+import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
+import objects.weapons.Weapon.WeaponType;
 import tile.TileManager.TileLocation;
 
 public abstract class Entity {
@@ -31,18 +41,22 @@ public abstract class Entity {
     public static final int SOLID_AREA_Y = 4;
     public static final int SOLID_AREA_WIDTH = 28;
     public static final int SOLID_AREA_HEIGHT = 40;
+    
+    public static final int DEFAULT_TIMEOUT = 15000; // ms
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
     public enum EntityType { PLAYER, NPC, ENEMY, ANIMAL }
 
     // Location
-    public int worldX, worldY;
+    public int worldX, worldY, startingX, startingY;
     public int speed;
     public Direction direction;
+    Direction startingDirection;
 
     // Sprite
     protected int spriteCounter = 0;
     protected int spriteNumber = 0;
+    protected BufferedImage hat;
     public boolean isMoving = false;
     protected Sprite sprite;
     SpriteManager spriteManager = new SpriteManager();
@@ -63,11 +77,23 @@ public abstract class Entity {
     // Alert
     public boolean isFriendly;
     public boolean willChase;
-    private boolean isAlerted;
-    protected boolean isChasing;
+    public boolean isAlerted;
     protected Queue<Point> moveQueue;
-    public boolean isNeeded;
-    public boolean isFrenzy;
+    protected boolean isNeeded;
+    protected boolean isFrenzy;
+    protected boolean warned;
+    protected String warningMessage;
+    protected int aggression;
+    protected boolean canSeePlayer;
+    protected boolean timerStarted;
+    protected long startAttackTime;
+    protected Entity attackingTarget;
+    protected int attackingTimeout;
+
+    // Wander behavior
+    public boolean wander = false;
+    private Point wanderTarget = null;
+    private long wanderPauseUntil = 0;
 
     // Entity Values
     public EntityType entityType;
@@ -77,11 +103,20 @@ public abstract class Entity {
     public String[] dialogue;
     public int dialogueIndex = 0;
     public Effect effect;
+    
+    // Weapons
+    public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
     public Weapon weapon;
+    public Weapon primaryWeapon;
     public boolean attacking = false;
 
     // Sounds
     protected String damageSound;
+
+    // Inventory Items
+    public boolean isVendor = false;
+    public HashMap<String, InventoryItem> inventoryItems = new HashMap<>();
+    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
 
     protected Point frenzyTarget = null;
 
@@ -94,11 +129,15 @@ public abstract class Entity {
         this.solidArea.height = SOLID_AREA_HEIGHT;
         this.solidAreaDefaultX = this.solidArea.x;
         this.solidAreaDefaultY = this.solidArea.y;
+        this.attackingTimeout = DEFAULT_TIMEOUT;
+        this.weapons.put(WeaponType.FIST, new FistWeapon(this.gamePanel, this));
         this.loadSprites();
     }
 
     public Entity(GamePanel gamePanel, int worldX, int worldY) {
         this(gamePanel);
+        this.startingX = worldX;
+        this.startingY = worldY;
         this.worldX = worldX * Constants.TILE_SIZE;
         this.worldY = worldY * Constants.TILE_SIZE;
         this.isMoving = false;
@@ -137,24 +176,145 @@ public abstract class Entity {
             drawDebugCollision(graphics2D, screenX, screenY);
         }
         drawEffect(graphics2D);
+        drawHat(graphics2D);
+    }
+
+    protected void drawHat(Graphics2D graphics2D) {
+        if (this.hat == null) { return; }
+        if (this.isDead) { return; }
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+        if (
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            graphics2D.drawImage(
+                this.hat,
+                screenX,
+                screenY - 18,
+                null
+            );
+        }
     }
 
     public void update() {
         if (this.isDead) { return; }
-        setAction();
         collision();
-        if (isFrenzy) {
-            startFrenzy();
-        } else {
-            startChase();
+        checkVisibility();
+        checkFrenzy();
+        checkLineOfFire();
+        handleMovement();
+    }
+
+    private void checkVisibility() {
+        if (this.movable == false) { return; }
+        this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(gamePanel.player, this);
+        if ((this.canSeePlayer || this.isAlerted) && !this.isFrenzy) {
+            this.isAlerted = true;
+            this.startAttackTime = System.currentTimeMillis();
+            queueChase();
+            chaseTimeout();
         }
+    }
+
+    private void checkFrenzy() {
+        if (this.isFrenzy && (this.moveQueue == null || (this.moveQueue != null && this.moveQueue.isEmpty()))) {
+            startFrenzy(getFrenzyLocation());
+        }
+    }
+
+    protected void queueChase() {
+        if ((this.moveQueue == null || this.moveQueue.isEmpty()) && this.willChase) {
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                getEnemy(this.attackingTarget).getLocation(),
+                this.gamePanel.tileManager.walkableTiles
+            );
+            getPath(path);
+        }
+    }
+
+    private void handleMovement() {
+        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
+            goTo();
+        }
+    }
+
+    private void goTo() {
+        if (this.movable == false) { return; }
+        if (this.moveQueue == null || this.moveQueue.isEmpty()) { return; }
+        Point point = this.moveQueue.peek();
+        if (point == null) { return; }
+
+        this.isMoving = true;
+
+        moveEntityStep(point);
+
+        int targetX = point.x * Constants.TILE_SIZE;
+        int targetY = point.y * Constants.TILE_SIZE;
+
+        if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
+            snapToGrid(point);
+            this.moveQueue.poll();
+        }
+
+        isBackAtStart();
+    }
+
+    private void isBackAtStart() {
+        if (this.moveQueue.isEmpty()) {
+            int x = this.getLocation().x;
+            int y = this.getLocation().y;
+            if (
+                (x >= this.startingX - 1 || x <= this.solidAreaDefaultX + 1) &&
+                (y >= this.startingY - 1 || y <= this.solidAreaDefaultY + 1)
+            ){
+                this.direction = Direction.DOWN;
+                this.isMoving = false;
+                this.attacking = false;
+            }
+        } 
+    }
+
+    private void chaseTimeout() {
+        if (this.timerStarted) { return; }
+        
+        this.timerStarted = true;
+        boolean initalWillChase = this.willChase;
+        boolean initalMovable = this.movable;
+        boolean initalIsFriendly = this.isFriendly;
+        if (this.startAttackTime != 0) this.startAttackTime = System.currentTimeMillis();
+        new Thread(() -> {
+            long elapsed = System.currentTimeMillis() - this.startAttackTime;
+            if (elapsed < 30000) {
+                try {
+                    Thread.sleep(30000 - elapsed);
+                } catch (InterruptedException ignored) {}
+            }
+            if (!this.canSeePlayer) {
+                backToStart();
+                this.isAlerted = false;
+                this.willChase = initalWillChase;
+                this.movable = initalMovable;
+                this.isFriendly = initalIsFriendly;
+                this.startAttackTime = 0;
+                this.timerStarted = false;
+                System.out.println("Going back to start.");
+            } else {
+                System.out.println("Can still see player, not going back to start.");
+            }
+        }).start();
     }
 
     public void handlePlayerCollision(Player player) {
         if (this.isFriendly) { return; }
-        if (this.weapon instanceof MeleeWeapon) {
-            MeleeWeapon meleeWeapon = (MeleeWeapon) this.weapon;
-            meleeWeapon.shoot(this);
+        if (this.isAlerted) {
+            if (this.weapons != null && this.weapons.containsKey(WeaponType.FIST)) {
+                this.weapon = this.weapons.get(WeaponType.FIST);
+                this.weapon.shoot(this);
+            }
         }
     }
 
@@ -189,8 +349,11 @@ public abstract class Entity {
         return null;
     }
 
-    public void takeDamage(int amount) {
+    public void takeDamage(int amount, Entity entity) {
         if (this.invincable) { return; }
+        this.gamePanel.playSoundEffect(this.damageSound);
+        this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
+        this.effect = new AlertEffect(this.gamePanel, this);
         this.health -= amount;
         if (this.health <= 0) {
             this.health = 0;
@@ -198,11 +361,34 @@ public abstract class Entity {
             this.movable = false;
             this.weapon = null;
         }
-        this.gamePanel.playSoundEffect(this.damageSound);
-        this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
-        this.effect = new AlertEffect(this.gamePanel, this);
+        if (this.isDead && this.isNeeded) {
+            this.gamePanel.death();
+            return;
+        }
         this.isAlerted = true;
+        this.attackingTarget = entity;
         System.out.println(this.entityType + ": " + getCurrentHealth());
+
+        if (
+            this.isFriendly &&
+            ((this.attackingTarget instanceof Player && this.warned) ||
+            !(this.attackingTarget instanceof Player))
+        ){
+            this.isFriendly = false;
+            this.movable = true;
+            this.willChase = true;
+            this.startAttackTime = System.currentTimeMillis();
+            
+            queueChase();
+            chaseTimeout();
+        }
+        if (this.isFriendly && this.aggression > 50) {
+            if (this.attackingTarget instanceof Player) {
+                if (this.warningMessage == null) { this.warningMessage = Dialogue.DEFAULT_WARNING[0]; }
+                this.gamePanel.ui.displayDialog(this.warningMessage);
+                this.warned = true;
+            }
+        }
         if (this instanceof Animal) {
             this.isFrenzy = true;
             this.frenzyTarget = null;
@@ -212,6 +398,10 @@ public abstract class Entity {
                 startFrenzy(this.frenzyTarget);
             }
         }
+    }
+
+    private Entity getEnemy(Entity entity) {
+        return entity == null || entity.isDead ? this.gamePanel.player : entity;
     }
 
     public void increaseHealth(double amount) {
@@ -225,7 +415,7 @@ public abstract class Entity {
         if (amount > 0) {
             increaseHealth(Math.abs(amount));
         } else {
-            takeDamage((int) Math.abs(amount));
+            takeDamage((int) Math.abs(amount), null);
         }
     }
 
@@ -250,6 +440,91 @@ public abstract class Entity {
         this.sprite = this.spriteManager.getSprite(this);
     }
 
+    public void setVendor(List<InventoryItem> items) {
+        this.isVendor = true;
+        for (InventoryItem item : items) {
+            this.inventory.put(item.name, new ArrayList<>(List.of(item)));
+        }
+    }
+
+    public boolean isVendor() {
+        return this.isVendor;
+    }
+
+    public void addInventoryItemFromVendor(InventoryItem item) {
+        if (item == null || item.count <= 0) return;
+        if (!item.sellable) return;
+        List<InventoryItem> itemList = inventory.computeIfAbsent(item.name, k -> new ArrayList<>());
+        for (InventoryItem existing : itemList) {
+            if (existing.canStackWith(item)) {
+                existing.count += item.count;
+                return;
+            }
+        }
+        InventoryItem copy = new InventoryItem(item);
+        copy.count = item.count;
+        if (item.weapon != null && !this.weapons.containsKey(item.weapon.weaponType)) {
+            this.weapons.put(item.weapon.weaponType, item.weapon);
+        }
+        itemList.add(copy);
+    }
+
+    public boolean removeInventoryItemFromVendor(String name, int count) {
+        List<InventoryItem> itemList = inventory.get(name);
+        if (itemList == null) return false;
+        int remaining = count;
+        for (Iterator<InventoryItem> it = itemList.iterator(); it.hasNext() && remaining > 0;) {
+            InventoryItem current = it.next();
+            if (!current.sellable) continue;
+            if (current.count > remaining) {
+                current.count -= remaining;
+                remaining = 0;
+                if (current.weapon != null && !this.weapons.containsKey(current.weapon.weaponType)) {
+                    this.weapons.remove(current.weapon.weaponType);
+                }
+            } else {
+                remaining -= current.count;
+                it.remove();
+            }
+        }
+        if (itemList.isEmpty()) {
+            inventory.remove(name);
+        }
+        return remaining <= 0;
+    }
+
+    public List<InventoryItem> getInventoryItemsForSale() {
+        List<InventoryItem> weaponList = new ArrayList<>();
+        List<InventoryItem> otherList = new ArrayList<>();
+
+        for (String key : this.inventory.keySet()) {
+            List<InventoryItem> items = this.inventory.get(key);
+
+            int totalCount = items.stream()
+                .filter(item -> item.sellable)
+                .mapToInt(item -> item.count)
+                .sum();
+
+            if (totalCount > 0) {
+                InventoryItem first = items.get(0);
+                InventoryItem item = new InventoryItem(first);
+                item.count = totalCount;
+
+                if (item.weapon != null) {
+                    weaponList.add(item);
+                } else {
+                    otherList.add(item);
+                }
+            }
+        }
+        weaponList.sort(Comparator.comparing(item -> item.name));
+        otherList.sort(Comparator.comparing(item -> item.name));
+        List<InventoryItem> selectableList = new ArrayList<>();
+        selectableList.addAll(weaponList);
+        selectableList.addAll(otherList);
+        return selectableList;
+    }
+
     protected abstract void loadSprites();
 
     protected void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
@@ -263,11 +538,40 @@ public abstract class Entity {
         );
     }
 
+    public int getCredits() {
+        return this.inventory.get(Constants.CREDITS).get(0).count;
+    }
+
+    public void addInventoryItem(InventoryItem item) {
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
+        if (!(this instanceof Player)) { return; }
+        if (item.count > 1) {
+            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+        } else {
+            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
+        }
+        
+    }
+
+    public void addCredits(int amount) {
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count += amount;
+        } else {
+            InventoryItem item = new InventoryItem(Constants.CREDITS, amount, false, true, false, 1);
+            addInventoryItem(item);
+        }
+    }
+
+    public void removeCredits(int amount) {
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count -= amount;
+        }
+    }
+
     private void collision() {
         this.collisionOn = false;
         this.gamePanel.collision.checkTile(this);
         this.gamePanel.collision.objectCollision(this, false);
-        checkVisibility();
 
         collisionEntity = this.gamePanel.collision.entityCollision(this);
         collisionPlayer = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
@@ -275,8 +579,10 @@ public abstract class Entity {
         boolean collidedWithEntity = collisionEntity != null;
         boolean collidedWithPlayer = collisionPlayer != null;
         
-        if (collidedWithPlayer) {
+        if (collidedWithPlayer || collidedWithEntity) {
             handlePlayerCollision(this.gamePanel.player);
+        } else {
+            this.weapon = this.primaryWeapon;
         }
 
         if (isFrenzy && (collidedWithEntity || collidedWithPlayer)) {
@@ -294,27 +600,14 @@ public abstract class Entity {
         }
     }
 
-    private void checkVisibility() {
-        boolean canSeePlayer = this.gamePanel.collision.checkLineTileCollision(gamePanel.player, this);
-        if (canSeePlayer) {
-            this.isAlerted = true;
+    protected void setHat(String hatPath) {
+        if (hatPath == null) { return; }
+        try {
+            this.hat = ImageIO.read(getClass().getResourceAsStream(hatPath));
+            this.hat = Utils.scaleImage(this.hat);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    private void setAction() {
-        if (!this.movable) { return; }
-        if (this.isAlerted && this.willChase && !this.isChasing && !this.isFrenzy) {
-            queueChase();
-        }
-    }
-
-    protected void queueChase() {
-        List<Point> path = bfsShortestPath(
-            getLocation(),
-            this.gamePanel.player.getLocation(),
-            this.gamePanel.tileManager.walkableTiles
-        );
-        getPath(path);
     }
 
     private void getPath(List<Point> path) {
@@ -323,62 +616,32 @@ public abstract class Entity {
             for (Point point : path) {
                 this.moveQueue.add(point);
             }
-            this.isChasing = true;
         }
-    }
-
-    private void startChase() {
-        if (!this.isChasing) { return; }
-
-        Point point = this.moveQueue.peek();
-        if (point == null) { return; }
-
-        this.isMoving = true;
-
-        moveEntityStep(point);
-        checkLineOfFire();
-
-        int targetX = point.x * Constants.TILE_SIZE;
-        int targetY = point.y * Constants.TILE_SIZE;
-
-        if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
-            snapToGrid(point);
-            this.moveQueue.poll();
-        }
-
-        if (this.moveQueue.isEmpty()) {
-            stopChase();
-        }
-    }
-
-    private void stopChase() {
-        this.isMoving = false;
-        this.isChasing = false;
-        if (this.moveQueue != null) { this.moveQueue.clear(); }
     }
 
     private void checkLineOfFire() {
         if (this.isFriendly) { return; }
-        if (this.weapon == null) { return; }
-        if (this.weapon instanceof MeleeWeapon) { return;}
+        if (this.primaryWeapon == null) { return; }
+        if (this.primaryWeapon instanceof MeleeWeapon) { return; }
+        if (!this.isAlerted) { return; }
         
         int buffer = 1;
         int entityX = getLocation().x;
         int entityY = getLocation().y;
-        int playerX = this.gamePanel.player.getLocation().x;
-        int playerY = this.gamePanel.player.getLocation().y;
+        int attackingX = getEnemy(this.attackingTarget).getLocation().x;
+        int attackingY = getEnemy(this.attackingTarget).getLocation().y;
 
         switch (this.direction) {
             case UP:
             case DOWN:
-                if (entityX >= playerX - buffer && entityX <= playerX + buffer) {
-                    this.weapon.shoot(this);
+                if (entityX >= attackingX - buffer && entityX <= attackingX + buffer) {
+                    this.primaryWeapon.shoot(this);
                 }
                 break;
             case RIGHT:
             case LEFT:
-                if (entityY >= playerY - buffer && entityY <= playerY + buffer) {
-                    this.weapon.shoot(this);
+                if (entityY >= attackingY - buffer && entityY <= attackingY + buffer) {
+                    this.primaryWeapon.shoot(this);
                 }
                 break;
         }
@@ -422,39 +685,6 @@ public abstract class Entity {
                 }
             }
         }
-        sprite();
-    }
-
-    private void sprite() {
-        this.spriteCounter++;
-        if (this.spriteCounter > Constants.FPS / 6 && this.isMoving) {
-            if (this.spriteNumber == 1) {
-                this.spriteNumber = 0;
-            } else if (this.spriteNumber == 0) {
-                this.spriteNumber = 1;
-            }
-            this.spriteCounter = 0;
-        }
-    }
-
-    protected void moveEntiy() {
-        if (!this.collisionOn) {
-            switch (this.direction) {
-                case UP:
-                    this.worldY -= speed;
-                    break;
-                case DOWN:
-                    this.worldY += speed;
-                    break;
-                case LEFT:
-                    this.worldX -= speed;
-                    break;
-                case RIGHT:
-                    this.worldX += speed;
-                    break;
-            }
-        }
-        sprite();
     }
 
     protected List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable) {
@@ -543,17 +773,6 @@ public abstract class Entity {
         return this.frenzyTarget;
     }
 
-    private void startFrenzy() {
-        if (this.frenzyTarget == null || getLocation().equals(this.frenzyTarget)) {
-            this.frenzyTarget = getFrenzyLocation();
-            if (!getValidFrenzyPath()) {
-                this.frenzyTarget = null;
-                startFrenzy();
-            }
-        }
-        moveFrenziedEntity();
-    }
-
     private void startFrenzy(Point point) {
         if (point != null && !getLocation().equals(point)) {
             this.frenzyTarget = point;
@@ -598,6 +817,65 @@ public abstract class Entity {
             }
         }
         this.isMoving = true;
-        sprite();
+    }
+
+    private void backToStart() {
+        List<Point> path = bfsShortestPath(
+            getLocation(),
+            new Point(this.startingX, this.startingY),
+            this.gamePanel.tileManager.walkableTiles
+        );
+        if (path != null && !path.isEmpty()) {
+            this.moveQueue = new LinkedList<>(path);
+        }
+    }
+
+    private void doWander() {
+        long now = System.currentTimeMillis();
+        this.isMoving = true;
+
+        if (now < wanderPauseUntil) {
+            this.isMoving = false;
+            return;
+        }
+
+        if (wanderTarget == null || getLocation().equals(wanderTarget)) {
+            if (Utils.generateRandomInt(0, 10) < 2) {
+                wanderTarget = new Point(this.startingX, this.startingY);
+            } else {
+                TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
+                wanderTarget = new Point(tileLocation.worldX, tileLocation.worldY);
+            }
+
+            List<Point> path = bfsShortestPath(
+                getLocation(),
+                wanderTarget,
+                this.gamePanel.tileManager.walkableTiles
+            );
+
+            if (path != null && !path.isEmpty()) {
+                path.remove(0);
+                this.moveQueue = new LinkedList<>(path);
+            }
+            return;
+        }
+
+        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
+            Point point = this.moveQueue.peek();
+            moveEntityStep(point);
+
+            int targetX = point.x * Constants.TILE_SIZE;
+            int targetY = point.y * Constants.TILE_SIZE;
+
+            if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
+                snapToGrid(point);
+                this.moveQueue.poll();
+            }
+        }
+
+        if (this.moveQueue == null || this.moveQueue.isEmpty()) {
+            wanderTarget = null;
+            wanderPauseUntil = now + (Utils.generateRandomInt(5, 20) * 1000L); // 10–30 sec
+        }
     }
 }

@@ -1,6 +1,7 @@
 package entity;
 
 import main.KeyHandler;
+import main.Utils;
 import main.InventoryItem.InventoryItemWrapper;
 import objects.GameMap;
 import objects.SuperObject;
@@ -47,11 +48,7 @@ public class Player extends Entity {
     public final int screenY;
     public static final int DEFAULT_SPEED = 4;
 
-    // Weapons
-    public HashMap<WeaponType, Weapon> weapons = new HashMap<>();
-
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
-    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
 
@@ -83,7 +80,7 @@ public class Player extends Entity {
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
-
+        addCredits(Utils.generateRandomInt(50, 100));
         giveAllWeapons();
     }
 
@@ -120,7 +117,7 @@ public class Player extends Entity {
             if (this.keyHandler.rightPressed) {
                 this.direction = Direction.RIGHT;
             }
-            moveEntiy();            
+            moveEntity();            
         }
         collision();
         spellCheck();
@@ -145,27 +142,13 @@ public class Player extends Entity {
         this.gamePanel.eventHandler.checkEvent();
     }
 
-    public void addInventoryItem(InventoryItem item) {
-        if (item.count > 1) {
-            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
-        } else {
-            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
-        }
-        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
-    }
-
-    public void addCoins(int amount) {
-        InventoryItem item = new InventoryItem("Coins", amount, false, true);
-        addInventoryItem(item);
-    }
-
     public void removeInventoryItem(InventoryItem item) {
         if (this.inventory.containsKey(item.name)) {
             List<InventoryItem> list = this.inventory.get(item.name);
             if (item.count > 1) {
                 item.count--;
             } else {
-                list.remove(item);
+                list.remove(0);
             }
             if (list.isEmpty()) {
                 this.inventory.remove(item.name);
@@ -205,7 +188,7 @@ public class Player extends Entity {
             for (InventoryItem item : items) {
                 totalCount += item.count;
             }
-            InventoryItem firstCopy = items.get(0).copy();
+            InventoryItem firstCopy = new InventoryItem(items.get(0));
             firstCopy.count = totalCount;
             if (firstCopy.usable || firstCopy.visibility) {
                 selectableMap.put(key, firstCopy);
@@ -268,7 +251,7 @@ public class Player extends Entity {
                 totalCount += item.count;
             }
             InventoryItem first = items.get(0);
-            InventoryItem item = new InventoryItem(first);
+            InventoryItem item = first.copy();
             item.count = totalCount;
             if (item.usable || item.visibility) {
                 if (item.weapon != null) {
@@ -315,6 +298,25 @@ public class Player extends Entity {
     public void switchWeapon(WeaponType weaponType) {
         if (!this.weapons.containsKey(weaponType)) { return; }
         this.weapon = this.weapons.get(weaponType);
+    }
+
+    protected void moveEntity() {
+        if (!this.collisionOn) {
+            switch (this.direction) {
+                case UP:
+                    this.worldY -= speed;
+                    break;
+                case DOWN:
+                    this.worldY += speed;
+                    break;
+                case LEFT:
+                    this.worldX -= speed;
+                    break;
+                case RIGHT:
+                    this.worldX += speed;
+                    break;
+            }
+        }
     }
 
     private void weapon() {

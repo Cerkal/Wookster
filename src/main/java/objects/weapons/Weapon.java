@@ -12,6 +12,8 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import objects.projectiles.ArrowProjectile;
+import objects.projectiles.LaserProjectile;
 import objects.projectiles.Projectile;
 import objects.projectiles.Projectile.ProjectileType;
 
@@ -38,6 +40,9 @@ public abstract class Weapon {
     public int initilizedAmmo = 10;
     public long lastShot = 0;
     public int speed = 10;
+
+    public boolean sellable = true;
+    public int price = 10;
 
     public HashMap<WeaponType, String> iconImages = Constants.WEAPON_ICONS;
 
@@ -71,7 +76,8 @@ public abstract class Weapon {
     }
 
     public int getAmmoCount() {
-        return this.gamePanel.player.getInventoryItem(this.projectileType.name());
+        this.ammo = this.gamePanel.player.getInventoryItem(this.projectileType.name());
+        return this.ammo;
     }
 
     public void select() {
@@ -86,7 +92,7 @@ public abstract class Weapon {
         graphics2D.drawString(this.weaponType.name(), x, y);
         if (this.range) {
             y += Constants.NEW_LINE_SIZE;
-            graphics2D.drawString("Ammo: " + String.valueOf(this.ammo) + " " + this.projectileType.name(), x, y);
+            graphics2D.drawString("Ammo: " + String.valueOf(getAmmoCount()) + " " + this.projectileType.name(), x, y);
         }
         y += Constants.NEW_LINE_SIZE;
         graphics2D.drawString("Max Damage: " + String.valueOf(this.maxDamage), x, y);
@@ -97,6 +103,22 @@ public abstract class Weapon {
         inventoryWeaponWrapper.projectileType = this.projectileType;
         inventoryWeaponWrapper.weaponType = this.weaponType;
         return inventoryWeaponWrapper;
+    }
+
+    public Weapon copy() {
+        if (this.weaponType == null) return null;
+        Weapon copyWeapon = WeaponType.create(this.gamePanel, this.weaponType, this.entity);
+        copyWeapon.hold = this.hold;
+        copyWeapon.ammo = this.ammo;
+        copyWeapon.range = this.range;
+        copyWeapon.longSprite = this.longSprite;
+        copyWeapon.maxDamage = this.maxDamage;
+        copyWeapon.lastShot = this.lastShot;
+        copyWeapon.speed = this.speed;
+        copyWeapon.sellable = this.sellable;
+        copyWeapon.price = this.price;
+        copyWeapon.icon = this.icon;
+        return copyWeapon;
     }
 
     protected void setWeaponIcon() {
@@ -141,8 +163,17 @@ public abstract class Weapon {
             this.gamePanel.player.addInventoryItem(new InventoryItem(this, 1, true));
             if (this.projectileType == null) { return; }
             if (this.gamePanel.player.getInventoryItem(this.projectileType.name()) == 0) {
+                int price = 1;
+                switch (this.projectileType) {
+                    case ARROWS:
+                        price = ArrowProjectile.PRICE;
+                        break;
+                    case LASERS:
+                        price = LaserProjectile.PRICE;
+                        break;
+                }
                 this.gamePanel.player.addInventoryItem(new InventoryItem(
-                    this.projectileType.name(), this.initilizedAmmo, false, false)
+                    this.projectileType.name(), this.initilizedAmmo, false, false, true, price)
                 );
             }
         }

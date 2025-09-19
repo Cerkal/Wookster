@@ -19,7 +19,8 @@ public class FistWeapon extends MeleeWeapon {
         this.holdCountMin = 10;
         this.holdCountMax = 30;
         this.speedModifier = 3;
-        this.maxDamage = (this.holdCountMax / this.speedModifier) * MeleeProjectile.DAMAGE_MODIFIER;
+        this.sellable = false;
+        this.maxDamage = (int) (this.holdCountMax / this.speedModifier) * MeleeProjectile.DAMAGE_MODIFIER;
         addToInventory();
     }
 
@@ -28,7 +29,7 @@ public class FistWeapon extends MeleeWeapon {
         PunchProjectile punch = new PunchProjectile(
             this.gamePanel,
             entity,
-            Utils.generateRandomInt(this.holdCountMin, this.holdCountMax) / this.speedModifier
+            (int) (Utils.generateRandomInt(this.holdCountMin, this.holdCountMax) / this.speedModifier)
         );
         punch.setPosition();
         punch.dispose = this.delay / 2;

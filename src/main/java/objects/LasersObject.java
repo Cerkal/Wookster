@@ -4,11 +4,14 @@ import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import objects.projectiles.LaserProjectile;
 
 public class LasersObject extends SuperObject {
 
     static final int MIN_RANDOM_LASER_AMOUNT = 10;
     static final int MAX_RANDOM_LASER_AMOUNT = 50;
+
+    static final int PRICE = LaserProjectile.PRICE;
 
     public LasersObject(GamePanel gamePanel) {
         super(gamePanel);
@@ -31,11 +34,15 @@ public class LasersObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_AMMO_LASERS_IMAGE);
         this.collision = true;
+        this.sellable = true;
+        this.price = PRICE;
         this.inventoryItem = new InventoryItem(
             this.name,
             Utils.generateRandomInt(MIN_RANDOM_LASER_AMOUNT, MAX_RANDOM_LASER_AMOUNT), 
             false,
-            false
+            false,
+            this.sellable,
+            PRICE
         );
     }
 }

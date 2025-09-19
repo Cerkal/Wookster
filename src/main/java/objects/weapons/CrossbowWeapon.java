@@ -17,21 +17,35 @@ public class CrossbowWeapon extends Weapon {
     // In milliseconds
     static final int CROSSBOW_DELAY = 1750;
 
-    static final int HOLD_COUNT_MIN = 25;
+    static final int HOLD_COUNT_MIN = 35;
     static final int HOLD_COUNT_MAX = 100;
     static final int SPEED_MODIFIER = 3;
     static final int MAX_ARROWS = 50;
     static final int INITALIZED_ARROWS = 20;
 
+    public static final int PRICE = 20;
+
     public CrossbowWeapon(GamePanel gamePanel, Entity entity) {
         super(gamePanel, entity);
+        init();
+        addToInventory();
+    }
+
+    public CrossbowWeapon(GamePanel gamePanel, Entity entity, boolean addToInventory) {
+        super(gamePanel, entity);
+        init();
+        if (addToInventory) addToInventory();
+    }
+
+    private void init() {
         this.weaponType = WeaponType.CROSSBOW;
         this.projectileType = ProjectileType.ARROWS;
         this.sound = Constants.SOUND_ARROW;
         this.initilizedAmmo = INITALIZED_ARROWS;
         this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
         this.range = true;
-        addToInventory();
+        this.price = PRICE;
+        this.sellable = true;
     }
 
     public void shoot() {
@@ -53,6 +67,9 @@ public class CrossbowWeapon extends Weapon {
             if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > CROSSBOW_DELAY) {
                 this.speed = Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER;
                 shootArrow();
+                entity.attacking = false;
+            } else {
+                entity.attacking = true;
             }
         }
     }

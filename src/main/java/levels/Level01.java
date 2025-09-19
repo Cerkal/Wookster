@@ -36,28 +36,28 @@ public class Level01 extends LevelBase {
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 23, 12));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 38, 8));
-        this.gamePanel.npcs.add(new NPCTrooper(gamePanel, 30, 39));
+        addNPC(new NPCTrooper(gamePanel, 23, 12));
+        addNPC(new NPCTrooper(gamePanel, 38, 8));
+        addNPC(new NPCTrooper(gamePanel, 30, 39));
     }
 
     @Override
     public void setObjects() {
         this.generateRandomObjects();
 
-        this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 7));
-        this.gamePanel.objects.add(new KeyObject(this.gamePanel, 23, 40));
-        this.gamePanel.objects.add(new KeyObject(this.gamePanel, 38, 8));
+        addGameObject(new KeyObject(this.gamePanel, 23, 7));
+        addGameObject(new KeyObject(this.gamePanel, 23, 40));
+        addGameObject(new KeyObject(this.gamePanel, 38, 8));
         
-        this.gamePanel.objects.add(new SwordObject(this.gamePanel, 30, 29));
+        addGameObject(new SwordObject(this.gamePanel, 30, 29));
 
-        this.gamePanel.objects.add(new DoorObject(this.gamePanel, 10, 12));
-        this.gamePanel.objects.add(new DoorObject(this.gamePanel, 8, 27));
-        this.gamePanel.objects.add(new DoorObject(this.gamePanel, 12, 23));
+        addGameObject(new DoorObject(this.gamePanel, 10, 12));
+        addGameObject(new DoorObject(this.gamePanel, 8, 27));
+        addGameObject(new DoorObject(this.gamePanel, 12, 23));
 
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new HealthSpell()));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
-        this.gamePanel.objects.add(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
+        addGameObject(new CarryPotionObject(this.gamePanel, new HealthSpell()));
+        addGameObject(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
+        addGameObject(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
     }
 
     @Override
