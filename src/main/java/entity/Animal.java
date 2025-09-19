@@ -22,7 +22,7 @@ public class Animal extends Entity {
         this.solidAreaDefaultY = this.solidArea.y;
         this.maxHealth = 20;
         this.health = this.maxHealth;
-        this.willChase = true;
+        this.weapons = null;
         this.isFriendly = false;
         this.isFrenzy = true;
     }

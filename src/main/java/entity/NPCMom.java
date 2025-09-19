@@ -14,6 +14,7 @@ public class NPCMom extends Entity {
         this.damageSound = Constants.SOUND_HURT;
         this.entityType = EntityType.NPC;
         this.name = "Mom";
+        this.willChase = false;
         this.isFriendly = true;
         this.isNeeded = true;
         setHat(Constants.WOOKSER_MOM_HAT);

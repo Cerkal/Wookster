@@ -117,7 +117,7 @@ public class Player extends Entity {
             if (this.keyHandler.rightPressed) {
                 this.direction = Direction.RIGHT;
             }
-            moveEntiy();            
+            moveEntity();            
         }
         collision();
         spellCheck();
@@ -298,6 +298,25 @@ public class Player extends Entity {
     public void switchWeapon(WeaponType weaponType) {
         if (!this.weapons.containsKey(weaponType)) { return; }
         this.weapon = this.weapons.get(weaponType);
+    }
+
+    protected void moveEntity() {
+        if (!this.collisionOn) {
+            switch (this.direction) {
+                case UP:
+                    this.worldY -= speed;
+                    break;
+                case DOWN:
+                    this.worldY += speed;
+                    break;
+                case LEFT:
+                    this.worldX -= speed;
+                    break;
+                case RIGHT:
+                    this.worldX += speed;
+                    break;
+            }
+        }
     }
 
     private void weapon() {

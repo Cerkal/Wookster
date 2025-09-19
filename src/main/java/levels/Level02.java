@@ -22,7 +22,7 @@ public class Level02 extends LevelBase {
     public Level02(GamePanel gamePanel) {
         super(gamePanel);
         this.mapPath = Constants.WORLD_02;
-        this.playerStartLocation = new Point(13, 7);
+        this.playerStartLocation = new Point(38 , 12);
     }
 
     public void init() {

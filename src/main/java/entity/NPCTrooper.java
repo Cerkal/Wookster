@@ -17,7 +17,8 @@ public class NPCTrooper extends Entity {
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
         this.willChase = true;
-        this.weapon = new BlasterWeapon(gamePanel, this);
+        this.weapons.put(WeaponType.BLASTER, new BlasterWeapon(gamePanel, this));
+        this.primaryWeapon = new BlasterWeapon(gamePanel, this);
     }
 
     @Override
@@ -31,6 +32,16 @@ public class NPCTrooper extends Entity {
         spriteManager.setSprite(m, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_LEFT_1));
         spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_0));
         spriteManager.setSprite(m, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_1));
+
+        String b = WeaponType.BLASTER.name();
+        spriteManager.setSprite(b, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_UP_0));
+        spriteManager.setSprite(b, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_UP_1));
+        spriteManager.setSprite(b, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_DOWN_0));
+        spriteManager.setSprite(b, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_DOWN_1));
+        spriteManager.setSprite(b, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_LEFT_0));
+        spriteManager.setSprite(b, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_LEFT_1));
+        spriteManager.setSprite(b, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_0));
+        spriteManager.setSprite(b, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_1));
 
         String i = SpriteAnimation.IDEL.name();
         spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_IDEL_UP_00));

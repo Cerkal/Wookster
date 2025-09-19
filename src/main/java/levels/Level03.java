@@ -17,7 +17,6 @@ import main.InventoryItem;
 import objects.ArrowsObject;
 import objects.FoodObject;
 import objects.LasersObject;
-import objects.SuperObject;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
 import objects.weapons.SwordWeapon;
@@ -56,9 +55,10 @@ public class Level03 extends LevelBase {
                 )
             )
         );
-        addNPC(this.vendor);
+        // addNPC(this.vendor);
 
         this.trooper = new NPCTrooper(this.gamePanel, 15, 12);
+        // this.trooper.wander = true;
         addNPC(this.trooper);
 
         NPCMom mom = new NPCMom(this.gamePanel, 14, 46) {
@@ -79,7 +79,8 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         mom.setDialogue(lines);
-        addNPC(mom);
+        mom.willChase = true;
+        // addNPC(mom);
 
     }
 

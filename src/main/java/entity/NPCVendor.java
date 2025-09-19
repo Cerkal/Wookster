@@ -56,6 +56,16 @@ public class NPCVendor extends Entity {
         spriteManager.setSprite(crossbow, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_CROSSBOW_LEFT_1));
         spriteManager.setSprite(crossbow, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0));
         spriteManager.setSprite(crossbow, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1));
+
+        String fist = WeaponType.FIST.name();
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_CROSSBOW_UP_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_CROSSBOW_UP_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_CROSSBOW_DOWN_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_CROSSBOW_DOWN_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_CROSSBOW_LEFT_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_CROSSBOW_LEFT_1));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_0));
+        spriteManager.setSprite(fist, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_CROSSBOW_RIGHT_1));
         
         spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
     }
