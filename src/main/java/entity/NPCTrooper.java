@@ -9,6 +9,8 @@ import objects.weapons.Weapon.WeaponType;
 
 public class NPCTrooper extends Entity {
 
+    final static int DEFAULT_ATTACK_TIMEOUT = 20000;
+
     public NPCTrooper(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
@@ -17,6 +19,7 @@ public class NPCTrooper extends Entity {
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
         this.willChase = true;
+        this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
         this.weapons.put(WeaponType.BLASTER, new BlasterWeapon(gamePanel, this));
         this.primaryWeapon = new BlasterWeapon(gamePanel, this);
     }

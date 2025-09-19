@@ -55,7 +55,7 @@ public class Level03 extends LevelBase {
                 )
             )
         );
-        // addNPC(this.vendor);
+        addNPC(this.vendor);
 
         this.trooper = new NPCTrooper(this.gamePanel, 15, 12);
         // this.trooper.wander = true;

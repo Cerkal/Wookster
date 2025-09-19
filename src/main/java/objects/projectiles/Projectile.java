@@ -142,7 +142,7 @@ public class Projectile {
         if (entity instanceof Player) {
             adjustDamage(this.npcDamage);
         }
-        entity.takeDamage(this.damage);
+        entity.takeDamage(this.damage, this.entity);
     }
 
     public void adjustDamage(double amount) {

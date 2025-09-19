@@ -80,7 +80,7 @@ public class Player extends Entity {
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);
         addInventoryItem(gameMap.inventoryItem);
-        addCredits(Utils.generateRandomInt(10, 30));
+        addCredits(Utils.generateRandomInt(50, 100));
         giveAllWeapons();
     }
 

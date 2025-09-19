@@ -10,6 +10,8 @@ import objects.weapons.Weapon.WeaponType;
 
 public class NPCVendor extends Entity {
 
+    final static int DEFAULT_ATTACK_TIMEOUT = 10000;
+
     public NPCVendor(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
@@ -20,7 +22,8 @@ public class NPCVendor extends Entity {
         this.isFriendly = true;
         this.isNeeded = false;
         this.aggression = 75;
-        this.weapon = new CrossbowWeapon(gamePanel, this);
+        this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
+        this.primaryWeapon = new CrossbowWeapon(gamePanel, this);
         setHat(Constants.WOOKSER_BUCKET_HAT);
     }
 
