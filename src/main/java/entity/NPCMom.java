@@ -4,6 +4,7 @@ import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
+import objects.weapons.Weapon.WeaponType;
 
 public class NPCMom extends Entity {
 
@@ -37,6 +38,12 @@ public class NPCMom extends Entity {
         spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
         spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
         spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
+
+        String f = WeaponType.FIST.name();
+        spriteManager.setSprite(f, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+        spriteManager.setSprite(f, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+        spriteManager.setSprite(f, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+        spriteManager.setSprite(f, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
         
         spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
     }

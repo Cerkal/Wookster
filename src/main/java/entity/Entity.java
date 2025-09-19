@@ -201,7 +201,6 @@ public abstract class Entity {
 
     public void update() {
         if (this.isDead) { return; }
-
         collision();
         checkVisibility();
         checkFrenzy();

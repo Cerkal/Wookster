@@ -58,7 +58,6 @@ public class Level03 extends LevelBase {
         addNPC(this.vendor);
 
         this.trooper = new NPCTrooper(this.gamePanel, 15, 12);
-        // this.trooper.wander = true;
         addNPC(this.trooper);
 
         NPCMom mom = new NPCMom(this.gamePanel, 14, 46) {
