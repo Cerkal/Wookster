@@ -38,22 +38,12 @@ public class Level03 extends LevelBase {
         super.init();
 
         List<Point> areaTest = List.of(
-            new Point(25, 25),
-            new Point(28, 28)
+            new Point(30, 30),
+            new Point(38, 38)
         );
-        /**
-         * 15,15       35,15
-         * 15,35       35,35 
-         */
-        /**
-         * Y: 15 - 35
-         * X: 15 - 35
-         */
-        Animal animal1 = new Animal(this.gamePanel, 23, 24);
+        Animal animal1 = new Animal(this.gamePanel, 30, 30);
         animal1.areaPoints = new ArrayList<>(areaTest);
         addNPC(animal1);
-        // addNPC(new Animal(this.gamePanel, 23, 27));
-        // addNPC(new Animal(this.gamePanel, 23, 29));
 
         this.vendor = new NPCVendor(gamePanel, 25, 12);
         this.vendor.setDialogue(Dialogue.LEVEL_03_VENDOR_INTRO);
@@ -102,8 +92,25 @@ public class Level03 extends LevelBase {
         String[] villagerDialogue = {"Hey, I'm just a villager. Don't mind me."};
         villager.setDialogue(villagerDialogue);
         villager.setWander();
+        villager.setArea(
+            List.of(
+                new Point(25, 25),
+                new Point(35, 35)
+                )
+            );
         addNPC(villager);
 
+        Entity villager2 = new NPCGeneric(gamePanel, 15, 23);
+        String[] villagerDialogue2 = {"Hey, I'm also just a villager. Don't mind me."};
+        villager2.setDialogue(villagerDialogue2);
+        villager2.setWander();
+        villager2.setArea(
+            List.of(
+                new Point(15, 15),
+                new Point(25, 25)
+                )
+            );
+        addNPC(villager2);
     }
 
     @Override

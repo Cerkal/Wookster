@@ -45,5 +45,7 @@ public class NPCGeneric extends Entity {
         spriteManager.setSprite(f, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_1));
         spriteManager.setSprite(f, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
         spriteManager.setSprite(f, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_1));
+
+        spriteManager.setSprite(SpriteAnimation.DEAD.name(), new Sprite(null, Constants.PLAYER_IMAGE_DEAD));
     }
 }

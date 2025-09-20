@@ -98,6 +98,7 @@ public abstract class Entity {
 
     // Wander behavior
     public boolean wander = false;
+    public long wanderTimer;
 
     // Entity Values
     public EntityType entityType;
@@ -236,12 +237,13 @@ public abstract class Entity {
 
     private void checkWander() {
         if (isMoveQueueEmpty()) {
-            this.speed = setDefaultSpeed() / 2;
+            int defaultValue = setDefaultSpeed();
+            this.speed = (int) (defaultValue *= .5);
             startFrenzy(getFrenzyLocation());
         }
     }
 
-     public void setWander() {
+    public void setWander() {
         this.isFrenzy = true;
         this.movable = true;
         this.moveStatus = MoveStatus.WANDER;
@@ -263,6 +265,10 @@ public abstract class Entity {
         queueChase();
     }
 
+    public void setArea(List<Point> points) {
+        this.areaPoints = points;
+    }
+
     private void checkVisibility() {
         if (this.movable == false) { return; }
         this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
@@ -270,7 +276,7 @@ public abstract class Entity {
             setFollow();
             return;
         }
-        if ((this.canSeePlayer || this.isAlerted) && !this.isFrenzy && !this.isFriendly) {
+        if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
             this.isAlerted = true;
             if (this.moveStatus == MoveStatus.WANDER) {
                 this.speed = this.defaultSpeed;
@@ -292,6 +298,9 @@ public abstract class Entity {
     private int setDefaultSpeed() {
         if (this.defaultSpeed == 0) this.defaultSpeed = this.speed;
         this.speed = this.defaultSpeed;
+        // if (this.moveStatus == MoveStatus.WANDER) {
+        //     this.moveQueue.clear();
+        // }
         return this.speed;
     }
 
@@ -306,16 +315,6 @@ public abstract class Entity {
             getPath(path);
         }
     }
-
-    // private int setDefaultSpeed() {
-    //     if (this.moveStatus == MoveStatus.WANDER) {
-    //         this.speed = this.defaultSpeed;
-    //         this.moveQueue.clear();
-    //     }
-    //     this.startAttackTime = System.currentTimeMillis();
-    //     actionTimeout();
-    //     setChase();
-    // }
 
     private void handleMovement() {
         if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
