@@ -35,7 +35,7 @@ public class Level02 extends LevelBase {
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {
             @Override
             public void postDialogAction() {
-                this.willChase = true;
+                setFollow();
                 Level02 level = (Level02) gamePanel.levelManager.getCurrentLevel();
                 level.signObject.removeObject();
             }

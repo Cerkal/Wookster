@@ -15,7 +15,10 @@ import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Utils;
 import objects.ArrowsObject;
+import objects.CarryPotionObject;
+import objects.ContainerObject;
 import objects.FoodObject;
 import objects.LasersObject;
 import objects.weapons.BlasterWeapon;
@@ -98,10 +101,11 @@ public class Level03 extends LevelBase {
                 new Point(35, 35)
                 )
             );
+        villager.setHat(Constants.WOOKSER_BALLA_HAT);
         addNPC(villager);
 
         Entity villager2 = new NPCGeneric(gamePanel, 15, 23);
-        String[] villagerDialogue2 = {"Hey, I'm also just a villager. Don't mind me."};
+        String[] villagerDialogue2 = {"Have you heard about the town run by ghouls?", "Just kidding."};
         villager2.setDialogue(villagerDialogue2);
         villager2.setWander();
         villager2.setArea(
@@ -110,6 +114,7 @@ public class Level03 extends LevelBase {
                 new Point(25, 25)
                 )
             );
+        villager2.setHat(Constants.WOOKSER_TOP_HAT);
         addNPC(villager2);
     }
 
@@ -117,7 +122,19 @@ public class Level03 extends LevelBase {
     public void setObjects() {}
 
     @Override
-    public void setStaticObjects() {}
+    public void setStaticObjects() {
+        ContainerObject chest = new ContainerObject(this.gamePanel, 13, 22);
+        chest.setInventoryItems(new ArrayList<>(
+                List.of(
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true)
+
+                )
+            )
+        );
+        addGameObject(chest);
+    }
 
     @Override
     public void update() {}

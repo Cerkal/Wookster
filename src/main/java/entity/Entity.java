@@ -63,7 +63,7 @@ public abstract class Entity {
     protected BufferedImage hat;
     public boolean isMoving = false;
     protected Sprite sprite;
-    SpriteManager spriteManager = new SpriteManager();
+    protected SpriteManager spriteManager = new SpriteManager();
 
     // Collision
     public Rectangle solidArea = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
@@ -298,9 +298,6 @@ public abstract class Entity {
     private int setDefaultSpeed() {
         if (this.defaultSpeed == 0) this.defaultSpeed = this.speed;
         this.speed = this.defaultSpeed;
-        // if (this.moveStatus == MoveStatus.WANDER) {
-        //     this.moveQueue.clear();
-        // }
         return this.speed;
     }
 
@@ -395,6 +392,7 @@ public abstract class Entity {
             this.moveStatus = initalMoveStatus;
             this.warned = false;
             this.isMoving = true;
+            System.out.println("--------------------");
             System.out.println("ENTITY " + this.name);
             System.out.println("--------------------");
             System.out.println("alerted " + this.isAlerted);
@@ -403,7 +401,7 @@ public abstract class Entity {
             System.out.println("isFriendly " + this.isFriendly);
             System.out.println("startAttackTime " + this.startAttackTime);
             System.out.println("moveStatus " + this.moveStatus);
-            System.out.println("Going back from frenzy.");
+            System.out.println("Going back from action timeout.");
         }).start();
     }
 
@@ -656,12 +654,19 @@ public abstract class Entity {
     }
 
     public void addCredits(int amount) {
-        if (this.inventory.containsKey(Constants.CREDITS)) {
-            this.inventory.get(Constants.CREDITS).get(0).count += amount;
-        } else {
-            InventoryItem item = new InventoryItem(Constants.CREDITS, amount, false, true, false, 1);
+        // if (this.inventory.containsKey(Constants.CREDITS)) {
+            // this.inventory.get(Constants.CREDITS).get(0).count += amount;
+        // } else {
+            InventoryItem item = new InventoryItem(
+                Constants.CREDITS,
+                amount,
+                false,
+                true,
+                false,
+                1
+            );
             addInventoryItem(item);
-        }
+        // }
     }
 
     public void removeCredits(int amount) {
@@ -688,7 +693,11 @@ public abstract class Entity {
         }
 
         if ((collidedWithEntity || collidedWithPlayer)) {
-            if (collidedWithPlayer && (this.isVendor || this.moveStatus == MoveStatus.FOLLOW)) { return; }
+            if (
+                collidedWithPlayer &&
+                (this.isVendor || this.moveStatus == MoveStatus.FOLLOW || this.moveStatus == MoveStatus.CHASING)
+            ){ return; }
+
             collisionCounter++;
             if (collisionCounter > this.speed * 2) {
                 if (collidedWithEntity) {

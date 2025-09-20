@@ -12,6 +12,8 @@ import java.util.Set;
 import entity.Animal;
 import entity.Entity;
 import entity.NPCGeneric;
+import entity.SpriteManager.Sprite;
+import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
@@ -36,6 +38,7 @@ public class Level00 extends LevelBase {
     SuperObject potionDoor;
 
     Entity oldmanPigs;
+    Entity oldmanPigsFinished;
     Entity oldmanInventory;
     Entity oldmanDad;
 
@@ -52,7 +55,7 @@ public class Level00 extends LevelBase {
     public void init() {
         super.init();
 
-        this.gamePanel.ui.displayDialog("Move using [w] [s] [a] [d] keys. Press " + KeyHandler.SPACEBAR + " to talk.");
+        this.gamePanel.ui.displayDialog("Move using [w] [a] [s] [d] keys. Press " + KeyHandler.SPACEBAR + " to talk.");
         this.pigs = Arrays.asList(
             new Animal(gamePanel, 20, 8),
             new Animal(gamePanel, 20, 12),
@@ -74,6 +77,15 @@ public class Level00 extends LevelBase {
                     )
                 );
             }
+
+            @Override
+            public void loadSprites() {
+                String i = SpriteAnimation.IDEL.name();
+                spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.OLD_MAN_UP_0));
+                spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.OLD_MAN_DOWN_0));
+                spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.OLD_MAN_LEFT_0));
+                spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.OLD_MAN_RIGHT_0));
+            }
         };
         this.oldmanPigs.invincable = true;
         this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
@@ -85,6 +97,15 @@ public class Level00 extends LevelBase {
                 this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.MOM));
                 this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
                 this.gamePanel.levelManager.loadNextLevel();
+            }
+
+            @Override
+            public void loadSprites() {
+                String i = SpriteAnimation.IDEL.name();
+                spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.OLD_MAN_UP_0));
+                spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.OLD_MAN_DOWN_0));
+                spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.OLD_MAN_LEFT_0));
+                spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.OLD_MAN_RIGHT_0));
             }
         };
         this.oldmanDad.invincable = true;
@@ -147,34 +168,45 @@ public class Level00 extends LevelBase {
                 }
             }
             this.gamePanel.npcs.remove(this.oldmanPigs);
-            this.oldmanPigs = new NPCGeneric(gamePanel, 22, 15) {
-                @Override
-                public void postDialogAction() {
-                    Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
-                    if (quest != null) {
-                        quest.completeQuest(this.gamePanel);
-                        this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.INVENTORY));
+            if (this.oldmanPigsFinished == null) {
+                this.oldmanPigsFinished = new NPCGeneric(gamePanel, 22, 15) {
+                    @Override
+                    public void postDialogAction() {
+                        Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
+                        if (quest != null) {
+                            quest.completeQuest(this.gamePanel);
+                            this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.INVENTORY));
+                        }
                     }
+
+                    @Override
+                    public void loadSprites() {
+                        String i = SpriteAnimation.IDEL.name();
+                        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.OLD_MAN_UP_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.OLD_MAN_DOWN_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.OLD_MAN_LEFT_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.OLD_MAN_RIGHT_0));
+                    }
+                };
+                Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
+                String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
+                quest.setResolution(ResolutionLevel.POSTIVE);
+                if (deadCount > 0) {
+                    lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
+                    quest.setResolution(ResolutionLevel.NEUTRAL);
                 }
-            };
-            Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
-            String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
-            quest.setResolution(ResolutionLevel.POSTIVE);
-            if (deadCount > 0) {
-                lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
-                quest.setResolution(ResolutionLevel.NEUTRAL);
+                if (pigs.size() == deadCount) {
+                    lines = Dialogue.TUTORIAL_PIGS_NEGATIVE;
+                    quest.setResolution(ResolutionLevel.NEGATIVE);
+                }
+                this.oldmanPigsFinished.invincable = true;
+                this.oldmanPigsFinished.setDialogue(lines);
+                addNPC(this.oldmanPigsFinished);
             }
-            if (pigs.size() == deadCount) {
-                lines = Dialogue.TUTORIAL_PIGS_NEGATIVE;
-                quest.setResolution(ResolutionLevel.NEGATIVE);
-            }
-            this.oldmanPigs.invincable = true;
-            this.oldmanPigs.setDialogue(lines);
-            addNPC(this.oldmanPigs);
         }
 
         if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
-            this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_END);
+            this.oldmanPigsFinished.setDialogue(Dialogue.TUTORIAL_PIGS_END);
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {
@@ -195,6 +227,15 @@ public class Level00 extends LevelBase {
                                 inventoryQuest.setProgress(25);
                             }
                         }
+                    }
+
+                    @Override
+                    public void loadSprites() {
+                        String i = SpriteAnimation.IDEL.name();
+                        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.OLD_MAN_UP_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.OLD_MAN_DOWN_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.OLD_MAN_LEFT_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.OLD_MAN_RIGHT_0));
                     }
                 };
                 this.oldmanInventory.invincable = true;
@@ -222,6 +263,15 @@ public class Level00 extends LevelBase {
                                 inventoryQuest.completeQuest(this.gamePanel);
                             }
                         }
+                    }
+
+                    @Override
+                    public void loadSprites() {
+                        String i = SpriteAnimation.IDEL.name();
+                        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.PLAYER_IMAGE_UP_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.PLAYER_IMAGE_DOWN_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.PLAYER_IMAGE_LEFT_0));
+                        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.PLAYER_IMAGE_RIGHT_0));
                     }
                 };
                 this.oldmanInventory.invincable = true;

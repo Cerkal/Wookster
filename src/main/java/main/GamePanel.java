@@ -82,7 +82,7 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
-    static final int NEW_GAME_LEVEL_INDEX = 3;
+    static final int NEW_GAME_LEVEL_INDEX = 0;
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
@@ -169,7 +169,9 @@ public class GamePanel extends Canvas implements Runnable {
             double elapsed = now - lastTime; // elapsed nanoseconds since last loop
             delta += elapsed / NS_PER_UPDATE;
             lastTime = now;
-            this.gameTime += (long) elapsed;
+            if (this.gameState == GameState.PLAY) {
+                this.gameTime += (long) elapsed;
+            }
 
             long updateStart, updateTime, renderStart, renderTime;
 

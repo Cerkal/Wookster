@@ -104,6 +104,7 @@ public class Constants {
     public static final String OBJECT_DOOR_IMAGE = "/objects/door.png";
     public static final String OBJECT_KEY_IMAGE = "/objects/key.png";
     public static final String OBJECT_CHEST_IMAGE = "/objects/chest.png";
+    public static final String OBJECT_CHEST_OPEN_IMAGE = "/objects/chest_opened.png";
     public static final String OBJECT_GREEN_POTION_IMAGE = "/objects/potion_green.png";
     public static final String OBJECT_PURPLE_POTION_IMAGE = "/objects/potion_purple.png";
     public static final String OBJECT_SIGN_IMAGE = "/objects/sign.png";
@@ -202,6 +203,10 @@ public class Constants {
     public static final String WOOKSER_MOM_HAT = "/player/mom_hat.png";
     public static final String WOOKSER_BUCKET_HAT = "/player/bucket_hat.png";
     public static final String WOOKSER_DAD_HAT = "/player/buret.png";
+    public static final String WOOKSER_BALLA_HAT = "/player/balla_hat.png";
+    public static final String WOOKSER_TINY_HAT = "/player/tiny_hat.png";
+    public static final String WOOKSER_GOGGLE_HAT = "/player/goggles_hat.png";
+    public static final String WOOKSER_TOP_HAT = "/player/top_hat.png";
 
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";

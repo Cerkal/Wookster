@@ -54,6 +54,7 @@ public class SuperObject {
     public boolean carriable;
     public boolean sellable;
     public int price = 3;
+    boolean activated = false;
 
     public HashMap<ObjectType, String> objectIcons = Constants.OBJECT_ICONS;
     protected BufferedImage inventoryIcon;
@@ -181,6 +182,10 @@ public class SuperObject {
         return objectWrapper;
     }
 
+    public boolean isActive() {
+        return this.activated;
+    }
+
     public int getRawX() {
         return this.worldX / Constants.TILE_SIZE;
     }
@@ -191,7 +196,7 @@ public class SuperObject {
 
     public enum ObjectType {
         ARROWS      ((gamePanel, object) -> new ArrowsObject(gamePanel, object.worldX, object.worldY)),
-        CHEST       ((gamePanel, object) -> new ChestObject(gamePanel, object.worldX, object.worldY)),
+        CHEST       ((gamePanel, object) -> new ContainerObject(gamePanel, object.worldX, object.worldY)),
         DOOR        ((gamePanel, object) -> new DoorObject(gamePanel, object.worldX, object.worldY)),
         LEVEL_DOOR  ((gamePanel, object) -> new LevelDoorObject(gamePanel, object.worldX, object.worldY)),
         KEY         ((gamePanel, object) -> new KeyObject(gamePanel, object.worldX, object.worldY)),

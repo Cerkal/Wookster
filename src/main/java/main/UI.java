@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import entity.Entity;
 import main.GamePanel.GameState;
 import main.Screen.Option;
 import main.Screen.Screen;
 import main.Screen.SettingSlider;
 import main.Screen.Toggle;
 import main.ScreenSelector.SelectionItem;
+import objects.ContainerObject;
 import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
@@ -381,13 +381,23 @@ public class UI {
     }
 
     public void drawVendor(Graphics2D graphics2D) {
-        if (this.gamePanel.gameState == GameState.VENDOR &&
-            this.gamePanel.player.collisionEntity.isVendor()
-        ){
-            Entity vendor = this.gamePanel.player.collisionEntity;
-            if (this.vendorScreen == null) {
-                this.vendorScreen = new VendorScreen(gamePanel, vendor);
+        if (this.gamePanel.gameState == GameState.VENDOR) {
+            List<InventoryItem> inventoryItems = new ArrayList<>();
+            if (this.gamePanel.player.collisionEntity != null && this.gamePanel.player.collisionEntity.isVendor()) {
+                inventoryItems = this.gamePanel.player.collisionEntity.getInventoryItemsForSale();
             }
+            if (
+                this.gamePanel.player.collisionObject != null &&
+                this.gamePanel.player.collisionObject instanceof ContainerObject &&
+                this.gamePanel.player.collisionObject.isActive()
+            ){
+                ContainerObject chest = (ContainerObject) this.gamePanel.player.collisionObject;
+                inventoryItems = chest.getInventoryItems();
+            }
+            if (this.vendorScreen == null) {
+                this.vendorScreen = new VendorScreen(gamePanel, inventoryItems, this.gamePanel.player.collisionEntity);
+            }
+            this.vendorScreen.setInventoryItems(inventoryItems, this.gamePanel.player.collisionEntity);
             this.vendorScreen.drawScreens(graphics2D);
         }
     }

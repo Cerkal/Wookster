@@ -9,6 +9,7 @@ import java.util.List;
 import entity.Entity;
 import main.ScreenSelector.SelectionItem;
 import main.ScreenSelector.SelectionResult;
+import objects.ContainerObject;
 
 public class VendorScreen {
 
@@ -18,27 +19,30 @@ public class VendorScreen {
 
     int selectedIndex;
 
+    boolean isContainer;
+
     ScreenSelector screenSelector;
     
-    public VendorScreen(GamePanel gamePanel, Entity entity) {
+    public VendorScreen(GamePanel gamePanel, List<InventoryItem> inventory, Entity entity) {
         this.gamePanel = gamePanel;
+
+        this.screenSelector = gamePanel.ui.screenSelector;
+        this.vendorInventory = new ArrayList<>(inventory);
         this.entity = entity;
-
-        screenSelector = gamePanel.ui.screenSelector;
-
-        screenSelector.clearScreens();
-        screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
-        screenSelector.addScreen(getSelectionItems(entity.getInventoryItemsForSale()));
-        screenSelector.setScreen(0);
+        if (entity == null) { this.isContainer = true; }
+        this.screenSelector.clearScreens();
+        this.screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
+        this.screenSelector.addScreen(getSelectionItems(this.vendorInventory));
+        this.screenSelector.setScreen(0);
     }
 
     public void drawScreens(Graphics2D graphics2D) {
         drawBoxes(graphics2D);
 
-        screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
-        screenSelector.set(1, getSelectionItems(entity.getInventoryItemsForSale()));
+        this.screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
+        this.screenSelector.set(1, getSelectionItems(this.vendorInventory));
 
-        int active = screenSelector.getScreenIndex();
+        int active = this.screenSelector.getScreenIndex();
         int passive = active == 0 ? 1 : 0;
 
         int leftSideX = Constants.TILE_SIZE * 2 - 10;
@@ -49,7 +53,9 @@ public class VendorScreen {
         graphics2D.drawString(String.valueOf(this.gamePanel.player.getCredits()), Constants.SCREEN_WIDTH / 2 - side, Constants.TILE_SIZE * 2);
 
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString(String.valueOf(entity.getCredits()), Constants.SCREEN_WIDTH - side, Constants.TILE_SIZE * 2);
+        if (entity != null) {
+            graphics2D.drawString(String.valueOf(entity.getCredits()), Constants.SCREEN_WIDTH - side, Constants.TILE_SIZE * 2);
+        }
 
         int rightSideX = Constants.SCREEN_WIDTH / 2 + (Constants.TILE_SIZE * 2) - 10;
         int rightSideY = Constants.TILE_SIZE * 4;
@@ -79,25 +85,45 @@ public class VendorScreen {
 
             if (selectedItem.selectedScreenIndex == Constants.VENDOR_PLAYER_INDEX) {
                 // Selling to vendor
-                if (entity.getCredits() - inventoryItem.price < 0) { return; }
-                if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                    InventoryItem singleItem = new InventoryItem(inventoryItem);
-                    singleItem.count = 1;
-                    singleItem.sellable = true;
-                    this.gamePanel.player.addCredits(inventoryItem.price);
-                    entity.removeCredits(inventoryItem.price);
-                    entity.addInventoryItemFromVendor(singleItem);
+                if (!this.isContainer && entity != null && entity.getCredits() - inventoryItem.price < 0) { return; }
+                if (this.isContainer) {
+                    ContainerObject chest = (ContainerObject) this.gamePanel.player.collisionObject;
+                    if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                        InventoryItem singleItem = new InventoryItem(inventoryItem);
+                        singleItem.count = 1;
+                        singleItem.sellable = true;
+                        chest.addInventoryItemFromVendor(singleItem);
+                    }
+                } else {
+                    if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                        InventoryItem singleItem = new InventoryItem(inventoryItem);
+                        singleItem.count = 1;
+                        singleItem.sellable = true;
+                        this.gamePanel.player.addCredits(inventoryItem.price);
+                        entity.removeCredits(inventoryItem.price);
+                        entity.addInventoryItemFromVendor(singleItem);
+                    }
                 }
             } else {
                 // Buying from vendor
-                if (this.gamePanel.player.getCredits() - inventoryItem.price < 0) { return; }
-                if (entity.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                    InventoryItem singleItem = new InventoryItem(inventoryItem);
-                    singleItem.count = 1;
-                    singleItem.sellable = true;
-                    entity.addCredits(inventoryItem.price);
-                    this.gamePanel.player.removeCredits(inventoryItem.price);
-                    this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                if (!this.isContainer && this.gamePanel.player.getCredits() - inventoryItem.price < 0) { return; }
+                if (this.isContainer) {
+                    ContainerObject chest = (ContainerObject) this.gamePanel.player.collisionObject;
+                    if (chest.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                        InventoryItem singleItem = new InventoryItem(inventoryItem);
+                        singleItem.count = 1;
+                        singleItem.sellable = true;
+                        this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                    }
+                } else {
+                    if (entity != null && entity.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
+                        InventoryItem singleItem = new InventoryItem(inventoryItem);
+                        singleItem.count = 1;
+                        singleItem.sellable = true;
+                        entity.addCredits(inventoryItem.price);
+                        this.gamePanel.player.removeCredits(inventoryItem.price);
+                        this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                    }
                 }
             }
             screenSelector.clearSelectionLeaveHighlight();
@@ -128,7 +154,8 @@ public class VendorScreen {
         graphics2D.fillRect(halfScreen + Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
 
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString(entity.name.toUpperCase(), halfScreen + Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 2);
+        String name = entity == null ? "CHEST" : entity.name.toUpperCase();
+        graphics2D.drawString(name, halfScreen + Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 2);
     }
 
     private List<SelectionItem> getSelectionItems(List<InventoryItem> itemList) {
@@ -143,5 +170,11 @@ public class VendorScreen {
             inventory.add(selectionItem);
         }
         return inventory;
+    }
+
+    public void setInventoryItems(List<InventoryItem> inventoryItems, Entity entity) {
+        this.entity = entity;
+        this.isContainer = entity == null;
+        this.vendorInventory = inventoryItems;
     }
 }

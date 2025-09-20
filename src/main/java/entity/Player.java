@@ -3,6 +3,7 @@ package entity;
 import main.KeyHandler;
 import main.Utils;
 import main.InventoryItem.InventoryItemWrapper;
+import objects.ContainerObject;
 import objects.GameMap;
 import objects.SuperObject;
 import objects.weapons.Weapon;
@@ -51,6 +52,7 @@ public class Player extends Entity {
     public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     public Entity entityInDialogue;
     public Entity collisionEntity;
+    public SuperObject collisionObject;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
@@ -300,6 +302,13 @@ public class Player extends Entity {
         this.weapon = this.weapons.get(weaponType);
     }
 
+    public void closeContainer() {
+        if (this.collisionObject != null && this.collisionObject instanceof ContainerObject) {
+            ContainerObject chest = (ContainerObject) this.collisionObject;
+            chest.close();
+        }
+    }
+
     protected void moveEntity() {
         if (!this.collisionOn) {
             switch (this.direction) {
@@ -362,9 +371,9 @@ public class Player extends Entity {
     }
 
     private void obectCollision() {
-        SuperObject collisionObject = gamePanel.collision.objectCollision(this, true);
-        if (collisionObject == null) return;
-        collisionObject.activateObject();
+        this.collisionObject = gamePanel.collision.objectCollision(this, true);
+        if (this.collisionObject == null) return;
+        this.collisionObject.activateObject();
     }
 
     private void entityCollision() {
