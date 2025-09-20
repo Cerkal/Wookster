@@ -309,6 +309,14 @@ public class Player extends Entity {
         }
     }
 
+    public String getContainerName() {
+        String name = "Container";
+        if (this.collisionObject != null && this.collisionObject instanceof ContainerObject) {
+            name = this.collisionObject.name;
+        }
+        return name;
+    }
+
     protected void moveEntity() {
         if (!this.collisionOn) {
             switch (this.direction) {

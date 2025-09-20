@@ -196,20 +196,20 @@ public class GamePanel extends Canvas implements Runnable {
 
             frames++;
 
-            // Maintain FPS by sleeping the thread
-            long frameTime = System.nanoTime() - now;
-            long sleepTime = (long) NS_PER_UPDATE - frameTime;
-            if (sleepTime > 0) {
-                try {
-                    Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
-                } catch (InterruptedException ignored) {}
-            }
-
             if (System.currentTimeMillis() - timer >= 1000) {
                 this.fps = frames;
                 frames = 0;
                 timer += 1000;
             }
+
+            // Maintain FPS by sleeping the thread
+            // long frameTime = System.nanoTime() - now;
+            // long sleepTime = (long) NS_PER_UPDATE - frameTime;
+            // if (sleepTime > 0) {
+            //     try {
+            //         Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
+            //     } catch (InterruptedException ignored) {}
+            // }
         }
     }
 

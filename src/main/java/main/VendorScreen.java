@@ -154,7 +154,7 @@ public class VendorScreen {
         graphics2D.fillRect(halfScreen + Constants.TILE_SIZE, Constants.TILE_SIZE, width, height);
 
         graphics2D.setColor(Color.WHITE);
-        String name = entity == null ? "CHEST" : entity.name.toUpperCase();
+        String name = entity == null ?  this.gamePanel.player.getContainerName().toUpperCase() : entity.name.toUpperCase();
         graphics2D.drawString(name, halfScreen + Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 2);
     }
 

@@ -278,23 +278,25 @@ public class ScreenSelector implements KeyListener {
     }
 
     private void up(List<SelectionItem> currentItems) {
-        commandNumber--;
-        if (commandNumber < 0) commandNumber = currentItems.size() - 1;
+        this.commandNumber--;
+        if (this.commandNumber < 0) this.commandNumber = currentItems.size() - 1;
     }
 
     private void down(List<SelectionItem> currentItems) {
-        commandNumber++;
-        if (commandNumber >= currentItems.size()) commandNumber = 0;
+        this.commandNumber++;
+        if (this.commandNumber >= currentItems.size()) this.commandNumber = 0;
     }
 
     private void left(List<SelectionItem> currentItems) {
-        screenIndex = (screenIndex - 1 + screens.size()) % screens.size();
-        commandNumber = 0;
+        this.screenIndex = (this.screenIndex - 1 + this.screens.size()) % this.screens.size();
+        this.commandNumber = 0;
+        this.result.selected = false;
     }
 
     private void right(List<SelectionItem> currentItems) {
-        screenIndex = (screenIndex + 1) % screens.size();
-        commandNumber = 0;
+        this.screenIndex = (this.screenIndex + 1) % this.screens.size();
+        this.commandNumber = 0;
+        this.result.selected = false;
     }
 
     private void select() {

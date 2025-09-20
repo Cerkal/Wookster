@@ -9,6 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
+import entity.Entity.MoveStatus;
 import main.Constants;
 import main.Utils;
 import main.GamePanel.GameState;
@@ -21,6 +22,8 @@ public class SpriteManager {
         DEAD,
         EFFECT;
     }
+
+    String lastMessage = "";
 
     public static class Sprite {
         public int frames;
@@ -94,6 +97,7 @@ public class SpriteManager {
         }
         List<Sprite> sprites = this.spriteMap.get(type).get(entity.direction);
         long gameTime = entity.gamePanel.gameTime;
+
         return getSpriteFromList(sprites, gameTime);
     }
 

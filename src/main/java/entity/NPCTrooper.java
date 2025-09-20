@@ -23,6 +23,7 @@ public class NPCTrooper extends Entity {
         this.weapons.put(WeaponType.BLASTER, new BlasterWeapon(gamePanel, this));
         this.isFrenzy = false;
         this.primaryWeapon = new BlasterWeapon(gamePanel, this);
+        this.aggression = 50;
     }
 
     @Override

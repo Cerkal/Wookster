@@ -36,11 +36,13 @@ public class Level02 extends LevelBase {
             @Override
             public void postDialogAction() {
                 setFollow();
+                System.out.println("Following...");
                 Level02 level = (Level02) gamePanel.levelManager.getCurrentLevel();
                 level.signObject.removeObject();
             }
         };
         mom.setDialogue(Dialogue.LEVEL_01_MOM);
+        mom.pushback = false;
         addNPC(mom);
 
         this.gamePanel.eventHandler.setRandomDamageTile(5);

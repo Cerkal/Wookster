@@ -55,7 +55,7 @@ public abstract class Entity {
     public Direction direction;
     Direction startingDirection;
     public MoveStatus moveStatus = MoveStatus.IDEL;
-    MoveStatus defaulMoveStatus = MoveStatus.IDEL;
+    MoveStatus defaultMoveStatus = MoveStatus.IDEL;
 
     // Sprite
     protected int spriteCounter = 0;
@@ -79,6 +79,7 @@ public abstract class Entity {
     int collisionCounter;
     public List<Point> areaPoints = new ArrayList<>();
     final int DEFAULT_AREA_RADIUS = 10;
+    public boolean pushback = true;
 
     // Alert
     public boolean isFriendly;
@@ -136,7 +137,7 @@ public abstract class Entity {
         this.solidAreaDefaultY = this.solidArea.y;
         this.attackingTimeout = DEFAULT_TIMEOUT;
         this.moveStatus = MoveStatus.IDEL;
-        this.defaulMoveStatus = this.moveStatus;
+        this.defaultMoveStatus = this.moveStatus;
         this.weapons.put(WeaponType.FIST, new FistWeapon(this.gamePanel, this));
         this.loadSprites();
     }
@@ -216,6 +217,10 @@ public abstract class Entity {
                 break;
             case MoveStatus.CHASING:
                 checkLineOfFire();
+                checkChase();
+                break;
+            case MoveStatus.FOLLOW:
+                checkFollow();
                 break;
             case MoveStatus.WANDER:
                 checkWander();
@@ -243,6 +248,10 @@ public abstract class Entity {
         }
     }
 
+    private void checkFollow() {
+        if (this.moveQueue == null || this.moveQueue.isEmpty()) queueChase();
+    }
+
     public void setWander() {
         this.isFrenzy = true;
         this.movable = true;
@@ -254,15 +263,34 @@ public abstract class Entity {
         queueChase();
     }
 
+    private void checkChase() {
+        if (this.attackingTarget != null && this.attackingTarget.isDead) {
+            this.moveStatus = defaultMoveStatus;
+        }
+    }
+
     public void setFollow() {
         this.isAlerted = true;
         this.willChase = true;
-        if (this.moveStatus == MoveStatus.WANDER) {
-            this.speed = this.defaultSpeed;
-            this.moveQueue.clear();
-        }
+        this.pushback = true;
+        setDefaultSpeed();
         this.moveStatus = MoveStatus.FOLLOW;
-        queueChase();
+    }
+
+    public void setMoveStatus(MoveStatus moveStatus) {
+        switch (moveStatus) {
+            case FOLLOW:
+                setFollow();
+                break;
+            case WANDER:
+                setWander();
+                break;
+            case IDEL:
+                break;
+            default:
+                break;
+        }
+        this.defaultMoveStatus = moveStatus;
     }
 
     public void setArea(List<Point> points) {
@@ -272,17 +300,15 @@ public abstract class Entity {
     private void checkVisibility() {
         if (this.movable == false) { return; }
         this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
-        if (this.moveStatus == MoveStatus.FOLLOW) {
-            setFollow();
-            return;
-        }
+        
         if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
             this.isAlerted = true;
             if (this.moveStatus == MoveStatus.WANDER) {
                 this.speed = this.defaultSpeed;
-                this.moveQueue.clear();
+                if (this.moveQueue != null) this.moveQueue.clear();
             }
             this.startAttackTime = System.currentTimeMillis();
+            this.attackingTarget = this.gamePanel.player;
             actionTimeout();
             setChase();
         }
@@ -341,7 +367,7 @@ public abstract class Entity {
     }
 
     private boolean isBackAtStart() {
-        if (this.moveQueue.isEmpty() && this.defaulMoveStatus == MoveStatus.IDEL) {
+        if (this.moveQueue.isEmpty() && this.defaultMoveStatus == MoveStatus.IDEL) {
             int x = this.getLocation().x;
             int y = this.getLocation().y;
             if (
@@ -353,8 +379,6 @@ public abstract class Entity {
                 this.attacking = false;
             }
             return true;
-        } else {
-            this.isMoving = true;
         }
         return false;
     }
@@ -401,7 +425,7 @@ public abstract class Entity {
             System.out.println("isFriendly " + this.isFriendly);
             System.out.println("startAttackTime " + this.startAttackTime);
             System.out.println("moveStatus " + this.moveStatus);
-            System.out.println("Going back from action timeout.");
+            System.out.println("actionTimeout: " + this.name + " is going back to " + initalMoveStatus.name() + ".");
         }).start();
     }
 
@@ -469,20 +493,21 @@ public abstract class Entity {
             (attacker instanceof Player && this.warned) ||
             (attacker instanceof Player == false)
         ){
-            actionTimeout();
-
-            this.isFriendly = false;
-            this.movable = true;
-            this.willChase = true;
-            this.startAttackTime = System.currentTimeMillis();
+            if (this.aggression >= 50) {
+                this.attackingTarget = attacker;
+                actionTimeout();
+                this.isFriendly = false;
+                this.movable = true;
+                this.willChase = true;
+                this.startAttackTime = System.currentTimeMillis();
+                setChase();
+            } else {
+                this.attackingTarget = null;
+                setDefaultSpeed();
+                startFrenzy(getFrenzyLocation());
+            }
         }
-        if (this.aggression > 50) {
-            this.attackingTarget = attacker;
-            setChase();
-        } else {
-            this.attackingTarget = null;
-            startFrenzy(getFrenzyLocation());
-        }
+        
         if (this.isFriendly && attacker instanceof Player) {
             if (this.warningMessage == null) { this.warningMessage = Dialogue.DEFAULT_WARNING[0]; }
             this.gamePanel.ui.displayDialog(this.warningMessage);
@@ -644,29 +669,33 @@ public abstract class Entity {
 
     public void addInventoryItem(InventoryItem item) {
         this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
+        displayInventoryMessage(item);
+    }
+
+    private void displayInventoryMessage(InventoryItem item) {
         if (!(this instanceof Player)) { return; }
         if (item.count > 1) {
             this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
         } else {
             this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
         }
-        
     }
 
     public void addCredits(int amount) {
-        // if (this.inventory.containsKey(Constants.CREDITS)) {
-            // this.inventory.get(Constants.CREDITS).get(0).count += amount;
-        // } else {
-            InventoryItem item = new InventoryItem(
-                Constants.CREDITS,
-                amount,
-                false,
-                true,
-                false,
-                1
-            );
+        InventoryItem item = new InventoryItem(
+            Constants.CREDITS,
+            amount,
+            false,
+            true,
+            false,
+            1
+        );
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count += amount;
+            displayInventoryMessage(item);
+        } else {
             addInventoryItem(item);
-        // }
+        }
     }
 
     public void removeCredits(int amount) {
@@ -694,9 +723,14 @@ public abstract class Entity {
 
         if ((collidedWithEntity || collidedWithPlayer)) {
             if (
-                collidedWithPlayer &&
-                (this.isVendor || this.moveStatus == MoveStatus.FOLLOW || this.moveStatus == MoveStatus.CHASING)
-            ){ return; }
+                !this.pushback ||
+                this.moveStatus == MoveStatus.FOLLOW ||
+                this.moveStatus == MoveStatus.CHASING ||
+                this.moveStatus == MoveStatus.IDEL
+            ){
+                this.isMoving = false;
+                return;
+            }
 
             collisionCounter++;
             if (collisionCounter > this.speed * 2) {
@@ -725,8 +759,13 @@ public abstract class Entity {
     private void getPath(List<Point> path) {
         if (path != null) {
             this.moveQueue = new LinkedList<>();
+            Point last = null;
             for (Point point : path) {
                 this.moveQueue.add(point);
+                last = point;
+            }
+            if (this.moveQueue.size() >= 1 && last != null && this.moveStatus == MoveStatus.FOLLOW) {
+                this.moveQueue.remove(last);
             }
         }
     }
@@ -771,8 +810,6 @@ public abstract class Entity {
         int dx = targetX - this.worldX;
         int dy = targetY - this.worldY;
 
-        this.isMoving = false;
-
         if (dx != 0) {
             this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
             moveEntityToTarget(targetX, this.worldY);
@@ -799,6 +836,8 @@ public abstract class Entity {
                     this.worldY -= Math.min(speed, this.worldY - targetY);
                 }
             }
+        } else {
+            this.isMoving = false;
         }
     }
 
@@ -877,8 +916,8 @@ public abstract class Entity {
         if (dx != 0 && dy != 0) {
             int ix = dx / Math.abs(dx) * -1;
             int iy = dy / Math.abs(dy) * -1;
-            for (int y = getRawY() - 1; y > 0 && y < Constants.TILE_SIZE; y += iy) {
-                for (int x = getRawX() - 1; x > 0 && x < Constants.TILE_SIZE; x += ix) {
+            for (int y = getRawY() - 1; y > 0 && y < Constants.MAX_SCREEN_ROW; y += iy) {
+                for (int x = getRawX() - 1; x > 0 && x < Constants.MAX_SCREEN_COL; x += ix) {
                     if (this.gamePanel.tileManager.walkableTiles[x][y]) {
                         points.add(new Point(x, y));
                     }
@@ -946,9 +985,6 @@ public abstract class Entity {
                 snapToGrid(nextPoint);
                 this.moveQueue.poll();
             }
-        }
-        if (this.moveQueue.isEmpty()) {
-            this.isMoving = false;
         }
     }
 
