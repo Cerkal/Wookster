@@ -25,6 +25,7 @@ public class Animal extends Entity {
         this.weapons = null;
         this.isFriendly = false;
         this.isFrenzy = true;
+        this.moveStatus = MoveStatus.FRENZY;
     }
 
     @Override

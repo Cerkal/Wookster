@@ -7,6 +7,7 @@ import java.util.List;
 
 import entity.Animal;
 import entity.Entity;
+import entity.NPCGeneric;
 import entity.NPCMom;
 import entity.NPCTrooper;
 import entity.NPCVendor;
@@ -36,10 +37,24 @@ public class Level03 extends LevelBase {
     public void init() {
         super.init();
 
-        addNPC(new Animal(this.gamePanel, 23, 24));
-        addNPC(new Animal(this.gamePanel, 23, 27));
-        addNPC(new Animal(this.gamePanel, 23, 29));
-        
+        List<Point> areaTest = List.of(
+            new Point(25, 25),
+            new Point(28, 28)
+        );
+        /**
+         * 15,15       35,15
+         * 15,35       35,35 
+         */
+        /**
+         * Y: 15 - 35
+         * X: 15 - 35
+         */
+        Animal animal1 = new Animal(this.gamePanel, 23, 24);
+        animal1.areaPoints = new ArrayList<>(areaTest);
+        addNPC(animal1);
+        // addNPC(new Animal(this.gamePanel, 23, 27));
+        // addNPC(new Animal(this.gamePanel, 23, 29));
+
         this.vendor = new NPCVendor(gamePanel, 25, 12);
         this.vendor.setDialogue(Dialogue.LEVEL_03_VENDOR_INTRO);
         this.vendor.addCredits(50);
@@ -57,13 +72,15 @@ public class Level03 extends LevelBase {
         );
         addNPC(this.vendor);
 
-        this.trooper = new NPCTrooper(this.gamePanel, 15, 12);
+        this.trooper = new NPCTrooper(this.gamePanel, 15, 8);
+        this.trooper.setWander();
         addNPC(this.trooper);
 
         NPCMom mom = new NPCMom(this.gamePanel, 14, 46) {
             @Override
             public void postDialogAction() {
                 this.willChase = true;
+                setFollow();
                 FoodObject berries = new FoodObject(this.gamePanel, new HealthSpell(10), "BERRIES");
                 if (this.gamePanel.player.getInventoryItem("BERRIES") == 0) {
                     this.gamePanel.player.addInventoryItem(new InventoryItem(berries, 1, true));
@@ -78,8 +95,14 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         mom.setDialogue(lines);
-        mom.willChase = true;
-        // addNPC(mom);
+        mom.setFollow();
+        addNPC(mom);
+
+        Entity villager = new NPCGeneric(gamePanel, 25, 23);
+        String[] villagerDialogue = {"Hey, I'm just a villager. Don't mind me."};
+        villager.setDialogue(villagerDialogue);
+        villager.setWander();
+        addNPC(villager);
 
     }
 

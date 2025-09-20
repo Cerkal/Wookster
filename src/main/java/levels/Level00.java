@@ -89,6 +89,7 @@ public class Level00 extends LevelBase {
         };
         this.oldmanDad.invincable = true;
         this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
+        this.oldmanDad.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(this.oldmanDad);       
     }
 

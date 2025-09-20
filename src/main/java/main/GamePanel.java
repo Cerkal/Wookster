@@ -82,6 +82,8 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
+    static final int NEW_GAME_LEVEL_INDEX = 3;
+
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setIgnoreRepaint(true);
@@ -119,7 +121,7 @@ public class GamePanel extends Canvas implements Runnable {
         this.gameState = GameState.PLAY;
         this.config.dataWrapper = new DataWrapper();
         this.restartLevel();
-        this.levelManager.loadLevel(0, false);
+        this.levelManager.loadLevel(NEW_GAME_LEVEL_INDEX, false);
         this.stopMusic();
         this.playMusic(Constants.SOUND_BG_01);
         System.out.println("New game.");

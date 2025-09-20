@@ -32,6 +32,7 @@ public class Quest {
     }
 
     public void completeQuest(GamePanel gamePanel) {
+        if (this.progress == 100) return;
         this.progress = 100;
         gamePanel.questManager.completedQuests.put(this.name, this);
         gamePanel.questManager.removeQuest(this.name);

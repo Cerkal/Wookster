@@ -216,6 +216,26 @@ public class TileManager {
         return availableTiles.get(Utils.generateRandomInt(0, availableTiles.size() - 1));
     }
 
+    public Point getRandomTileLocationsWithinArea(List<Point> areaList) {
+        List<Point> locations = new ArrayList<>();
+        if (areaList.size() != 2) {
+            TileLocation tileLocation = getRandomTileLocation();
+            new Point(tileLocation.worldX, tileLocation.worldY);
+        }
+        for (int y = areaList.get(0).y; y < areaList.get(1).y; y++) {
+            for (int x = areaList.get(0).x; x < areaList.get(1).x; x++) {
+                if (walkableTiles[x][y] == true) {
+                    locations.add(new Point(x, y));
+                }
+            }
+        }
+        Point activePoint = locations.get(Utils.generateRandomInt(0, locations.size() - 1));
+        if (activePoint != null) {
+            return locations.get(Utils.generateRandomInt(0, locations.size() - 1));
+        }
+        return null;
+    }
+
     public class TileLocation {
         public int worldX;
         public int worldY;
