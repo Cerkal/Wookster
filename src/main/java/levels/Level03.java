@@ -38,7 +38,8 @@ public class Level03 extends LevelBase {
     Entity vendor;
     Entity trooper;
     Entity mom;
-    ContainerObject momBox;
+
+    public ContainerObject momBox;
 
     public Level03(GamePanel gamePanel) {
         super(gamePanel);
@@ -96,6 +97,7 @@ public class Level03 extends LevelBase {
                 FoodObject berries = new FoodObject(this.gamePanel, new HealthSpell(10), "BERRIES");
                 if (
                     this.gamePanel.player.getInventoryItem("BERRIES") == 0 &&
+                    this.gamePanel.player.getCurrentHealth() < 100 &&
                     this.gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM_HOME) &&
                     this.gamePanel.questManager.getProgress(QuestDescriptions.MOM_HOME) == 0
                 ){
@@ -105,6 +107,8 @@ public class Level03 extends LevelBase {
                 }
                 if (this.gamePanel.questManager.getProgress(QuestDescriptions.MOM_HOME) == 50) {
                     this.gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME).completeQuest(this.gamePanel);
+                    Level03 level = (Level03) this.gamePanel.levelManager.getCurrentLevel();
+                    level.momBox.isLocked = false;
                 }
             }
         };
@@ -241,7 +245,6 @@ public class Level03 extends LevelBase {
                 };
                 this.mom.setDialogue(line);
                 this.gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME).setProgress(50);
-                this.momBox.isLocked = false;
             }
         }
     }

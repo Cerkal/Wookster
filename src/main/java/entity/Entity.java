@@ -42,7 +42,7 @@ public abstract class Entity {
     public static final int SOLID_AREA_Y = 4;
     public static final int SOLID_AREA_WIDTH = 28;
     public static final int SOLID_AREA_HEIGHT = 40;
-    
+    public static final int DEFAULT_AREA_RADIUS = 10;
     public static final int DEFAULT_TIMEOUT = 15000; // ms
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
@@ -51,16 +51,12 @@ public abstract class Entity {
 
     // Location
     public int worldX, worldY, startingX, startingY;
-    public int speed;
-    public int defaultSpeed;
-    public Direction direction;
-    Direction startingDirection;
+    public int speed, defaultSpeed;
+    public Direction direction, startingDirection;
     public MoveStatus moveStatus = MoveStatus.IDEL;
     MoveStatus defaultMoveStatus = MoveStatus.IDEL;
 
     // Sprite
-    protected int spriteCounter = 0;
-    protected int spriteNumber = 0;
     protected BufferedImage hat;
     public boolean isMoving = false;
     protected Sprite sprite;
@@ -70,7 +66,6 @@ public abstract class Entity {
     public Rectangle solidArea = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
-    public int actionLockCounter = 0;
     public boolean movable = true;
     public boolean invincable = false;
     public int invincableCounter;
@@ -79,7 +74,6 @@ public abstract class Entity {
     Entity collisionPlayer = null;
     int collisionCounter;
     public List<Point> areaPoints = new ArrayList<>();
-    final int DEFAULT_AREA_RADIUS = 10;
     public boolean pushback = true;
 
     // Alert
@@ -97,6 +91,7 @@ public abstract class Entity {
     protected long startAttackTime;
     protected Entity attackingTarget;
     protected int attackingTimeout;
+    protected Point frenzyTarget = null;
 
     // Wander behavior
     public boolean wander = false;
@@ -122,10 +117,8 @@ public abstract class Entity {
 
     // Inventory Items
     public boolean isVendor = false;
-    public HashMap<String, InventoryItem> inventoryItems = new HashMap<>();
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
 
-    protected Point frenzyTarget = null;
 
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -150,62 +143,6 @@ public abstract class Entity {
         this.worldX = worldX * Constants.TILE_SIZE;
         this.worldY = worldY * Constants.TILE_SIZE;
         this.isMoving = false;
-    }
-
-    public void setLocation(int x, int y) {
-        this.worldX = x * Constants.TILE_SIZE;
-        this.worldY = y * Constants.TILE_SIZE;
-    }
-
-    public void setLocation(Point point) {
-        this.worldX = point.x * Constants.TILE_SIZE;
-        this.worldY = point.y * Constants.TILE_SIZE;
-    }
-
-    public Point getLocation() {
-        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
-    }
-
-    public void draw(Graphics2D graphics2D) {
-        getSpiteImage();
-        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
-        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
-        if (
-            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
-            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
-            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
-        ){
-            graphics2D.drawImage(
-                this.sprite.image,
-                screenX - this.sprite.xAdjust,
-                screenY - this.sprite.yAdjust,
-                null
-            );
-            drawDebugCollision(graphics2D, screenX, screenY);
-        }
-        drawEffect(graphics2D);
-        drawHat(graphics2D);
-    }
-
-    protected void drawHat(Graphics2D graphics2D) {
-        if (this.hat == null) { return; }
-        if (this.isDead) { return; }
-        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
-        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
-        if (
-            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
-            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
-            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
-        ){
-            graphics2D.drawImage(
-                this.hat,
-                screenX,
-                screenY - 18,
-                null
-            );
-        }
     }
 
     public void update() {
@@ -1003,5 +940,61 @@ public abstract class Entity {
 
     private boolean isMoveQueueEmpty() {
         return (this.moveQueue == null || (this.moveQueue != null && this.moveQueue.isEmpty()));
+    }
+
+    public void setLocation(int x, int y) {
+        this.worldX = x * Constants.TILE_SIZE;
+        this.worldY = y * Constants.TILE_SIZE;
+    }
+
+    public void setLocation(Point point) {
+        this.worldX = point.x * Constants.TILE_SIZE;
+        this.worldY = point.y * Constants.TILE_SIZE;
+    }
+
+    public Point getLocation() {
+        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
+    }
+
+    public void draw(Graphics2D graphics2D) {
+        getSpiteImage();
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+        if (
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            graphics2D.drawImage(
+                this.sprite.image,
+                screenX - this.sprite.xAdjust,
+                screenY - this.sprite.yAdjust,
+                null
+            );
+            drawDebugCollision(graphics2D, screenX, screenY);
+        }
+        drawEffect(graphics2D);
+        drawHat(graphics2D);
+    }
+
+    protected void drawHat(Graphics2D graphics2D) {
+        if (this.hat == null) { return; }
+        if (this.isDead) { return; }
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+        if (
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            graphics2D.drawImage(
+                this.hat,
+                screenX,
+                screenY - 18,
+                null
+            );
+        }
     }
 }

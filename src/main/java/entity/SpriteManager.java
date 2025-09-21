@@ -9,7 +9,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
-import entity.Entity.MoveStatus;
 import main.Constants;
 import main.Utils;
 import main.GamePanel.GameState;
@@ -23,7 +22,8 @@ public class SpriteManager {
         EFFECT;
     }
 
-    String lastMessage = "";
+    boolean spriteDebugger;
+    String lastDebuggerMessage;
 
     public static class Sprite {
         public int frames;
@@ -83,6 +83,19 @@ public class SpriteManager {
             type = SpriteAnimation.MOVE.name();
         } else {
             type = SpriteAnimation.IDEL.name();
+        }
+
+        if (spriteDebugger) {
+            String message = entity.name +
+                " type: " + type +
+                " direction: " + entity.direction +
+                " moving: " + entity.isMoving +
+                " attacking: " + entity.attacking;
+
+            if (!this.lastDebuggerMessage.equalsIgnoreCase(message)) {
+                this.lastDebuggerMessage = message;
+                System.out.println(message);
+            }
         }
 
         if (entity.gamePanel.gameState != GameState.PLAY) {
