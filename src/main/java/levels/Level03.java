@@ -121,7 +121,7 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         this.mom.setDialogue(lines);
-        this.mom.setMoveStatus(MoveStatus.FOLLOW);
+        // this.mom.setMoveStatus(MoveStatus.FOLLOW);
         addNPC(this.mom);
 
         Entity villager01 = new NPCGeneric(gamePanel, 15, 23);

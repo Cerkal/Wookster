@@ -88,7 +88,6 @@ public abstract class Entity {
     protected int aggression;
     protected boolean canSeePlayer;
     protected boolean timerStarted;
-    protected long startAttackTime;
     protected Entity attackingTarget;
     protected int attackingTimeout;
     protected Point frenzyTarget = null;
@@ -246,7 +245,6 @@ public abstract class Entity {
                 this.speed = this.defaultSpeed;
                 if (this.moveQueue != null) this.moveQueue.clear();
             }
-            this.startAttackTime = System.currentTimeMillis();
             this.attackingTarget = this.gamePanel.player;
             actionTimeout();
             setChase();
@@ -323,27 +321,19 @@ public abstract class Entity {
     }
 
     private void actionTimeout() {
-        if (this.timerStarted) {
-            this.startAttackTime = System.currentTimeMillis();
-            return;
-        }
+        if (this.timerStarted) { return; }
         
         this.timerStarted = true;
         boolean initalWillChase = this.willChase;
         boolean initalMovable = this.movable;
         boolean initalIsFriendly = this.isFriendly;
         MoveStatus initalMoveStatus = this.moveStatus;
-        if (this.startAttackTime != 0) this.startAttackTime = System.currentTimeMillis();
         new Thread(() -> {
-            long elapsed = System.currentTimeMillis() - this.startAttackTime;
-            if (elapsed < DEFAULT_TIMEOUT) {
-                try {
-                    Thread.sleep(DEFAULT_TIMEOUT - elapsed);
-                } catch (InterruptedException ignored) {}
-            }
+            try {
+                Thread.sleep(DEFAULT_TIMEOUT);
+            } catch (InterruptedException ignored) {}
             if (initalMoveStatus == MoveStatus.IDEL) backToStart();
             // Reset timer
-            this.startAttackTime = 0;
             this.timerStarted = false;
             // Reset to old status
             this.moveQueue.clear();
@@ -362,7 +352,6 @@ public abstract class Entity {
             System.out.println("willChase " + this.willChase);
             System.out.println("movable " + this.movable);
             System.out.println("isFriendly " + this.isFriendly);
-            System.out.println("startAttackTime " + this.startAttackTime);
             System.out.println("moveStatus " + this.moveStatus);
             System.out.println("actionTimeout: " + this.name + " is going back to " + initalMoveStatus.name() + ".");
         }).start();
@@ -438,7 +427,6 @@ public abstract class Entity {
                 this.isFriendly = false;
                 this.movable = true;
                 this.willChase = true;
-                this.startAttackTime = System.currentTimeMillis();
                 setChase();
             } else {
                 this.attackingTarget = null;
