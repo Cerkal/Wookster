@@ -2,12 +2,16 @@ package levels;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.HashMap;
 
 import entity.NPCMom;
 import entity.NPCTrooper;
 import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
+import main.Quest;
+import main.Quest.ResolutionLevel;
+import main.QuestDescriptions;
 import objects.CarryPotionObject;
 import objects.DoorObject;
 import objects.KeyObject;
@@ -36,9 +40,19 @@ public class Level02 extends LevelBase {
             @Override
             public void postDialogAction() {
                 setFollow();
-                System.out.println("Following...");
                 Level02 level = (Level02) gamePanel.levelManager.getCurrentLevel();
                 level.signObject.removeObject();
+                if (gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM)) {
+                    gamePanel.questManager.currentQuests.get(QuestDescriptions.MOM).completeQuest(gamePanel);
+                }
+                if (gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME) == null) {
+                    gamePanel.questManager.addQuest(
+                        new Quest(QuestDescriptions.MOM_HOME, new HashMap<>(){{
+                            put(ResolutionLevel.DEFAULT, 15);
+                        }}
+                    ));
+                }
+                
             }
         };
         mom.setDialogue(Dialogue.LEVEL_01_MOM);

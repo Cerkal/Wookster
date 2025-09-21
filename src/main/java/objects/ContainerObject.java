@@ -15,6 +15,8 @@ public class ContainerObject extends SuperObject {
     List<InventoryItem> inventoryItems = new ArrayList<>();
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
 
+    public boolean isLocked = false;
+
     public ContainerObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         init();
@@ -22,10 +24,13 @@ public class ContainerObject extends SuperObject {
 
     public void activateObject() {
         super.activateObject();
-        if (this.gamePanel.keyHandler.spacePressed && !this.activated) {
+        if (this.gamePanel.keyHandler.spacePressed && !this.activated && !this.isLocked) {
             this.activated = true;
             this.gamePanel.gameState = GameState.VENDOR;
             this.setImage(Constants.OBJECT_CHEST_OPEN_IMAGE);
+        }
+        if (this.gamePanel.keyHandler.spacePressed && !this.activated && this.isLocked) {
+            this.gamePanel.ui.displayMessage("It's locked.");
         }
     }
 

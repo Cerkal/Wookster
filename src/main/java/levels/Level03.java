@@ -3,6 +3,7 @@ package levels;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import entity.Animal;
@@ -16,48 +17,66 @@ import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
+import main.Quest;
+import main.QuestDescriptions;
 import main.Utils;
+import main.Quest.ResolutionLevel;
 import objects.ArrowsObject;
 import objects.CarryPotionObject;
 import objects.ContainerObject;
 import objects.FoodObject;
 import objects.LasersObject;
+import objects.SignObject;
 import objects.weapons.BlasterWeapon;
 import objects.weapons.CrossbowWeapon;
 import objects.weapons.SwordWeapon;
 import spells.HealthSpell;
+import spells.InvincibilitySpell;
 
 public class Level03 extends LevelBase {
 
     Entity vendor;
     Entity trooper;
+    Entity mom;
+    ContainerObject momBox;
 
     public Level03(GamePanel gamePanel) {
         super(gamePanel);
         this.mapPath = Constants.WORLD_03;
-        this.playerStartLocation = new Point(15, 44);
+        this.playerStartLocation = new Point(15, 43);
     }
 
     public void init() {
         super.init();
 
-        List<Point> areaTest = List.of(
-            new Point(30, 30),
-            new Point(38, 38)
+        List<Point> pigArea = List.of(
+            new Point(15, 35),
+            new Point(25, 45)
         );
-        Animal animal1 = new Animal(this.gamePanel, 30, 30);
-        animal1.areaPoints = new ArrayList<>(areaTest);
-        addNPC(animal1);
+        Animal animal1 = new Animal(this.gamePanel, 15, 27);
+        animal1.setArea(pigArea);
+        Animal animal2 = new Animal(this.gamePanel, 15, 29);
+        animal2.setArea(pigArea);
+        Animal animal3 = new Animal(this.gamePanel, 15, 32);
+        animal3.setArea(pigArea);
+        addNPC(List.of(animal1, animal2, animal3));
 
+        // Vendor
         this.vendor = new NPCVendor(gamePanel, 25, 12);
         this.vendor.setDialogue(Dialogue.LEVEL_03_VENDOR_INTRO);
-        this.vendor.addCredits(50);
+        this.vendor.addCredits(Utils.generateRandomInt(50, 70));
+        this.vendor.setArea(
+            List.of(
+                new Point(23, 10),
+                new Point(29, 16)
+            )
+        );
+        this.vendor.setMoveStatus(MoveStatus.WANDER);
         this.vendor.name = "Bucket Head";
         this.vendor.setVendor(
             new ArrayList<>(
                 List.of(
                     new InventoryItem(new CrossbowWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
-                    new InventoryItem(new SwordWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
                     new InventoryItem(new BlasterWeapon(this.gamePanel, this.gamePanel.player, false), 3, true),
                     new InventoryItem(new ArrowsObject(this.gamePanel), 20, false),
                     new InventoryItem(new LasersObject(this.gamePanel), 20, false)
@@ -70,27 +89,36 @@ public class Level03 extends LevelBase {
         this.trooper.setMoveStatus(MoveStatus.WANDER);
         addNPC(this.trooper);
 
-        NPCMom mom = new NPCMom(this.gamePanel, 14, 46) {
+        this.mom = new NPCMom(this.gamePanel, 15, 46) {
             @Override
             public void postDialogAction() {
                 this.willChase = true;
-                setFollow();
                 FoodObject berries = new FoodObject(this.gamePanel, new HealthSpell(10), "BERRIES");
-                if (this.gamePanel.player.getInventoryItem("BERRIES") == 0) {
+                if (
+                    this.gamePanel.player.getInventoryItem("BERRIES") == 0 &&
+                    this.gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM_HOME) &&
+                    this.gamePanel.questManager.getProgress(QuestDescriptions.MOM_HOME) == 0
+                ){
                     this.gamePanel.player.addInventoryItem(new InventoryItem(berries, 1, true));
                     String[] lines = {"Take me home."};
                     this.setDialogue(lines);
                 }
+                if (this.gamePanel.questManager.getProgress(QuestDescriptions.MOM_HOME) == 50) {
+                    this.gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME).completeQuest(this.gamePanel);
+                }
             }
         };
         String[] lines = {"Take me home."};
-        if (this.gamePanel.player.getInventoryItem("BERRIES") == 0) {
+        if (
+            this.gamePanel.player.getInventoryItem("BERRIES") == 0 &&
+            this.gamePanel.player.getCurrentHealth() < 100
+        ){
             String[] berries = {"You look hungry dear. Take some berries.", "Now take me home."};
             lines = berries;
         }
-        mom.setDialogue(lines);
-        mom.setMoveStatus(MoveStatus.FOLLOW);
-        addNPC(mom);
+        this.mom.setDialogue(lines);
+        this.mom.setMoveStatus(MoveStatus.FOLLOW);
+        addNPC(this.mom);
 
         Entity villager01 = new NPCGeneric(gamePanel, 15, 23);
         String[] villagerDialogue01 = {"Have you heard about the town run by ghouls?", "Just kidding."};
@@ -106,8 +134,8 @@ public class Level03 extends LevelBase {
         villager01.setHat(Constants.WOOKSER_TOP_HAT);
         addNPC(villager01);
 
-        Entity villager02 = new NPCGeneric(gamePanel, 25, 23);
-        String[] villagerDialogue02 = {"Hey, I'm just a villager. Don't mind me."};
+        Entity villager02 = new NPCGeneric(gamePanel, 31, 26);
+        String[] villagerDialogue02 = {"Don't ask me about this hat."};
         villager02.setDialogue(villagerDialogue02);
         villager02.setWander();
         villager02.setArea(
@@ -165,10 +193,58 @@ public class Level03 extends LevelBase {
             )
         );
         addGameObject(chest02);
+
+        this.momBox = new ContainerObject(this.gamePanel, 33, 10);
+        this.momBox.name = "Mom's Special Box";
+        this.momBox.isLocked = true;
+        this.momBox.setInventoryItems(new ArrayList<>(
+                List.of(
+                    new InventoryItem(new SwordWeapon(this.gamePanel, this.gamePanel.player, false), 1, true),
+                    new InventoryItem(new ArrowsObject(this.gamePanel), 10, false),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel, new InvincibilitySpell()), Utils.generateRandomInt(1, 1), true),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(1, 2), true)
+                )
+            )
+        );
+        addGameObject(this.momBox);
+
+        addGameObject(new SignObject(this.gamePanel, 23, 16, "Bucket Head's Junk Shop."));
+        addGameObject(new SignObject(this.gamePanel, 33, 16, "Mom's house."));
     }
 
     @Override
-    public void update() {}
+    public void update() {
+        if (gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME) == null) {
+            gamePanel.questManager.addQuest(
+                new Quest(QuestDescriptions.MOM_HOME, 
+                new HashMap<>(){{
+                    put(ResolutionLevel.DEFAULT, 15);
+                }}
+            ));
+        }
+
+        if (
+            this.gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM_HOME) &&
+            this.gamePanel.questManager.getProgress(QuestDescriptions.MOM_HOME) < 50
+        ){
+            if (
+                this.mom != null &&
+                this.mom.getRawX() > 33 && this.mom.getRawX() < 40 &&
+                this.mom.getRawY() > 11 && this.mom.getRawY() < 16
+            ){
+                this.mom.setArea(List.of(new Point(33, 11), new Point(40, 16)));
+                this.mom.setMoveStatus(MoveStatus.WANDER);
+                String[] line = {
+                    "We made it!",
+                    "There's a chest with some goodies in it.",
+                    "And take some credits, don't spend it all in one place."
+                };
+                this.mom.setDialogue(line);
+                this.gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME).setProgress(50);
+                this.momBox.isLocked = false;
+            }
+        }
+    }
 
     @Override
     public void draw(Graphics2D graphics2D) {}

@@ -27,6 +27,7 @@ import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
+import main.GamePanel.GameState;
 import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
@@ -278,6 +279,8 @@ public abstract class Entity {
     }
 
     public void setMoveStatus(MoveStatus moveStatus) {
+        this.moveStatus = moveStatus;
+        this.defaultMoveStatus = moveStatus;
         switch (moveStatus) {
             case FOLLOW:
                 setFollow();
@@ -290,7 +293,6 @@ public abstract class Entity {
             default:
                 break;
         }
-        this.defaultMoveStatus = moveStatus;
     }
 
     public void setArea(List<Point> points) {
@@ -673,7 +675,7 @@ public abstract class Entity {
     }
 
     private void displayInventoryMessage(InventoryItem item) {
-        if (!(this instanceof Player)) { return; }
+        if (this instanceof Player == false || this.gamePanel.gameState == GameState.VENDOR) { return; }
         if (item.count > 1) {
             this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
         } else {
