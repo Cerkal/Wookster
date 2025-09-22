@@ -48,7 +48,11 @@ public class BlasterWeapon extends Weapon {
     public void shoot() {
         this.ammo = this.getAmmoCount();
         if (ammo <= 0) { return; }
-        if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+        if (
+            this.gamePanel.keyHandler.enterPressed ||
+            this.gamePanel.keyHandler.spacePressed ||
+            this.gamePanel.mouseHandler.clicked
+        ){
             this.gamePanel.player.attacking = true;
             shootLaser();
         } else {
@@ -71,8 +75,9 @@ public class BlasterWeapon extends Weapon {
     }
 
     private void shootLaser() {
-        int delay = entity instanceof Player ? BLASTER_DELAY : BLASTER_NPC_DELAY;
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > delay) {
+        this.gamePanel.mouseHandler.clicked = false;
+        this.delay = entity instanceof Player ? BLASTER_DELAY : BLASTER_NPC_DELAY;
+        if (canShoot()) {
             this.lastShot = this.gamePanel.gameTime;
             if (entity instanceof Player) this.removeAmmo();
             this.playSound();

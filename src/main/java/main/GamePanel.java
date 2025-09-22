@@ -1,8 +1,10 @@
 package main;
 
 import java.awt.Canvas;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import effects.Effect;
@@ -51,11 +54,20 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugRenderTime = false;
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
-    public boolean debugAllWeapons = false;
+    public boolean debugAllWeapons = true;
+    
+    // Mouse Aim
+    public boolean mouseAim = true;
+    public Cursor targetCursor;
+    public Cursor targetCursorWide;
+    public Cursor defaultCursor;
+    private boolean cursorHidden = false;
 
     public GameState gameState = GameState.TITLE;
     public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
+    public MouseHandler mouseHandler = new MouseHandler(this);
+    public MouseMoveHandler mouseMoveHandler = new MouseMoveHandler(this);
     public QuestManager questManager = new QuestManager(this);
     public Sound sound = new Sound();
     public Config config = new Config(this);
@@ -89,6 +101,9 @@ public class GamePanel extends Canvas implements Runnable {
         setIgnoreRepaint(true);
         setFocusable(true);
         addKeyListener(this.player.keyHandler);
+        addMouseListener(this.mouseHandler);
+        addMouseMotionListener(this.mouseMoveHandler);
+        setDefaultCursor();
         loadLevels();
     }
 
@@ -329,5 +344,36 @@ public class GamePanel extends Canvas implements Runnable {
         levelManager.addLevel(new Level01(this));
         levelManager.addLevel(new Level02(this));
         levelManager.addLevel(new Level03(this));
+    }
+
+    private void setDefaultCursor() {
+        try {
+            defaultCursor = Cursor.getDefaultCursor();
+            BufferedImage cursorImg = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR));
+            targetCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(8, 8), Constants.TARGET_CURSOR);
+            
+            BufferedImage cursorImgWide = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_SMALL_CURSOR));
+            targetCursorWide = Toolkit.getDefaultToolkit().createCustomCursor(cursorImgWide, new Point(8, 8), Constants.TARGET_SMALL_CURSOR);
+        } catch (Exception e) {}
+    }
+
+    public void targetMouse() {
+        if (!mouseAim) return;
+        setCursor(this.mouseMoveHandler.currentCursor);
+        cursorHidden = true;
+    }
+
+    public void showMouse() {
+        if (!cursorHidden) return;
+        setCursor(defaultCursor);
+        cursorHidden = false;
+    }
+
+    public void toggleMouse() {
+        if (cursorHidden) {
+            showMouse();
+        } else {
+            targetMouse();
+        }
     }
 }

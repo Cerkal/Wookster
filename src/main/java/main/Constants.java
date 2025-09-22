@@ -71,6 +71,7 @@ public class Constants {
     public static final String GAME_SETTINGS_EFFECTS_TOGGLE = "Sound Effects: ";
     public static final String GAME_SETTINGS_MUSIC_SLIDER = "Music Volume: ";
     public static final String GAME_SETTINGS_EFFECTS_SLIDER = "Sound Effects Volume: ";
+    public static final String GAME_SETTINGS_MOUSE_AIM = "Mouse Aim: ";
     
     // Inventory Titles
     public static final String INVENTORY = "Inventory";
@@ -96,6 +97,10 @@ public class Constants {
     // Tutorial Notes
     public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";
 
+    // Menu
+    public static final String TARGET_CURSOR = "/menu/target.png";
+    public static final String TARGET_SMALL_CURSOR = "/menu/target_small.png";
+    
     // Files
     public static final String SAVE_FILE = "save.json";
     public static final String LOG_FILE = "Wookster.log";

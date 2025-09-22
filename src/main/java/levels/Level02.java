@@ -29,6 +29,7 @@ public class Level02 extends LevelBase {
         this.playerStartLocation = new Point(13, 7);
     }
 
+    @Override
     public void init() {
         super.init();
 

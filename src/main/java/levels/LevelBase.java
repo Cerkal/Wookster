@@ -58,6 +58,19 @@ public abstract class LevelBase {
         long loadingStartTime = System.currentTimeMillis();
         new Thread(() -> {
             init();
+            boolean entitiesReady = true;
+            while (entitiesReady) {
+                for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
+                    if (!entity.isReady) {
+                        System.out.println("Entity " + entity.name + " not ready yet.");
+                        entitiesReady = false;
+                    } else {
+                        System.out.println("Entity " + entity.name + " ready.");
+                    }
+                }
+                if (entitiesReady) { break; }
+            }
+            
             long elapsed = System.currentTimeMillis() - loadingStartTime;
             if (elapsed < Constants.MIN_LOADING) {
                 try {
@@ -153,10 +166,12 @@ public abstract class LevelBase {
     }
 
     public void addNPC(Entity entity) {
+        entity.setIsReady();
         this.gamePanel.npcs.add(entity);
     }
 
     public void addNPC(List<Entity> entities) {
+        for (Entity entity : new ArrayList<>(entities)) entity.setIsReady();
         this.gamePanel.npcs.addAll(entities);
     }
 

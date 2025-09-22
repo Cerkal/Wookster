@@ -144,6 +144,14 @@ public class Config {
             case Constants.GAME_SETTINGS_EFFECTS_SLIDER:
                 this.gamePanel.sound.setEffectsVolume(value);
                 break;
+            case Constants.GAME_SETTINGS_MOUSE_AIM:
+                boolean mouseAim = ToggleOption.isToggleOn(value);
+                if (mouseAim) {
+                    this.gamePanel.mouseAim = true;
+                } else {
+                    this.gamePanel.mouseAim = false;
+                }
+                break;
             default:
                 break;
         }

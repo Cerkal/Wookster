@@ -72,6 +72,12 @@ public class UI {
     }
 
     public void draw(Graphics2D graphics2D) {
+
+        if (this.gamePanel.gameState == GameState.PLAY) {
+            this.gamePanel.targetMouse();
+        } else {
+            this.gamePanel.showMouse();
+        }
         graphics2D.setFont(this.customFont);
         
         drawHealth(graphics2D);
@@ -421,7 +427,8 @@ public class UI {
         List<String> strings = Arrays.asList(
             Long.toString(this.gamePanel.gameTime / Constants.MILLISECOND),
             "FPS (" + String.valueOf(this.gamePanel.fps) + ")",
-            playerLocation
+            playerLocation,
+            String.valueOf(this.gamePanel.player.worldX) + " " + String.valueOf(this.gamePanel.player.worldY)
         );
 
         List<String> inventoryStringList = new ArrayList<>();

@@ -47,6 +47,7 @@ public class Level03 extends LevelBase {
         this.playerStartLocation = new Point(15, 43);
     }
 
+    @Override
     public void init() {
         super.init();
 
@@ -165,6 +166,21 @@ public class Level03 extends LevelBase {
         villager03.setMoveStatus(MoveStatus.WANDER);
         villager03.setHat(Constants.WOOKSER_TINY_HAT);
         addNPC(villager03);
+
+
+        // TEST ATTACKING
+        Entity test = new NPCTrooper(gamePanel, 15, 35);
+        test.setMoveStatus(MoveStatus.WANDER);
+        test.accuracy = 1;
+        test.name = "Accurate Andy";
+        addNPC(test);
+
+        // TEST ATTACKING
+        Entity test1 = new NPCVendor(gamePanel, 15, 30);
+        test1.setMoveStatus(MoveStatus.WANDER);
+        test.accuracy = 100;
+        test1.name = "Inaccurate Ian";
+        addNPC(test1);
     }
 
     @Override

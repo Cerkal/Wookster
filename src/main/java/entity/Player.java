@@ -336,7 +336,7 @@ public class Player extends Entity {
         }
     }
 
-    private void weapon() {
+    public void weapon() {
         if (this.weapon == null) { return; }
         if (
             this.collisionEntity == null ||

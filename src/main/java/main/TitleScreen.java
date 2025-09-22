@@ -130,6 +130,23 @@ public class TitleScreen {
                             gamePanel.sound.setEffectsVolume(this.getCurrentValue());
                         }
                     },
+                    new Toggle(
+                        Constants.GAME_SETTINGS_MOUSE_AIM,
+                        List.of(
+                            new ToggleOption(ToggleOption.ON) {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.mouseAim = true;
+                                }
+                            },
+                            new ToggleOption(ToggleOption.OFF) {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.mouseAim = false;
+                                }
+                            }
+                        )
+                    ),
                     new Option(Constants.GAME_TITLE_BACK_BUTTON) {
                         @Override
                         public void action(GamePanel gamePanel) {
