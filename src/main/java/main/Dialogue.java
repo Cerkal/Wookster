@@ -20,6 +20,14 @@ public class Dialogue {
         "Come back when you are done."
     };
 
+    public static final String[] TUTORIAL_PIGS_START_MOUSE_AIM = {
+        "Can you help me with these pigs?",
+        "Just deal with them...",
+        "Sometimes they just need a good punch.",
+        "Click and hold the " + KeyHandler.LEFT_MOUSE_BUTTON + " to punch.",
+        "Come back when you are done."
+    };
+
     public static final String[] TUTORIAL_PIGS_POSITIVE = {
         "Well thats one way to do it.",
         "I'd have just killed em' all.",
@@ -51,11 +59,11 @@ public class Dialogue {
         "Here, take one.",
         "You can find them all over the place.",
         "I'm not sure why but people leave them laying around.",
-        "Press " + KeyHandler.I + " to open your inventory.",
+        "Press " + KeyHandler.TAB + " to open your inventory.",
     };
 
     public static final String[] TUTORIAL_INVENTORY_REMINDER = {
-        "Press " + KeyHandler.I + " to open your inventory.",
+        "Press " + KeyHandler.TAB + " to open your inventory.",
         "Then drink the potion by pressing " + KeyHandler.SPACEBAR,
         "It's not that hard.",
     };
@@ -74,6 +82,15 @@ public class Dialogue {
         "I'm worried about her. Please find her.",
         "Take this crossbow.",
         "Press and hold " + KeyHandler.SPACEBAR + " to shoot.",
+        "I'm your dad by the way."
+    };
+
+    public static final String[] TUTORIAL_COMPLETE_MOUSE_AIM = {
+        PLAYER_NAME + ", about your mom...",
+        "She went out for berries or something.",
+        "I'm worried about her. Please find her.",
+        "Take this crossbow.",
+        "Press and hold " + KeyHandler.LEFT_MOUSE_BUTTON + " to shoot.",
         "I'm your dad by the way."
     };
 

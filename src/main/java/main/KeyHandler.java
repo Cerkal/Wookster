@@ -15,7 +15,8 @@ public class KeyHandler implements KeyListener {
     GamePanel gamePanel;
 
     public static String SPACEBAR = "[spacebar]";
-    public static String I = "[i]";
+    public static String LEFT_MOUSE_BUTTON = "[left mouse button]";
+    public static String TAB = "[tab]";
     public static String R = "[r]";
 
     public KeyHandler(GamePanel gamePanel) {

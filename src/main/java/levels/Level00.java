@@ -77,7 +77,8 @@ public class Level00 extends LevelBase {
                 );
             }
         };
-        this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
+        String[] startLines = this.gamePanel.mouseAim ? Dialogue.TUTORIAL_PIGS_START_MOUSE_AIM : Dialogue.TUTORIAL_PIGS_START;
+        this.oldmanPigs.setDialogue(startLines);
         addNPC(oldmanPigs);
 
         this.oldmanDad = new NPCOld(gamePanel, 16, 27) {
@@ -88,7 +89,8 @@ public class Level00 extends LevelBase {
                 this.gamePanel.levelManager.loadNextLevel();
             }
         };
-        this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
+        String[] completeLines = this.gamePanel.mouseAim ? Dialogue.TUTORIAL_COMPLETE_MOUSE_AIM : Dialogue.TUTORIAL_COMPLETE;
+        this.oldmanDad.setDialogue(completeLines);
         this.oldmanDad.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(this.oldmanDad);       
     }
