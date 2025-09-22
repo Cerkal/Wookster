@@ -34,7 +34,7 @@ public class Level02 extends LevelBase {
         super.init();
 
         addNPC(new NPCTrooper(gamePanel, 11, 40));
-        addNPC(new NPCTrooper(gamePanel, 26, 8));
+        addNPC(new NPCTrooper(gamePanel, 29, 8));
         addNPC(new NPCTrooper(gamePanel, 36, 32));
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {

@@ -43,6 +43,17 @@ public class TitleScreen {
                 MAIN_SCREEN,
                 new ArrayList<>(
                     List.of(
+                        new Option(Constants.GAME_TITLE_SCREEN_CONTINUE) {
+                            @Override
+                            public void action(GamePanel gamePanel) {
+                                if (gamePanel.gameState == GameState.PAUSE) {
+                                    gamePanel.gameState = GameState.PLAY;
+                                }
+                                if (gamePanel.gameState == GameState.TITLE) {
+                                    gamePanel.loadGame();
+                                }
+                            }
+                        },
                         new Option(Constants.GAME_TITLE_SCREEN_NEW_GAME) {
                             @Override
                             public void action(GamePanel gamePanel) {

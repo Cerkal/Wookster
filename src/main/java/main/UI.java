@@ -133,7 +133,7 @@ public class UI {
         graphics2D.setColor(Color.white);
         
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
-        int y = getYForCenteredText();
+        int y = getYForCenteredText() - 35;
         graphics2D.drawString(Constants.GAME_TITLE, x, Constants.TILE_SIZE * 3);
 
         Screen screen = titleScreen.currentScreen;
@@ -149,6 +149,7 @@ public class UI {
             ) && screen.title == TitleScreen.DEFAULT_SCREEN
         ){
             optionSelectionList.remove(2);
+            y += 35;
         }
 
         screenSelector.set(0, optionSelectionList);

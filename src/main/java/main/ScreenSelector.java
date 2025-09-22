@@ -183,6 +183,11 @@ public class ScreenSelector implements KeyListener {
             graphics2D.setColor(DEFAULT_COLOR);
             y += delimiter;
         }
+        int currentScreenItems = screens.get(screenIndex).size();
+        int totalPages = (int) Math.ceil((double) currentScreenItems / pageSize);
+        if (pageNumber < totalPages - 1) {
+            graphics2D.drawString("...", x + Constants.TILE_SIZE, y);
+        }
     }
 
     private void drawDisplay(Graphics2D graphics2D, int x, int y, int delimiter, List<SelectionItem> items, boolean center) {
@@ -203,6 +208,11 @@ public class ScreenSelector implements KeyListener {
             }
             graphics2D.setColor(DEFAULT_COLOR);
             y += delimiter;
+        }
+        int currentScreenItems = screens.get(1).size();
+        int totalPages = (int) Math.ceil((double) currentScreenItems / pageSize);
+        if (pageNumber < totalPages - 1) {
+            graphics2D.drawString("...", x + Constants.TILE_SIZE, y);
         }
     }
 

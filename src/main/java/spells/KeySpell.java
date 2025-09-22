@@ -19,9 +19,9 @@ public class KeySpell extends SuperSpell {
     public KeySpell() {
         super(SpellType.KEY_SPELL);
         this.brokeDirection = randomDirection();
-        this.descriptionText.add("Breaks move key in certain direction");
-        this.descriptionText.add("until all other directional keys");
-        this.descriptionText.add("have been pushed.");
+        this.descriptionText.add("Breaks move key in certain");
+        this.descriptionText.add("direction until all other");
+        this.descriptionText.add("directional keys have been pushed.");
         this.positiveSpell = false;
         this.sellable = false;
         this.price = 0;

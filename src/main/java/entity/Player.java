@@ -78,6 +78,7 @@ public class Player extends Entity {
         this.inventory = new HashMap<>();
         this.weapons = new HashMap<>();
         this.spells.clear();
+        this.accuracy = 50;
 
         addWeapon(WeaponType.FIST);
         GameMap gameMap = new GameMap(this.gamePanel);

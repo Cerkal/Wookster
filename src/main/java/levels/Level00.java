@@ -135,7 +135,13 @@ public class Level00 extends LevelBase {
                 }
             }
         }
-        if (inPen.size() == pigCount && this.questManager.isActiveQuest(QuestDescriptions.PIGS)) {
+        if (
+            inPen.size() == pigCount &&
+            (
+                this.questManager.isActiveQuest(QuestDescriptions.PIGS) ||
+                this.questManager.isCompletedQuest(QuestDescriptions.PIGS)
+            )
+        ){
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -175,7 +181,7 @@ public class Level00 extends LevelBase {
         }
 
         if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
-            this.oldmanPigsFinished.setDialogue(Dialogue.TUTORIAL_PIGS_END);
+            if (this.oldmanPigsFinished != null) this.oldmanPigsFinished.setDialogue(Dialogue.TUTORIAL_PIGS_END);
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {

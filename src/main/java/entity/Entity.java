@@ -407,6 +407,7 @@ public abstract class Entity {
             return;
         }
         this.isAlerted = true;
+
         System.out.println(this.entityType + ": " + getCurrentHealth());
 
         if (
@@ -426,7 +427,6 @@ public abstract class Entity {
                 setDefaultSpeed();
                 startFrenzy(getFrenzyLocation());
             }
-            System.out.println(this.entityType + " attacking target: " + attacker.name);
         }
         
         if (this.isFriendly && attacker instanceof Player) {

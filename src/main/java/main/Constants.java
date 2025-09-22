@@ -57,6 +57,7 @@ public class Constants {
     public static final String GAME_DEATH = "Dead";
     public static final String GAME_LOADING = "Loading";
     public static final String GAME_SAVING = "Saving";
+    public static final String GAME_TITLE_SCREEN_CONTINUE = "Continue";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";

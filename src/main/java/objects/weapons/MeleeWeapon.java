@@ -24,7 +24,11 @@ public abstract class MeleeWeapon extends Weapon {
     }
 
     public void shoot() {
-        if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+        if (
+            this.gamePanel.keyHandler.enterPressed ||
+            this.gamePanel.keyHandler.spacePressed || 
+            this.gamePanel.mouseHandler.holding 
+        ){
             this.hold++;
         } else {
             if (this.hold > 0) {
