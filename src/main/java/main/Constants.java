@@ -100,6 +100,7 @@ public class Constants {
 
     // Menu
     public static final String TARGET_CURSOR = "/menu/target.png";
+    public static final String TARGET_CURSOR_WHITE = "/menu/target_white.png";
     public static final String TARGET_SMALL_CURSOR = "/menu/target_small.png";
     
     // Files

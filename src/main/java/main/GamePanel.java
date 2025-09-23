@@ -218,13 +218,13 @@ public class GamePanel extends Canvas implements Runnable {
             }
 
             // Maintain FPS by sleeping the thread
-            // long frameTime = System.nanoTime() - now;
-            // long sleepTime = (long) NS_PER_UPDATE - frameTime;
-            // if (sleepTime > 0) {
-            //     try {
-            //         Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
-            //     } catch (InterruptedException ignored) {}
-            // }
+            long frameTime = System.nanoTime() - now;
+            long sleepTime = (long) NS_PER_UPDATE - frameTime;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
+                } catch (InterruptedException ignored) {}
+            }
         }
     }
 
@@ -349,11 +349,11 @@ public class GamePanel extends Canvas implements Runnable {
     private void setDefaultCursor() {
         try {
             defaultCursor = Cursor.getDefaultCursor();
-            BufferedImage cursorImg = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR));
-            targetCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(8, 8), Constants.TARGET_CURSOR);
+            BufferedImage cursorImg = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE));
+            targetCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(8, 8), Constants.TARGET_CURSOR_WHITE);
             
-            BufferedImage cursorImgWide = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_SMALL_CURSOR));
-            targetCursorWide = Toolkit.getDefaultToolkit().createCustomCursor(cursorImgWide, new Point(8, 8), Constants.TARGET_SMALL_CURSOR);
+            BufferedImage cursorImgWide = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE));
+            targetCursorWide = Toolkit.getDefaultToolkit().createCustomCursor(cursorImgWide, new Point(8, 8), Constants.TARGET_CURSOR_WHITE);
         } catch (Exception e) {}
     }
 
