@@ -73,6 +73,7 @@ public class Constants {
     public static final String GAME_SETTINGS_MUSIC_SLIDER = "Music Volume: ";
     public static final String GAME_SETTINGS_EFFECTS_SLIDER = "Sound Effects Volume: ";
     public static final String GAME_SETTINGS_MOUSE_AIM = "Mouse Aim: ";
+    public static final String GAME_SETTINGS_CURSOR_SIZE = "Cursor Size: ";
     
     // Inventory Titles
     public static final String INVENTORY = "Inventory";
@@ -100,8 +101,9 @@ public class Constants {
 
     // Menu
     public static final String TARGET_CURSOR = "/menu/target.png";
-    public static final String TARGET_CURSOR_WHITE = "/menu/target_white.png";
-    public static final String TARGET_SMALL_CURSOR = "/menu/target_small.png";
+    public static final String TARGET_CURSOR_SMALL = "/menu/target_small.png";
+    public static final String TARGET_CURSOR_WHITE_LARGE = "/menu/target_white.png";
+    public static final String TARGET_CURSOR_WHITE_SMALL = "/menu/target_white_small.png";
     
     // Files
     public static final String SAVE_FILE = "save.json";
@@ -453,4 +455,6 @@ public class Constants {
     );
 
     public static final String FONT_ARIAL = "Arial";
+
+    public static final String DEFAULT_SETTINGS = "{\"settingsMap\":{\"Music Volume: \":5,\"Mouse Aim: \":0,\"Sound Effects: \":1,\"Music: \":1,\"Sound Effects Volume: \":5,\"Back\":0,\"Cursor Size: \":1}}";
 }

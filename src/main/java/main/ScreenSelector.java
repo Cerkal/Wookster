@@ -11,6 +11,8 @@ import main.GamePanel.GameState;
 
 public class ScreenSelector implements KeyListener {
 
+    public final static int PAGE_SIZE = 6;
+
     private final GamePanel gamePanel;
     private final Color DEFAULT_COLOR = Color.WHITE;
 
@@ -18,7 +20,8 @@ public class ScreenSelector implements KeyListener {
     private int screenIndex = 0;
     private int commandNumber = 0;
     private int displayNumber = 0;
-    private int pageSize = 6;
+
+    private int pageSize = PAGE_SIZE;
     private int pageNumber = 0;
 
     private Font customFont;
@@ -326,5 +329,9 @@ public class ScreenSelector implements KeyListener {
         } catch (FontFormatException | IOException e) {
             this.customFont = new Font(Constants.FONT_ARIAL, Font.PLAIN, 20);
         }
+    }
+
+    public void setPageSize(int value) {
+        this.pageSize = value < 1 ?  PAGE_SIZE : value;
     }
 }

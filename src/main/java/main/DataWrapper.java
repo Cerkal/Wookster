@@ -48,13 +48,12 @@ public class DataWrapper {
     }
 
     public String getDataForSave(GamePanel gamePanel) {
-        
-        this.currentQuests = gamePanel.questManager.getCurrentQuests();
-        this.completedQuests = gamePanel.questManager.getCompletedQuests();
         this.settingsMap = gamePanel.ui.titleScreen.getSettings();
 
         // Level Data
-        if (!completedQuests.isEmpty()) {
+        if (gamePanel.questManager.getQuest(QuestDescriptions.TUTORIAL_COMPLETE) != null) {
+            this.currentQuests = gamePanel.questManager.getCurrentQuests();
+            this.completedQuests = gamePanel.questManager.getCompletedQuests();
             this.player = gamePanel.player.getPlayerSaveState();
             LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
             try {

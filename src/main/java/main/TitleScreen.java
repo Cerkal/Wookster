@@ -16,8 +16,8 @@ public class TitleScreen {
     GamePanel gamePanel;
     Screen currentScreen;
     String previousScreen;
-    ScreenSelector screenSelector;
     HashMap<String, Screen> screens = new HashMap<>();
+    HashMap<String, Integer> screenIndex = new HashMap<>();
 
     public static final String MAIN_SCREEN = Constants.GAME_TITLE;
     final static String GAME_TITLE = Constants.GAME_TITLE;
@@ -158,6 +158,23 @@ public class TitleScreen {
                             }
                         )
                     ),
+                    new Toggle(
+                        Constants.GAME_SETTINGS_CURSOR_SIZE,
+                        List.of(
+                            new ToggleOption("Small") {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.currentCursor = gamePanel.cursorSmall;
+                                }
+                            },
+                            new ToggleOption("Large") {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.currentCursor = gamePanel.cursorLarge;
+                                }
+                            }
+                        )
+                    ),
                     new Option(Constants.GAME_TITLE_BACK_BUTTON) {
                         @Override
                         public void action(GamePanel gamePanel) {
@@ -182,7 +199,10 @@ public class TitleScreen {
     }
 
     private void addScreen(Screen screen) {
+        int index = this.screens.size();
+        screen.screenIndex = index;
         this.screens.put(screen.title, screen);
+        this.screenIndex.put(screen.title, index);
     }
 
     public HashMap<String, Integer> getSettings() {

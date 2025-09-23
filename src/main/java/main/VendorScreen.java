@@ -42,6 +42,7 @@ public class VendorScreen {
         this.screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
         this.screenSelector.set(1, getSelectionItems(this.vendorInventory));
 
+        this.screenSelector.setPageSize(ScreenSelector.PAGE_SIZE);
         int active = this.screenSelector.getScreenIndex();
         int passive = active == 0 ? 1 : 0;
 

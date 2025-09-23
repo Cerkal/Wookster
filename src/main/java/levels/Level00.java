@@ -87,6 +87,10 @@ public class Level00 extends LevelBase {
                 this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.MOM));
                 this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
                 this.gamePanel.levelManager.loadNextLevel();
+                Quest tutorial = new Quest(QuestDescriptions.TUTORIAL_COMPLETE);
+                tutorial.setDisplay(false);
+                this.gamePanel.questManager.addQuest(tutorial);
+                this.gamePanel.questManager.getQuest(QuestDescriptions.TUTORIAL_COMPLETE).completeQuest(gamePanel);;
             }
         };
         String[] completeLines = this.gamePanel.mouseAim ? Dialogue.TUTORIAL_COMPLETE_MOUSE_AIM : Dialogue.TUTORIAL_COMPLETE;

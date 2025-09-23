@@ -58,9 +58,10 @@ public class GamePanel extends Canvas implements Runnable {
     
     // Mouse Aim
     public boolean mouseAim = true;
-    public Cursor targetCursor;
-    public Cursor targetCursorWide;
+    public Cursor cursorSmall;
+    public Cursor cursorLarge;
     public Cursor defaultCursor;
+    public Cursor currentCursor;
     private boolean cursorHidden = false;
 
     public GameState gameState = GameState.TITLE;
@@ -102,7 +103,7 @@ public class GamePanel extends Canvas implements Runnable {
         setFocusable(true);
         addKeyListener(this.player.keyHandler);
         addMouseListener(this.mouseHandler);
-        addMouseMotionListener(this.mouseMoveHandler);
+        // addMouseMotionListener(this.mouseMoveHandler);
         setDefaultCursor();
         loadLevels();
     }
@@ -349,17 +350,20 @@ public class GamePanel extends Canvas implements Runnable {
     private void setDefaultCursor() {
         try {
             defaultCursor = Cursor.getDefaultCursor();
-            BufferedImage cursorImg = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE));
-            targetCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(8, 8), Constants.TARGET_CURSOR_WHITE);
+
+            BufferedImage cursorImageSmall = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE_SMALL));
+            cursorSmall = Toolkit.getDefaultToolkit().createCustomCursor(cursorImageSmall, new Point(8, 8), Constants.TARGET_CURSOR_WHITE_SMALL);
             
-            BufferedImage cursorImgWide = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE));
-            targetCursorWide = Toolkit.getDefaultToolkit().createCustomCursor(cursorImgWide, new Point(8, 8), Constants.TARGET_CURSOR_WHITE);
+            BufferedImage cursorImageLarge = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE_LARGE));
+            cursorLarge = Toolkit.getDefaultToolkit().createCustomCursor(cursorImageLarge, new Point(8, 8), Constants.TARGET_CURSOR_WHITE_LARGE);
+
+            currentCursor = cursorSmall;
         } catch (Exception e) {}
     }
 
     public void targetMouse() {
         if (!mouseAim) return;
-        setCursor(this.mouseMoveHandler.currentCursor);
+        setCursor(this.currentCursor);
         cursorHidden = true;
     }
 

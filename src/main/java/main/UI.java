@@ -126,6 +126,8 @@ public class UI {
 
     public void titleScreen(Graphics2D graphics2D) {
 
+        Screen screen = titleScreen.currentScreen;
+
         graphics2D.setColor(Color.black);
         graphics2D.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
 
@@ -133,29 +135,30 @@ public class UI {
         graphics2D.setColor(Color.white);
         
         int x = getXForCenteredText(graphics2D, Constants.GAME_TITLE, this.customFontLarge);
-        int y = getYForCenteredText() - 35;
+        int y = screen.yAlign - Constants.TILE_SIZE;
         graphics2D.drawString(Constants.GAME_TITLE, x, Constants.TILE_SIZE * 3);
 
-        Screen screen = titleScreen.currentScreen;
         HashMap<String, Option> options = screen.getOptionsMap();
         List<String> optionList = screen.getOptionTitles();
         List<SelectionItem> optionSelectionList = new ArrayList<>();
-        for (String option : optionList) {
-            optionSelectionList.add(new SelectionItem(option, option));
-        }
 
         if ((this.gamePanel.gameState == GameState.TITLE ||
              this.gamePanel.levelManager.currentLevelIndex == 0
             ) && screen.title == TitleScreen.DEFAULT_SCREEN
         ){
-            optionSelectionList.remove(2);
+            optionList.remove(optionList.indexOf(Constants.GAME_TITLE_SCREEN_SAVE_GAME));
             y += 35;
         }
 
-        screenSelector.set(0, optionSelectionList);
-        screenSelector.setScreen(0);
+        for (String option : optionList) {
+            optionSelectionList.add(new SelectionItem(option, option));
+        }
 
-        ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
+        this.screenSelector.set(screen.screenIndex, optionSelectionList);
+        this.screenSelector.setPageSize(screen.title == TitleScreen.SETTINGS_SCREEN ? 7 : ScreenSelector.PAGE_SIZE);
+        this.screenSelector.setScreen(screen.screenIndex);
+
+        ScreenSelector.SelectionResult selectedItem = this.screenSelector.selector(
             graphics2D,
             screen.xAlign,
             y,
@@ -165,7 +168,7 @@ public class UI {
 
         // Handle selected item
         if (selectedItem != null && selectedItem.selected) {
-            if (selectedItem.selectedScreenIndex == 0) {
+            if (selectedItem.selectedScreenIndex == screen.screenIndex) {
 
                 Option option = options.get(selectedItem.selectedObject);
 
@@ -186,7 +189,7 @@ public class UI {
                         case KeyEvent.VK_D -> { ((SettingSlider) option).increase(); }
                     }
                 }
-                screenSelector.clearSelectionLeaveHighlight();
+                this.screenSelector.clearSelectionLeaveHighlight();
             }
         }
     }
@@ -285,7 +288,7 @@ public class UI {
                 }
                 inventory.add(selectionItem);
             }
-            screenSelector.set(Constants.INVENTORY_INDEX, inventory);
+            this.screenSelector.set(Constants.INVENTORY_INDEX, inventory);
 
             // Set Effects
             List<SelectionItem> spellList = new ArrayList<>();
@@ -297,7 +300,7 @@ public class UI {
                     )
                 );
             }
-            screenSelector.set(Constants.EFFECTS_INDEX, spellList);
+            this.screenSelector.set(Constants.EFFECTS_INDEX, spellList);
 
             // Set Quests
             HashMap<String, Quest> questMap = this.gamePanel.questManager.getAllQuests();
@@ -305,11 +308,11 @@ public class UI {
             for (Quest quest : questMap.values()) {
                 SelectionItem selectionItem = new SelectionItem(quest.name, quest);
                 if (quest.getProgress() == 100) selectionItem.color = Color.DARK_GRAY;
-                questList.add(selectionItem);
+                if (quest.display) questList.add(selectionItem);
             }
-            screenSelector.set(Constants.QUEST_INDEX, questList);
+            this.screenSelector.set(Constants.QUEST_INDEX, questList);
 
-            ScreenSelector.SelectionResult selectedItem = screenSelector.selector(
+            ScreenSelector.SelectionResult selectedItem = this.screenSelector.selector(
                 graphics2D,
                 Constants.TILE_SIZE * 2 + 20,
                 Constants.TILE_SIZE * 5 - 30,
@@ -364,7 +367,7 @@ public class UI {
                         inventoryItem.remove();
                     }
                     this.gamePanel.gameState = GameState.PLAY;
-                    screenSelector.clearSelection();
+                    this.screenSelector.clearSelection();
                 }
 
                 // Handle Quest / Effects Item
@@ -373,7 +376,7 @@ public class UI {
                     selectedItem.customKeyPress == -1
                 ){
                     this.gamePanel.gameState = GameState.PLAY;
-                    screenSelector.clearSelection();
+                    this.screenSelector.clearSelection();
                 }
             }
             return;

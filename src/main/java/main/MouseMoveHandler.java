@@ -30,30 +30,30 @@ public class MouseMoveHandler implements MouseMotionListener {
         switch (direction) {
             case Direction.UP -> {
                 if (Constants.SCREEN_HEIGHT / 2 > e.getY()) {
-                    this.currentCursor = this.gamePanel.targetCursor;
+                    this.currentCursor = this.gamePanel.cursorSmall;
                 } else {
-                    this.currentCursor = this.gamePanel.targetCursorWide;
+                    this.currentCursor = this.gamePanel.cursorLarge;
                 }
             }
             case Direction.DOWN -> {
                 if (Constants.SCREEN_HEIGHT / 2 < e.getY()) {
-                    this.currentCursor = this.gamePanel.targetCursor;
+                    this.currentCursor = this.gamePanel.cursorSmall;
                 } else {
-                    this.currentCursor = this.gamePanel.targetCursorWide;
+                    this.currentCursor = this.gamePanel.cursorLarge;
                 }
             }
             case Direction.LEFT -> {
                 if (Constants.SCREEN_WIDTH / 2 > e.getX()) {
-                    this.currentCursor = this.gamePanel.targetCursor;
+                    this.currentCursor = this.gamePanel.cursorSmall;
                 } else {
-                    this.currentCursor = this.gamePanel.targetCursorWide;
+                    this.currentCursor = this.gamePanel.cursorLarge;
                 }
             }
             case Direction.RIGHT -> {
                 if (Constants.SCREEN_WIDTH / 2 < e.getX()) {
-                    this.currentCursor = this.gamePanel.targetCursor;
+                    this.currentCursor = this.gamePanel.cursorSmall;
                 } else {
-                    this.currentCursor = this.gamePanel.targetCursorWide;
+                    this.currentCursor = this.gamePanel.cursorLarge;
                 }
             }
         }
