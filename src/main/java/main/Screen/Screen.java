@@ -11,6 +11,8 @@ public class Screen {
     public String title;
     public List<Option> options = new ArrayList<>();
     public boolean centerText = true;
+    public int screenIndex;
+    public int yAlign = Constants.SCREEN_HEIGHT / 2;
     public int xAlign = Constants.SCREEN_WIDTH / 2 - (Constants.TILE_SIZE * 2) - 100;
     public int longestOption;
 

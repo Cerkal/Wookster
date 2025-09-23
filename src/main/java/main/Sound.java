@@ -7,7 +7,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.LineEvent;
 
 public class Sound {
 
@@ -16,7 +15,6 @@ public class Sound {
 
     private Clip musicClip;
     private FloatControl musicVolumeControl;
-    private float originalMusicVolume;
 
     private String musicFile;
 
@@ -82,7 +80,6 @@ public class Sound {
 
             if (musicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 musicVolumeControl = (FloatControl) musicClip.getControl(FloatControl.Type.MASTER_GAIN);
-                originalMusicVolume = musicVolumeControl.getValue();
                 applyMusicVolume();
             }
 
@@ -121,18 +118,6 @@ public class Sound {
         // Scale 1–10 -> -30dB to 0dB range
         float fraction = sliderValue / 10.0f;
         return (float) (Math.log10(fraction) * 20.0);
-    }
-
-    private void lowerMusicVolumeTemporarily(float changeDb) {
-        if (musicVolumeControl != null) {
-            musicVolumeControl.setValue(originalMusicVolume + changeDb);
-        }
-    }
-
-    private void restoreMusicVolume() {
-        if (musicVolumeControl != null) {
-            applyMusicVolume();
-        }
     }
 
     public float getDecibelVolume(int value) {

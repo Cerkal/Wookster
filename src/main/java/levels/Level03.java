@@ -10,7 +10,6 @@ import entity.Animal;
 import entity.Entity;
 import entity.NPCGeneric;
 import entity.NPCMom;
-import entity.NPCTrooper;
 import entity.NPCVendor;
 import entity.Entity.MoveStatus;
 import main.Constants;
@@ -47,6 +46,7 @@ public class Level03 extends LevelBase {
         this.playerStartLocation = new Point(15, 43);
     }
 
+    @Override
     public void init() {
         super.init();
 
@@ -86,10 +86,6 @@ public class Level03 extends LevelBase {
         );
         addNPC(this.vendor);
 
-        this.trooper = new NPCTrooper(this.gamePanel, 15, 8);
-        this.trooper.setMoveStatus(MoveStatus.WANDER);
-        addNPC(this.trooper);
-
         this.mom = new NPCMom(this.gamePanel, 15, 46) {
             @Override
             public void postDialogAction() {
@@ -121,7 +117,7 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         this.mom.setDialogue(lines);
-        // this.mom.setMoveStatus(MoveStatus.FOLLOW);
+        this.mom.setMoveStatus(MoveStatus.FOLLOW);
         addNPC(this.mom);
 
         Entity villager01 = new NPCGeneric(gamePanel, 15, 23);
@@ -165,6 +161,14 @@ public class Level03 extends LevelBase {
         villager03.setMoveStatus(MoveStatus.WANDER);
         villager03.setHat(Constants.WOOKSER_TINY_HAT);
         addNPC(villager03);
+
+        Entity villager04 = new NPCGeneric(gamePanel, 14, 12);
+        String[] villagerDialogue04 = {"Hey, I'm just a villager. Don't mind me."};
+        villager04.setDialogue(villagerDialogue04);
+        villager04.setWander();
+        villager04.setMoveStatus(MoveStatus.WANDER);
+        villager04.setHat(Constants.WOOKSER_DAD_HAT);
+        addNPC(villager04);
     }
 
     @Override

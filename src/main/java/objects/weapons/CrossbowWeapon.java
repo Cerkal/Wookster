@@ -44,6 +44,7 @@ public class CrossbowWeapon extends Weapon {
         this.initilizedAmmo = INITALIZED_ARROWS;
         this.maxDamage = HOLD_COUNT_MAX/SPEED_MODIFIER * ArrowProjectile.DAMAGE_MODIFIER;
         this.range = true;
+        this.delay = CROSSBOW_DELAY;
         this.price = PRICE;
         this.sellable = true;
     }
@@ -52,7 +53,11 @@ public class CrossbowWeapon extends Weapon {
         if (this.entity instanceof Player) {
             this.ammo = this.getAmmoCount();
             if (ammo <= 0) { return; }
-            if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+            if (
+                this.gamePanel.keyHandler.enterPressed ||
+                this.gamePanel.keyHandler.spacePressed ||
+                this.gamePanel.mouseHandler.holding
+            ){
                 this.hold++;
                 this.gamePanel.player.attacking = true;
             } else {
@@ -64,7 +69,7 @@ public class CrossbowWeapon extends Weapon {
                 this.gamePanel.player.attacking = false;
             }
         } else {
-            if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > CROSSBOW_DELAY) {
+            if (canShoot()) {
                 this.speed = Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER;
                 shootArrow();
                 entity.attacking = false;

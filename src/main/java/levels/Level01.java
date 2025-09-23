@@ -33,6 +33,7 @@ public class Level01 extends LevelBase {
         this.playerStartLocation = new Point(23, 23);
     }
 
+    @Override
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);

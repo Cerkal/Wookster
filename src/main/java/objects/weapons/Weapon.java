@@ -40,7 +40,7 @@ public abstract class Weapon {
     public int initilizedAmmo = 10;
     public long lastShot = 0;
     public int speed = 10;
-
+    public int delay;
     public boolean sellable = true;
     public int price = 10;
 
@@ -157,6 +157,10 @@ public abstract class Weapon {
     }
 
     public abstract Projectile getProjectile(Entity entity);
+
+    public boolean canShoot() {
+        return (this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > this.delay;
+    }
 
     protected void addToInventory() {
         if (this.entity instanceof Player && this.gamePanel.player != null) {

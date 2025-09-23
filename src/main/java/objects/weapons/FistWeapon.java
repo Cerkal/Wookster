@@ -31,7 +31,7 @@ public class FistWeapon extends MeleeWeapon {
             entity,
             (int) (Utils.generateRandomInt(this.holdCountMin, this.holdCountMax) / this.speedModifier)
         );
-        punch.setPosition();
+        // punch.setPosition();
         punch.dispose = this.delay / 2;
         return punch;
     }

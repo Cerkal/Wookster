@@ -16,8 +16,8 @@ public class TitleScreen {
     GamePanel gamePanel;
     Screen currentScreen;
     String previousScreen;
-    ScreenSelector screenSelector;
     HashMap<String, Screen> screens = new HashMap<>();
+    HashMap<String, Integer> screenIndex = new HashMap<>();
 
     public static final String MAIN_SCREEN = Constants.GAME_TITLE;
     final static String GAME_TITLE = Constants.GAME_TITLE;
@@ -43,6 +43,17 @@ public class TitleScreen {
                 MAIN_SCREEN,
                 new ArrayList<>(
                     List.of(
+                        new Option(Constants.GAME_TITLE_SCREEN_CONTINUE) {
+                            @Override
+                            public void action(GamePanel gamePanel) {
+                                if (gamePanel.gameState == GameState.PAUSE) {
+                                    gamePanel.gameState = GameState.PLAY;
+                                }
+                                if (gamePanel.gameState == GameState.TITLE) {
+                                    gamePanel.loadGame();
+                                }
+                            }
+                        },
                         new Option(Constants.GAME_TITLE_SCREEN_NEW_GAME) {
                             @Override
                             public void action(GamePanel gamePanel) {
@@ -130,6 +141,40 @@ public class TitleScreen {
                             gamePanel.sound.setEffectsVolume(this.getCurrentValue());
                         }
                     },
+                    new Toggle(
+                        Constants.GAME_SETTINGS_MOUSE_AIM,
+                        List.of(
+                            new ToggleOption(ToggleOption.ON) {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.mouseAim = true;
+                                }
+                            },
+                            new ToggleOption(ToggleOption.OFF) {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.mouseAim = false;
+                                }
+                            }
+                        )
+                    ),
+                    new Toggle(
+                        Constants.GAME_SETTINGS_CURSOR_SIZE,
+                        List.of(
+                            new ToggleOption("Small") {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.currentCursor = gamePanel.cursorSmall;
+                                }
+                            },
+                            new ToggleOption("Large") {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.currentCursor = gamePanel.cursorLarge;
+                                }
+                            }
+                        )
+                    ),
                     new Option(Constants.GAME_TITLE_BACK_BUTTON) {
                         @Override
                         public void action(GamePanel gamePanel) {
@@ -154,7 +199,10 @@ public class TitleScreen {
     }
 
     private void addScreen(Screen screen) {
+        int index = this.screens.size();
+        screen.screenIndex = index;
         this.screens.put(screen.title, screen);
+        this.screenIndex.put(screen.title, index);
     }
 
     public HashMap<String, Integer> getSettings() {

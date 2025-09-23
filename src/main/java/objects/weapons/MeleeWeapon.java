@@ -10,7 +10,6 @@ import objects.projectiles.MeleeProjectile;
 
 public abstract class MeleeWeapon extends Weapon {
 
-    protected int delay = 500;
     protected int holdCountMin = 10;
     protected int holdCountMax = 30;
     protected double speedModifier = 3;
@@ -21,10 +20,15 @@ public abstract class MeleeWeapon extends Weapon {
         super(gamePanel, entity);
         this.range = false;
         this.ammo = 0;
+        this.delay = 500;
     }
 
     public void shoot() {
-        if (this.gamePanel.keyHandler.enterPressed || this.gamePanel.keyHandler.spacePressed) {
+        if (
+            this.gamePanel.keyHandler.enterPressed ||
+            this.gamePanel.keyHandler.spacePressed || 
+            this.gamePanel.mouseHandler.holding 
+        ){
             this.hold++;
         } else {
             if (this.hold > 0) {
@@ -49,7 +53,7 @@ public abstract class MeleeWeapon extends Weapon {
     public abstract MeleeProjectile getProjectile(Entity entity);
 
     public void attack() {
-        if ((this.gamePanel.gameTime - this.lastShot) / Constants.MILLISECOND > this.delay) {
+        if (canShoot()) {
             this.lastShot = this.gamePanel.gameTime;
             this.removeAmmo();
             this.playSound();

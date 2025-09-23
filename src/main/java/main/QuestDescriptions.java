@@ -5,6 +5,8 @@ import java.util.List;
 
 public class QuestDescriptions {
 
+    public static final String TUTORIAL_COMPLETE = "TUTORIAL COMPLETE";
+
     public static final String PIGS = "PIG HELPER";
     public static final String INVENTORY = "INVENTORY PRO";
     public static final String MOM = "MISSING MOM";

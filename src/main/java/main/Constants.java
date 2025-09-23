@@ -57,6 +57,7 @@ public class Constants {
     public static final String GAME_DEATH = "Dead";
     public static final String GAME_LOADING = "Loading";
     public static final String GAME_SAVING = "Saving";
+    public static final String GAME_TITLE_SCREEN_CONTINUE = "Continue";
     public static final String GAME_TITLE_SCREEN_NEW_GAME = "New Game";
     public static final String GAME_TITLE_SCREEN_SAVE_GAME = "Save Game";
     public static final String GAME_TITLE_SCREEN_LOAD_GAME = "Load Game";
@@ -71,6 +72,8 @@ public class Constants {
     public static final String GAME_SETTINGS_EFFECTS_TOGGLE = "Sound Effects: ";
     public static final String GAME_SETTINGS_MUSIC_SLIDER = "Music Volume: ";
     public static final String GAME_SETTINGS_EFFECTS_SLIDER = "Sound Effects Volume: ";
+    public static final String GAME_SETTINGS_MOUSE_AIM = "Mouse Aim: ";
+    public static final String GAME_SETTINGS_CURSOR_SIZE = "Cursor Size: ";
     
     // Inventory Titles
     public static final String INVENTORY = "Inventory";
@@ -96,6 +99,12 @@ public class Constants {
     // Tutorial Notes
     public static final String TUTORIAL_NOTE_KEYSPELL = "A spell has been put on you. Check the effects tab in your inventory.";
 
+    // Menu
+    public static final String TARGET_CURSOR = "/menu/target.png";
+    public static final String TARGET_CURSOR_SMALL = "/menu/target_small.png";
+    public static final String TARGET_CURSOR_WHITE_LARGE = "/menu/target_white.png";
+    public static final String TARGET_CURSOR_WHITE_SMALL = "/menu/target_white_small.png";
+    
     // Files
     public static final String SAVE_FILE = "save.json";
     public static final String LOG_FILE = "Wookster.log";
@@ -446,4 +455,6 @@ public class Constants {
     );
 
     public static final String FONT_ARIAL = "Arial";
+
+    public static final String DEFAULT_SETTINGS = "{\"settingsMap\":{\"Music Volume: \":5,\"Mouse Aim: \":0,\"Sound Effects: \":1,\"Music: \":1,\"Sound Effects Volume: \":5,\"Back\":0,\"Cursor Size: \":1}}";
 }

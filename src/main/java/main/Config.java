@@ -47,13 +47,17 @@ public class Config {
     public void saveConfig() {
         System.out.println("Saving...");
         String data = this.dataWrapper.getDataForSave(this.gamePanel);
+        save(data);
+        // printPrettyString(data);
+    }
+
+    private void save(String data) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(saveFile))) {
             writer.write(data);
         } catch (IOException e) {
             System.err.println("An error occurred while writing to the save file: " + saveFile.getAbsolutePath());
             e.printStackTrace();
         }
-        // printPrettyString(data);
     }
 
     public void printPrettyString(String jsonData) {
@@ -103,6 +107,8 @@ public class Config {
     public boolean hasSavedFile() {
         if (!saveFile.exists()) {
             System.out.println("No saved file, must be a new game");
+            System.out.println("Writing default settings...");
+            save(Constants.DEFAULT_SETTINGS);
             return false;
         }
         return true;
@@ -143,6 +149,22 @@ public class Config {
                 break;
             case Constants.GAME_SETTINGS_EFFECTS_SLIDER:
                 this.gamePanel.sound.setEffectsVolume(value);
+                break;
+            case Constants.GAME_SETTINGS_MOUSE_AIM:
+                boolean mouseAim = ToggleOption.isToggleOn(value);
+                if (mouseAim) {
+                    this.gamePanel.mouseAim = true;
+                } else {
+                    this.gamePanel.mouseAim = false;
+                }
+                break;
+            case Constants.GAME_SETTINGS_CURSOR_SIZE:
+                boolean smallCursor = ToggleOption.isToggleOn(value);
+                if (smallCursor) {
+                    this.gamePanel.currentCursor = this.gamePanel.cursorSmall;
+                } else {
+                    this.gamePanel.currentCursor = this.gamePanel.cursorLarge;
+                }
                 break;
             default:
                 break;

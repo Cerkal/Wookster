@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import entity.Entity;
@@ -12,6 +13,7 @@ import entity.Entity.Direction;
 import entity.Player;
 import main.Constants;
 import main.GamePanel;
+import main.Utils;
 
 public class Projectile {
 
@@ -21,6 +23,7 @@ public class Projectile {
 
     public int worldX;
     public int worldY;
+    public double offset = 0;
     public Direction direction;
     public boolean collisionOn = false;
     public Entity entity;
@@ -38,6 +41,14 @@ public class Projectile {
 
     public int price = 1;
 
+    protected double velocityX = 0;
+    protected double velocityY = 0;
+    protected Entity target;
+
+    boolean mouseAimSet;
+
+    private HashMap<Double, BufferedImage> rotatedImages = new HashMap<>();
+
     public enum ProjectileType {
         ARROWS,
         LASERS
@@ -50,6 +61,62 @@ public class Projectile {
         this.entity = entity;
         this.worldX = entity.worldX;
         this.worldY = entity.worldY;
+
+        mouseAimSet = isMouseAimSet();
+
+        int targetX = 0;
+        int targetY = 0;
+        this.target = entity.getAttackingTarget();
+
+        // PLAYER
+        if (entity instanceof Player) {
+            // Mouse Shoot
+            if (mouseAimSet) {
+                targetX = (int) (this.gamePanel.mouseHandler.target.getX()
+                    - this.gamePanel.player.screenX
+                    + this.gamePanel.player.worldX);
+                targetY = (int) (this.gamePanel.mouseHandler.target.getY()
+                    - this.gamePanel.player.screenY
+                    + this.gamePanel.player.worldY);
+            // Space Shoot
+            } else {
+                switch (this.direction) {
+                    case UP:    this.velocityY = -this.speed; break;
+                    case DOWN:  this.velocityY = this.speed; break;
+                    case LEFT:  this.velocityX = -this.speed; break;
+                    case RIGHT: this.velocityX = this.speed; break;
+                    default: break;
+                }
+                this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
+                return;
+            }
+
+        // ENTITY
+        } else {
+            targetX = this.target.worldX;
+            targetY = this.target.worldY;
+        }
+        
+        int diff = Math.min(
+            Math.abs(entity.worldX - targetX),
+            Math.abs(entity.worldY - targetY)
+        );
+        diff = (int) (Utils.generateRandomInt(diff * -1, diff) * (100 - entity.accuracy) * .01);
+        double dx = targetX - entity.worldX;
+        double dy = targetY - entity.worldY;
+        switch (this.direction) {
+            case UP, DOWN:
+                dx = (targetX + diff) - entity.worldX;
+                break;
+            case LEFT, RIGHT:
+                dy = (targetY + diff) - entity.worldY;
+                break;
+        }
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance != 0) {
+            this.velocityX = (dx / distance) * this.speed;
+            this.velocityY = (dy / distance) * this.speed;
+        }
         this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
     }
 
@@ -83,6 +150,11 @@ public class Projectile {
         try {
             this.originalImage = ImageIO.read(getClass().getResourceAsStream(image));
             this.image = this.originalImage;
+            // Pre-rotate images for cardinal directions
+            rotatedImages.put(0.0, this.originalImage);
+            rotatedImages.put(90.0, rotateImage(this.originalImage, 90));
+            rotatedImages.put(180.0, rotateImage(this.originalImage, 180));
+            rotatedImages.put(270.0, rotateImage(this.originalImage, 270));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,27 +167,36 @@ public class Projectile {
                 this.gamePanel.projectileManager.toRemove.add(this);
             }
         }
-        switch (this.direction) {
-            case UP:
-                this.worldY -= this.speed;
-                this.image = this.originalImage;
-                break;
-            case DOWN:
-                this.worldY += this.speed;
-                this.image = rotateSquareImage(this.originalImage, 180);
-                break;
-            case LEFT:
-                this.worldX -= this.speed;
-                this.image = rotateSquareImage(this.originalImage, 270);
-                break;
-            case RIGHT:
-                this.worldX += this.speed;
-                this.image = rotateSquareImage(this.originalImage, 90);
-                break;
+
+        if (this instanceof MeleeProjectile) {
+            this.worldX = (int) (this.entity.worldX + (this.velocityX * 1.5));
+            this.worldY = (int) (this.entity.worldY + (this.velocityY * 1.5));
+        } else {
+            this.worldX += this.velocityX;
+            this.worldY += this.velocityY;
         }
+
+        if (this.entity instanceof Player && !mouseAimSet) {
+            switch (this.direction) {
+                case UP:    this.image = rotatedImages.get(0.0); break;
+                case DOWN:  this.image = rotatedImages.get(180.0); break;
+                case LEFT:  this.image = rotatedImages.get(270.0); break;
+                case RIGHT: this.image = rotatedImages.get(90.0); break;
+            }
+            return;
+        }
+
+        double angle = Math.toDegrees(Math.atan2(this.velocityY, this.velocityX)) + 90;
+        angle = ((angle % 360) + 360) % 360; // Normalize angle to [0, 360]
+        BufferedImage cached = rotatedImages.get(angle);
+        if (cached == null) {
+            cached = rotateImage(this.originalImage, angle);
+            rotatedImages.put(angle, cached);
+        }
+        this.image = cached;
     }
 
-    private static BufferedImage rotateSquareImage(BufferedImage originalImage, double angleDegrees) {
+    private static BufferedImage rotateImage(BufferedImage originalImage, double angleDegrees) {
         int size = originalImage.getWidth();
         BufferedImage rotatedImage = new BufferedImage(size, size, originalImage.getType());
         Graphics2D g2d = rotatedImage.createGraphics();
@@ -123,6 +204,7 @@ public class Projectile {
         transform.rotate(Math.toRadians(angleDegrees), size / 2.0, size / 2.0);
         g2d.setTransform(transform);
         g2d.drawImage(originalImage, 0, 0, null);
+        g2d.dispose();
         return rotatedImage;
     }
 
@@ -147,5 +229,9 @@ public class Projectile {
 
     public void adjustDamage(double amount) {
         this.damage *= amount;
+    }
+
+    private boolean isMouseAimSet() {
+        return this.gamePanel.mouseAim && this.gamePanel.mouseHandler.target != null;
     }
 }

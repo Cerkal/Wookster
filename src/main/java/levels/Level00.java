@@ -50,6 +50,7 @@ public class Level00 extends LevelBase {
         this.playerStartLocation = new Point(15, 12);
     }
 
+    @Override
     public void init() {
         super.init();
 
@@ -76,7 +77,8 @@ public class Level00 extends LevelBase {
                 );
             }
         };
-        this.oldmanPigs.setDialogue(Dialogue.TUTORIAL_PIGS_START);
+        String[] startLines = this.gamePanel.mouseAim ? Dialogue.TUTORIAL_PIGS_START_MOUSE_AIM : Dialogue.TUTORIAL_PIGS_START;
+        this.oldmanPigs.setDialogue(startLines);
         addNPC(oldmanPigs);
 
         this.oldmanDad = new NPCOld(gamePanel, 16, 27) {
@@ -85,9 +87,14 @@ public class Level00 extends LevelBase {
                 this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.MOM));
                 this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
                 this.gamePanel.levelManager.loadNextLevel();
+                Quest tutorial = new Quest(QuestDescriptions.TUTORIAL_COMPLETE);
+                tutorial.setDisplay(false);
+                this.gamePanel.questManager.addQuest(tutorial);
+                this.gamePanel.questManager.getQuest(QuestDescriptions.TUTORIAL_COMPLETE).completeQuest(gamePanel);;
             }
         };
-        this.oldmanDad.setDialogue(Dialogue.TUTORIAL_COMPLETE);
+        String[] completeLines = this.gamePanel.mouseAim ? Dialogue.TUTORIAL_COMPLETE_MOUSE_AIM : Dialogue.TUTORIAL_COMPLETE;
+        this.oldmanDad.setDialogue(completeLines);
         this.oldmanDad.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(this.oldmanDad);       
     }
@@ -134,7 +141,13 @@ public class Level00 extends LevelBase {
                 }
             }
         }
-        if (inPen.size() == pigCount && this.questManager.isActiveQuest(QuestDescriptions.PIGS)) {
+        if (
+            inPen.size() == pigCount &&
+            (
+                this.questManager.isActiveQuest(QuestDescriptions.PIGS) ||
+                this.questManager.isCompletedQuest(QuestDescriptions.PIGS)
+            )
+        ){
             int deadCount = 0;
             for (Entity entity : this.gamePanel.npcs) {
                 if (entity instanceof Animal) {
@@ -174,7 +187,7 @@ public class Level00 extends LevelBase {
         }
 
         if (this.gamePanel.questManager.isCompletedQuest(QuestDescriptions.PIGS)) {
-            this.oldmanPigsFinished.setDialogue(Dialogue.TUTORIAL_PIGS_END);
+            if (this.oldmanPigsFinished != null) this.oldmanPigsFinished.setDialogue(Dialogue.TUTORIAL_PIGS_END);
             this.gamePanel.objects.remove(this.inventoryDoor);
 
             if (this.oldmanInventory == null) {

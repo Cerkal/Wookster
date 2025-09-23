@@ -15,7 +15,8 @@ public class KeyHandler implements KeyListener {
     GamePanel gamePanel;
 
     public static String SPACEBAR = "[spacebar]";
-    public static String I = "[i]";
+    public static String LEFT_MOUSE_BUTTON = "[left mouse button]";
+    public static String TAB = "[tab]";
     public static String R = "[r]";
 
     public KeyHandler(GamePanel gamePanel) {
@@ -27,7 +28,6 @@ public class KeyHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-
         switch (this.gamePanel.gameState) {
             case GameState.PLAY:
                 if (code == KeyEvent.VK_W) {
@@ -51,7 +51,7 @@ public class KeyHandler implements KeyListener {
                 if (code == KeyEvent.VK_ENTER) {
                     this.enterPressed = true;
                 }
-                if (code == KeyEvent.VK_I) {
+                if (code == KeyEvent.VK_I || code == KeyEvent.VK_TAB) {
                     this.gamePanel.ui.screenSelector.clearScreens();
                     for (int i = 0; i < Constants.INVENTORY_TABS.size(); i++) {
                         this.gamePanel.ui.screenSelector.addScreen(new ArrayList<>());
@@ -96,7 +96,7 @@ public class KeyHandler implements KeyListener {
                         this.gamePanel.player.spells.get(SpellType.CLARITY_SPELL).removeSpell(this.gamePanel.player);
                     }
                 }
-                if (code == KeyEvent.VK_I) {
+                if (code == KeyEvent.VK_I || code == KeyEvent.VK_TAB) {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
                 break;

@@ -1,8 +1,10 @@
 package main;
 
 import java.awt.Canvas;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import effects.Effect;
@@ -52,10 +55,20 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
     public boolean debugAllWeapons = false;
+    
+    // Mouse Aim
+    public boolean mouseAim = true;
+    public Cursor cursorSmall;
+    public Cursor cursorLarge;
+    public Cursor defaultCursor;
+    public Cursor currentCursor;
+    private boolean cursorHidden = false;
 
     public GameState gameState = GameState.TITLE;
     public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
+    public MouseHandler mouseHandler = new MouseHandler(this);
+    public MouseMoveHandler mouseMoveHandler = new MouseMoveHandler(this);
     public QuestManager questManager = new QuestManager(this);
     public Sound sound = new Sound();
     public Config config = new Config(this);
@@ -82,13 +95,16 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
-    static final int NEW_GAME_LEVEL_INDEX = 3;
+    static final int NEW_GAME_LEVEL_INDEX = 0;
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setIgnoreRepaint(true);
         setFocusable(true);
         addKeyListener(this.player.keyHandler);
+        addMouseListener(this.mouseHandler);
+        // addMouseMotionListener(this.mouseMoveHandler);
+        setDefaultCursor();
         loadLevels();
     }
 
@@ -203,13 +219,13 @@ public class GamePanel extends Canvas implements Runnable {
             }
 
             // Maintain FPS by sleeping the thread
-            // long frameTime = System.nanoTime() - now;
-            // long sleepTime = (long) NS_PER_UPDATE - frameTime;
-            // if (sleepTime > 0) {
-            //     try {
-            //         Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
-            //     } catch (InterruptedException ignored) {}
-            // }
+            long frameTime = System.nanoTime() - now;
+            long sleepTime = (long) NS_PER_UPDATE - frameTime;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
+                } catch (InterruptedException ignored) {}
+            }
         }
     }
 
@@ -329,5 +345,39 @@ public class GamePanel extends Canvas implements Runnable {
         levelManager.addLevel(new Level01(this));
         levelManager.addLevel(new Level02(this));
         levelManager.addLevel(new Level03(this));
+    }
+
+    private void setDefaultCursor() {
+        try {
+            defaultCursor = Cursor.getDefaultCursor();
+
+            BufferedImage cursorImageSmall = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE_SMALL));
+            cursorSmall = Toolkit.getDefaultToolkit().createCustomCursor(cursorImageSmall, new Point(8, 8), Constants.TARGET_CURSOR_WHITE_SMALL);
+            
+            BufferedImage cursorImageLarge = ImageIO.read(getClass().getResourceAsStream(Constants.TARGET_CURSOR_WHITE_LARGE));
+            cursorLarge = Toolkit.getDefaultToolkit().createCustomCursor(cursorImageLarge, new Point(8, 8), Constants.TARGET_CURSOR_WHITE_LARGE);
+
+            currentCursor = cursorSmall;
+        } catch (Exception e) {}
+    }
+
+    public void targetMouse() {
+        if (!mouseAim) return;
+        setCursor(this.currentCursor);
+        cursorHidden = true;
+    }
+
+    public void showMouse() {
+        if (!cursorHidden) return;
+        setCursor(defaultCursor);
+        cursorHidden = false;
+    }
+
+    public void toggleMouse() {
+        if (cursorHidden) {
+            showMouse();
+        } else {
+            targetMouse();
+        }
     }
 }

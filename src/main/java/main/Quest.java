@@ -11,6 +11,7 @@ public class Quest {
     int progress;
     ResolutionLevel resolution = ResolutionLevel.DEFAULT;
     HashMap<ResolutionLevel, Integer> paymentMap;
+    boolean display = true;
 
     public static enum ResolutionLevel {
         POSTIVE,
@@ -82,5 +83,9 @@ public class Quest {
     @Override
     public String toString() {
         return "[" + this.progress + "]";
+    }
+
+    public void setDisplay(boolean value) {
+        this.display = value;
     }
 }

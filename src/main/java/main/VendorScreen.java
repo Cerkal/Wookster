@@ -42,11 +42,12 @@ public class VendorScreen {
         this.screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale()));
         this.screenSelector.set(1, getSelectionItems(this.vendorInventory));
 
+        this.screenSelector.setPageSize(ScreenSelector.PAGE_SIZE);
         int active = this.screenSelector.getScreenIndex();
         int passive = active == 0 ? 1 : 0;
 
         int leftSideX = Constants.TILE_SIZE * 2 - 10;
-        int leftSideY = Constants.TILE_SIZE * 4;
+        int leftSideY = Constants.TILE_SIZE * 4 - 30;
 
         graphics2D.setColor(Color.WHITE);
         int side = (int) (Constants.TILE_SIZE * 2.5);
@@ -58,7 +59,7 @@ public class VendorScreen {
         }
 
         int rightSideX = Constants.SCREEN_WIDTH / 2 + (Constants.TILE_SIZE * 2) - 10;
-        int rightSideY = Constants.TILE_SIZE * 4;
+        int rightSideY = Constants.TILE_SIZE * 4 - 30;
 
         SelectionResult selectedItem = screenSelector.selector(
             graphics2D,
@@ -156,6 +157,8 @@ public class VendorScreen {
         graphics2D.setColor(Color.WHITE);
         String name = entity == null ?  this.gamePanel.player.getContainerName().toUpperCase() : entity.name.toUpperCase();
         graphics2D.drawString(name, halfScreen + Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 2);
+
+        graphics2D.drawString("Press [e] to exit", Constants.TILE_SIZE * 2, height);
     }
 
     private List<SelectionItem> getSelectionItems(List<InventoryItem> itemList) {
