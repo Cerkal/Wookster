@@ -243,18 +243,38 @@ public abstract class Entity {
 
     private void checkVisibility() {
         if (this.movable == false) { return; }
-        this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
-        
-        if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
-            this.isAlerted = true;
-            if (this.moveStatus == MoveStatus.WANDER) {
-                setDefaultSpeed();
-                clearMoveQueue();
+
+        if (!this.isFriendly && this instanceof Animal == false) {
+            for (Entity entity : this.gamePanel.npcs) {
+                if (this.attackingTarget == null) {
+                    if (this.moveStatus == MoveStatus.WANDER) {
+                        setDefaultSpeed();
+                        clearMoveQueue();
+                    }
+                    this.isAlerted = true;
+                    if (this.gamePanel.collision.checkLineTileCollision(entity, this) == false) { continue; }
+                    this.attackingTarget = entity;
+                    actionTimeout();
+                    setChase();
+                    System.out.println("attacking: " + this.attackingTarget);
+                    return;
+                }
             }
-            this.attackingTarget = this.attackingTarget == null ? this.gamePanel.player : this.attackingTarget;
-            actionTimeout();
-            setChase();
         }
+        System.out.println("attacking 2: " + this.attackingTarget);
+
+        // this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
+        
+        // if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
+        //     this.isAlerted = true;
+        //     if (this.moveStatus == MoveStatus.WANDER) {
+        //         setDefaultSpeed();
+        //         clearMoveQueue();
+        //     }
+        //     this.attackingTarget = this.gamePanel.player;
+        //     actionTimeout();
+        //     setChase();
+        // }
     }
 
      private void checkFrenzy() {
@@ -429,7 +449,7 @@ public abstract class Entity {
             }
         }
         
-        if (this.isFriendly && attacker instanceof Player) {
+        if (this.isFriendly && attacker instanceof Player && !this.warned) {
             if (this.warningMessage == null) { this.warningMessage = Dialogue.DEFAULT_WARNING[0]; }
             this.gamePanel.ui.displayDialog(this.warningMessage);
             this.warned = true;
@@ -649,7 +669,6 @@ public abstract class Entity {
         if ((collidedWithEntity || collidedWithPlayer)) {
             if (
                 !this.pushback ||
-                this.moveStatus == MoveStatus.FOLLOW ||
                 this.moveStatus == MoveStatus.CHASING ||
                 this.moveStatus == MoveStatus.IDEL
             ){
@@ -658,6 +677,14 @@ public abstract class Entity {
             }
 
             collisionCounter++;
+            if (collidedWithPlayer && this.moveStatus == MoveStatus.FOLLOW) {
+                if (collisionCounter > 250) {
+                    this.frenzyTarget = getPushBackLocationFollow(collisionPlayer);
+                    collisionCounter = 0;
+                }
+                return;
+            }
+
             if (collisionCounter > this.speed * 2) {
                 if (collidedWithEntity) {
                     this.frenzyTarget = getPushBackLocation(collisionEntity);
@@ -700,7 +727,8 @@ public abstract class Entity {
         if (this.primaryWeapon == null) { return; }
         if (this.primaryWeapon instanceof MeleeWeapon) { return; }
         if (!this.isAlerted) { return; }
-        
+        if (this.attackingTarget == null) { return; }
+
         int buffer = 1;
         int entityX = getLocation().x;
         int entityY = getLocation().y;
@@ -881,7 +909,64 @@ public abstract class Entity {
         }
     }
 
+    private Point getPushBackLocationFollow(Entity entity) {
+        List<Point> points = new ArrayList<>();
+        int dx = entity.worldX - worldX;
+        int dy = entity.worldY - worldY;
+        int startX, endX, startY, endY;
+        int size = 3;
+        // Determine X range
+        if (dx < 0) { // entity is left of this
+            startX = getRawX() + 1;
+            endX = getRawX() + size;
+        } else if (dx > 0) { // entity is right of this
+            startX = getRawX() - size;
+            endX = getRawX() - 1;
+        } else { // same X, allow both sides
+            startX = getRawX() - size/2;
+            endX = getRawX() + size/2;
+        }
+
+        // Determine Y range
+        if (dy < 0) { // entity is above this
+            startY = getRawY() + 1;
+            endY = getRawY() + size;
+        } else if (dy > 0) { // entity is below this
+            startY = getRawY() - size;
+            endY = getRawY() - 1;
+        } else { // same Y, allow both sides
+            startY = getRawY() - size/2;
+            endY = getRawY() + size/2;
+        }
+
+        // Clamp to map bounds
+        int maxX = this.gamePanel.tileManager.walkableTiles.length - 1;
+        int maxY = this.gamePanel.tileManager.walkableTiles[0].length - 1;
+        startX = Math.max(0, Math.min(startX, maxX));
+        endX = Math.max(0, Math.min(endX, maxX));
+        startY = Math.max(0, Math.min(startY, maxY));
+        endY = Math.max(0, Math.min(endY, maxY));
+
+        // Ensure correct iteration direction
+        int stepX = startX <= endX ? 1 : -1;
+        int stepY = startY <= endY ? 1 : -1;
+
+        for (int x = startX; stepX > 0 ? x <= endX : x >= endX; x += stepX) {
+            for (int y = startY; stepY > 0 ? y <= endY : y >= endY; y += stepY) {
+            if (this.gamePanel.tileManager.walkableTiles[x][y]) {
+                points.add(new Point(x, y));
+            }
+            }
+        }
+        if (!points.isEmpty()) {
+            return getPushBackLocFromWalkable(points);
+        }
+        return getFrenzyLocation();
+    }
+    
     private Point getPushBackLocation(Entity entity) {
+        if (this.moveStatus == MoveStatus.FOLLOW) return getPushBackLocationFollow(entity);
+
         int dx = entity.worldX - worldX;
         int dy = entity.worldY - worldY;
         List<Point> points = new ArrayList<Point>();
@@ -903,6 +988,7 @@ public abstract class Entity {
     }
 
     private Point getPushBackLocFromWalkable(List<Point> points) {
+        System.out.println("points " + points);
         this.frenzyTarget = points.get(Utils.generateRandomInt(0, points.size() - 1));
         if (!getValidFrenzyPath()) {
             points.remove(this.frenzyTarget);
@@ -1083,5 +1169,12 @@ public abstract class Entity {
         public void printDefaults(Entity entity, String name) {
             if (entity.name == name) printDefaults(entity);
         }
+    }
+
+    private void setAttacker(Entity entity) {
+        if (this.attackingTarget != null) return;
+        if (this == entity) return;
+        if (entity == null || getClass() != entity.getClass()) return;
+        this.attackingTarget = entity;
     }
 }
