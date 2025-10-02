@@ -234,7 +234,7 @@ public class Collision {
         }
     }
 
-    public boolean checkLineTileCollision(Player player, Entity entity) {
+    public boolean checkLineTileCollision(Entity target, Entity entity) {
         if (
             entity.worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
             entity.worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
@@ -243,8 +243,8 @@ public class Collision {
         ){
             int startX = entity.worldX + Constants.TILE_SIZE/2;
             int startY = entity.worldY + Constants.TILE_SIZE/2;
-            int endX = player.worldX + Constants.TILE_SIZE/2;
-            int endY = player.worldY + Constants.TILE_SIZE/2;
+            int endX = target.worldX + Constants.TILE_SIZE/2;
+            int endY = target.worldY + Constants.TILE_SIZE/2;
 
             // Bresenham’s line algorithm
             int x0 = startX / Constants.TILE_SIZE;

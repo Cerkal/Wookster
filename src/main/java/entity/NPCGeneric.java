@@ -16,6 +16,7 @@ public class NPCGeneric extends Entity {
         this.name = "Generic";
         this.movable = false;
         this.isFriendly = true;
+        this.warned = true;
     }
 
     @Override

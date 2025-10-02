@@ -10,6 +10,7 @@ import entity.Animal;
 import entity.Entity;
 import entity.NPCGeneric;
 import entity.NPCMom;
+import entity.NPCTrooper;
 import entity.NPCVendor;
 import entity.Entity.MoveStatus;
 import main.Constants;
@@ -170,6 +171,11 @@ public class Level03 extends LevelBase {
         villager04.setMoveStatus(MoveStatus.WANDER);
         villager04.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(villager04);
+
+        NPCTrooper trooper = new NPCTrooper(gamePanel, 14, 15);
+        trooper.setWander();
+        trooper.setMoveStatus(MoveStatus.WANDER);
+        addNPC(trooper);
     }
 
     @Override

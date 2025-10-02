@@ -50,11 +50,11 @@ public class NPCTrooper extends Entity {
         spriteManager.setSprite(b, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_1));
 
         String i = SpriteAnimation.IDEL.name();
-        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_IDEL_UP_00));
+        spriteManager.setSprite(i, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_UP_0));
         spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_DOWN_00, 250));
         spriteManager.setSprite(i, new Sprite(Direction.DOWN, Constants.TROOPER_IMAGE_IDEL_DOWN_01, 50));
-        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_IDEL_LEFT_00));
-        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_IDEL_RIGHT_00));
+        spriteManager.setSprite(i, new Sprite(Direction.LEFT, Constants.TROOPER_IMAGE_LEFT_0));
+        spriteManager.setSprite(i, new Sprite(Direction.RIGHT, Constants.TROOPER_IMAGE_RIGHT_0));
 
         String fist = WeaponType.FIST.name();
         spriteManager.setSprite(fist, new Sprite(Direction.UP, Constants.TROOPER_IMAGE_FIST_UP_00));
