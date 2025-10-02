@@ -58,6 +58,7 @@ public class TitleScreen {
                             @Override
                             public void action(GamePanel gamePanel) {
                                 gamePanel.newGame();
+                                gamePanel.config.saveConfig();
                             }
                         },
                         new Option(Constants.GAME_TITLE_SCREEN_LOAD_GAME) {

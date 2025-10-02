@@ -122,6 +122,7 @@ public abstract class Entity {
     // Inventory Items
     public boolean isVendor = false;
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
+    public int priceModifier = 1;
 
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -349,7 +350,7 @@ public abstract class Entity {
         }).start();
     }
 
-    public void handlePlayerCollision(Player player) {
+    public void handlePlayerCollision() {
         if (this.isFriendly || this.moveStatus == MoveStatus.FOLLOW) { return; }
         if (this.isAlerted) {
             if (this.weapons != null && this.weapons.containsKey(WeaponType.FIST)) {
@@ -406,6 +407,7 @@ public abstract class Entity {
             this.gamePanel.death();
             return;
         }
+        if (this instanceof Player) { return; }
         this.isAlerted = true;
 
         System.out.println(this.entityType + ": " + getCurrentHealth());
@@ -641,7 +643,8 @@ public abstract class Entity {
         boolean collidedWithPlayer = collisionPlayer != null;
         
         if (collidedWithPlayer || collidedWithEntity) {
-            handlePlayerCollision(this.gamePanel.player);
+            handlePlayerCollision();
+            return;
         } else {
             if (this.primaryWeapon != null) this.weapon = this.primaryWeapon;
         }

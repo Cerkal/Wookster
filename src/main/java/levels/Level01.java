@@ -9,9 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import entity.NPCTrooper;
+import entity.Entity.MoveStatus;
 import main.Constants;
 import main.GamePanel;
+import main.InventoryItem;
+import main.Utils;
 import objects.CarryPotionObject;
+import objects.ContainerObject;
 import objects.DoorObject;
 import objects.JermeyObject;
 import objects.KeyObject;
@@ -38,7 +42,9 @@ public class Level01 extends LevelBase {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);
         addNPC(new NPCTrooper(gamePanel, 23, 12));
-        addNPC(new NPCTrooper(gamePanel, 38, 8));
+        NPCTrooper trooper = new NPCTrooper(gamePanel, 38, 8);
+        trooper.setMoveStatus(MoveStatus.WANDER);
+        addNPC(trooper);
         addNPC(new NPCTrooper(gamePanel, 30, 39));
     }
 
@@ -59,6 +65,19 @@ public class Level01 extends LevelBase {
         addGameObject(new CarryPotionObject(this.gamePanel, new HealthSpell()));
         addGameObject(new CarryPotionObject(this.gamePanel, new SpeedSpell()));
         addGameObject(new CarryPotionObject(this.gamePanel, new ClaritySpell()));
+
+        ContainerObject chest = new ContainerObject(this.gamePanel, 37, 43);
+        chest.name = "Random Chest";
+        chest.setInventoryItems(new ArrayList<>(
+                List.of(
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true),
+                    new InventoryItem(new CarryPotionObject(this.gamePanel), Utils.generateRandomInt(0, 2), true)
+
+                )
+            )
+        );
+        addGameObject(chest);
     }
 
     @Override

@@ -216,6 +216,7 @@ public class Constants {
     public static final String WOOKSER_TINY_HAT = "/player/tiny_hat.png";
     public static final String WOOKSER_GOGGLE_HAT = "/player/goggles_hat.png";
     public static final String WOOKSER_TOP_HAT = "/player/top_hat.png";
+    public static final String WOOKSER_BLUE_HAT = "/player/blue_hat.png";
 
     // Droids
     public static final String DROIDS_IMAGE_DOWN_0 = "/npc/droids.png";

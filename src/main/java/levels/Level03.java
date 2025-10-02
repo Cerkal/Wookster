@@ -74,6 +74,7 @@ public class Level03 extends LevelBase {
         );
         this.vendor.setMoveStatus(MoveStatus.WANDER);
         this.vendor.name = "Bucket Head";
+        this.vendor.setHat(Constants.WOOKSER_BUCKET_HAT);
         this.vendor.setVendor(
             new ArrayList<>(
                 List.of(

@@ -25,7 +25,6 @@ public class NPCVendor extends Entity {
         this.pushback = false;
         this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
         this.primaryWeapon = new CrossbowWeapon(gamePanel, this);
-        setHat(Constants.WOOKSER_BUCKET_HAT);
     }
 
     @Override

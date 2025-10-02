@@ -94,13 +94,18 @@ public class Dialogue {
         "I'm your dad by the way."
     };
 
-    // Level 01
+    // Level 02
     public static final String[] LEVEL_01_MOM = {
         "Trees hu?",
         "It's easy to get lost in here.",
         "I was going to make this my home.",
         "Thank God you found me.",
         "Lead the way. I'll follow you."
+    };
+
+    public static final String[] LEVEL_02_VENDOR_INTRO = {
+        "I'm Ammo Andy.",
+        "I sell ammo at very high prices.",
     };
 
     // Level 03
