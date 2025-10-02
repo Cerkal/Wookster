@@ -13,6 +13,7 @@ public class NPCGeneric extends Entity {
         this.direction = Direction.DOWN;
         this.speed = 2;
         this.entityType = EntityType.NPC;
+        this.damageSound = Constants.SOUND_HURT;
         this.name = "Generic";
         this.movable = false;
         this.isFriendly = true;

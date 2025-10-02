@@ -54,6 +54,7 @@ public abstract class Entity {
     // Location
     public int worldX, worldY, startingX, startingY;
     public int speed, defaultSpeed;
+    public int runSpeed = 4;
     public Direction direction, startingDirection;
     public MoveStatus moveStatus = MoveStatus.IDEL;
     MoveStatus defaultMoveStatus = MoveStatus.IDEL;
@@ -159,8 +160,12 @@ public abstract class Entity {
                 checkFrenzy();
                 break;
             case MoveStatus.CHASING:
-                checkLineOfFire();
-                checkChase();
+                try {
+                    checkLineOfFire();
+                    checkChase();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
                 break;
             case MoveStatus.FOLLOW:
                 checkFollow();
@@ -245,52 +250,47 @@ public abstract class Entity {
     private void checkVisibility() {
         if (this.movable == false) { return; }
 
-        if (!this.isFriendly && this instanceof Animal == false) {
-            for (Entity entity : this.gamePanel.npcs) {
+        if (!this.isFriendly && this instanceof Animal == false && this.moveStatus != MoveStatus.FRENZY) {
+
+            List<Entity> entities = new ArrayList<>(this.gamePanel.npcs);
+            entities.add(this.gamePanel.player);
+
+            for (Entity entity : entities) {
                 if (entity.isDead) continue;
-                if (this.moveStatus == MoveStatus.WANDER) {
-                    setDefaultSpeed();
-                    clearMoveQueue();
-                }
-                if (this.attackingTarget != null) {
+                if (this.getClass() == entity.getClass() || this == entity) continue;
+                boolean target = this.gamePanel.collision.checkLineTileCollision(entity, this);
+                if (this.attackingTarget == null && target) {
                     actionTimeout();
-                    setChase();
-                    System.out.println("attacking: " + this.attackingTarget);
-                    return;    
-                } else {
                     this.isAlerted = true;
-                    if (this.gamePanel.collision.checkLineTileCollision(entity, this) == false) { continue; }
                     this.attackingTarget = entity;
-                    actionTimeout();
-                    setChase();
-                    System.out.println("attacking: " + this.attackingTarget);
+                    if (this.moveStatus == MoveStatus.WANDER) {
+                        setDefaultSpeed();
+                        clearMoveQueue();
+                    }
+                    System.out.println(this.name + " attacking: " + this.attackingTarget);
                 }
+                if ((this.attackingTarget == entity) || this.isAlerted) setChase();
             }
+            return;
         }
-        // this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
-        
-        // if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
-        //     this.isAlerted = true;
-        //     if (this.moveStatus == MoveStatus.WANDER) {
-        //         setDefaultSpeed();
-        //         clearMoveQueue();
-        //     }
-        //     this.attackingTarget = this.gamePanel.player;
-        //     actionTimeout();
-        //     setChase();
-        // }
     }
 
      private void checkFrenzy() {
         if (this.isFrenzy && isMoveQueueEmpty()) {
+            if (this.moveStatus == MoveStatus.FRENZY) setRunSpeed();
             setDefaultSpeed();
             startFrenzy(getFrenzyLocation());
         }
     }
 
-    private int setDefaultSpeed() {
+    public int setDefaultSpeed() {
         if (this.defaultSpeed == 0) this.defaultSpeed = this.speed;
         this.speed = this.defaultSpeed;
+        return this.speed;
+    }
+
+    private int setRunSpeed() {
+        this.speed = this.runSpeed;
         return this.speed;
     }
 
@@ -352,9 +352,7 @@ public abstract class Entity {
 
     private void actionTimeout() {
         if (this.timerStarted) { return; }
-        
         this.timerStarted = true;
-        Defaults defaults = new Defaults(this);
         new Thread(() -> {
             try {
                 Thread.sleep(DEFAULT_TIMEOUT);
@@ -366,8 +364,6 @@ public abstract class Entity {
                 // Reset to old status
                 clearMoveQueue();
                 defaults.revertToDefault(this);
-                defaults.printDefaults(this, "Attacker 1");
-                defaults.printDefaults(this, "Attacker 2");
                 System.out.println("actionTimeout: " + this.name + " is going back to " + this.moveStatus.name() + ".");
             }
         }).start();
@@ -431,6 +427,7 @@ public abstract class Entity {
             return;
         }
         if (this instanceof Player) { return; }
+        if (this.getClass() == attacker.getClass()) { return; }
         this.isAlerted = true;
 
         System.out.println(this.entityType + ": " + getCurrentHealth());
@@ -656,7 +653,16 @@ public abstract class Entity {
 
     private void collision() {
         this.collisionOn = false;
-        this.gamePanel.collision.checkTile(this);
+        boolean collision = this.gamePanel.collision.checkTile(this);
+        if (collision) {
+            System.out.println(this.name + " collison");
+            collisionCounter++;
+            if (collisionCounter > 50) {
+                this.frenzyTarget = getFrenzyLocation();
+                startFrenzy(this.frenzyTarget);
+                return;
+            }
+        }
         this.gamePanel.collision.objectCollision(this, false);
 
         collisionEntity = this.gamePanel.collision.entityCollision(this);
@@ -667,7 +673,6 @@ public abstract class Entity {
         
         if (collidedWithPlayer || collidedWithEntity) {
             handlePlayerCollision();
-            return;
         } else {
             if (this.primaryWeapon != null) this.weapon = this.primaryWeapon;
         }
@@ -884,13 +889,20 @@ public abstract class Entity {
     }
 
     private Point getFrenzyLocation() {
-        if (this.areaPoints != null && !this.areaPoints.isEmpty()) {
+        // Wookie frenzy location
+        if (this.areaPoints != null && !this.areaPoints.isEmpty() && (this.moveStatus != MoveStatus.FRENZY || this instanceof Animal)) {
             return this.gamePanel.tileManager.getRandomTileLocationsWithinArea(this.areaPoints);
         }
-        List<Point> points = getDefaultPoints();
-        if (points != null && !points.isEmpty()) {
-            return points.get(Utils.generateRandomInt(0, points.size() - 1));
+        
+        // Move to animal override
+        if (this instanceof Animal && this.isFrenzy) {
+            List<Point> points = getDefaultPoints();
+            if (points != null && !points.isEmpty()) {
+                return points.get(Utils.generateRandomInt(0, points.size() - 1));
+            }
         }
+
+        // Find any spot on the map
         TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
         return new Point(tileLocation.worldX, tileLocation.worldY);
     }
@@ -994,7 +1006,6 @@ public abstract class Entity {
     }
 
     private Point getPushBackLocFromWalkable(List<Point> points) {
-        System.out.println("points " + points);
         this.frenzyTarget = points.get(Utils.generateRandomInt(0, points.size() - 1));
         if (!getValidFrenzyPath()) {
             points.remove(this.frenzyTarget);
@@ -1128,7 +1139,7 @@ public abstract class Entity {
         this.isReady = true;
     }
 
-    private void clearMoveQueue() {
+    public void clearMoveQueue() {
         if (this.moveQueue != null) {
             this.moveQueue.clear();
         }
@@ -1143,6 +1154,7 @@ public abstract class Entity {
         public boolean warned;
         public boolean isMoving;
         public MoveStatus moveStatus;
+        private Entity attackingTarget;
 
         public Defaults(Entity entity) {
             this.isAlerted = entity.isAlerted;
@@ -1153,6 +1165,7 @@ public abstract class Entity {
             this.warned = entity.warned;
             this.isMoving = entity.isMoving;
             this.moveStatus = entity.moveStatus;
+            this.attackingTarget = entity.attackingTarget;
         }
 
         public void revertToDefault(Entity entity) {
@@ -1164,6 +1177,7 @@ public abstract class Entity {
             entity.warned = this.warned;
             entity.isMoving = this.isMoving;
             entity.moveStatus = this.moveStatus;
+            entity.attackingTarget = this.attackingTarget;
         }
 
         public void printDefaults(Entity entity) {
@@ -1175,12 +1189,5 @@ public abstract class Entity {
         public void printDefaults(Entity entity, String name) {
             if (entity.name == name) printDefaults(entity);
         }
-    }
-
-    private void setAttacker(Entity entity) {
-        if (this.attackingTarget != null) return;
-        if (this == entity) return;
-        if (entity == null || getClass() != entity.getClass()) return;
-        this.attackingTarget = entity;
     }
 }

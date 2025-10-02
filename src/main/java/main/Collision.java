@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import entity.Entity;
-import entity.Player;
 import objects.SuperObject;
 import objects.projectiles.Projectile;
 import tile.Tile;
@@ -17,7 +16,7 @@ public class Collision {
         this.gamePanel = gamePanel;
     }
 
-    public void checkTile(Entity entity) {
+    public boolean checkTile(Entity entity) {
         int entityBoundaryLeft = entity.worldX + entity.solidArea.x;
         int entityBoundaryRight = entity.worldX + entity.solidArea.x + entity.solidArea.width;
         int entityBoundaryTop = entity.worldY + entity.solidArea.y;
@@ -64,7 +63,9 @@ public class Collision {
             gamePanel.tileManager.tile[tileNum2].collision == true
         ){
             entity.collisionOn = true;
+            return true;
         }
+        return false;
     }
 
     public SuperObject objectCollision(Entity entity, boolean player) {
@@ -236,10 +237,10 @@ public class Collision {
 
     public boolean checkLineTileCollision(Entity target, Entity entity) {
         if (
-            entity.worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
-            entity.worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
-            entity.worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
-            entity.worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+            entity.worldX + (Constants.TILE_SIZE) > (target.worldX - this.gamePanel.player.screenX) &&
+            entity.worldX - (Constants.TILE_SIZE) < (target.worldX + this.gamePanel.player.screenX) &&
+            entity.worldY + (Constants.TILE_SIZE) > (target.worldY - this.gamePanel.player.screenY) &&
+            entity.worldY - (Constants.TILE_SIZE) < (target.worldY + this.gamePanel.player.screenY)
         ){
             int startX = entity.worldX + Constants.TILE_SIZE/2;
             int startY = entity.worldY + Constants.TILE_SIZE/2;

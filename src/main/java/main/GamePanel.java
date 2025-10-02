@@ -95,7 +95,7 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
-    static final int NEW_GAME_LEVEL_INDEX = 3;
+    static final int NEW_GAME_LEVEL_INDEX = 0;
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));

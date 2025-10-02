@@ -11,6 +11,7 @@ public class Animal extends Entity {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
         this.speed = 2;
+        this.runSpeed = 2;
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ANIMAL;
         this.name = "Animal";
