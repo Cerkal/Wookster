@@ -246,23 +246,26 @@ public abstract class Entity {
 
         if (!this.isFriendly && this instanceof Animal == false) {
             for (Entity entity : this.gamePanel.npcs) {
-                if (this.attackingTarget == null) {
-                    if (this.moveStatus == MoveStatus.WANDER) {
-                        setDefaultSpeed();
-                        clearMoveQueue();
-                    }
+                if (entity.isDead) continue;
+                if (this.moveStatus == MoveStatus.WANDER) {
+                    setDefaultSpeed();
+                    clearMoveQueue();
+                }
+                if (this.attackingTarget != null) {
+                    actionTimeout();
+                    setChase();
+                    System.out.println("attacking: " + this.attackingTarget);
+                    return;    
+                } else {
                     this.isAlerted = true;
                     if (this.gamePanel.collision.checkLineTileCollision(entity, this) == false) { continue; }
                     this.attackingTarget = entity;
                     actionTimeout();
                     setChase();
                     System.out.println("attacking: " + this.attackingTarget);
-                    return;
                 }
             }
         }
-        System.out.println("attacking 2: " + this.attackingTarget);
-
         // this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
         
         // if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {

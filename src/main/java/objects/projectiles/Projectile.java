@@ -68,6 +68,18 @@ public class Projectile {
         int targetY = 0;
         this.target = entity.getAttackingTarget();
 
+        if (this.target == null) {
+            switch (this.direction) {
+                case UP:    this.velocityY = -this.speed; break;
+                case DOWN:  this.velocityY = this.speed; break;
+                case LEFT:  this.velocityX = -this.speed; break;
+                case RIGHT: this.velocityX = this.speed; break;
+                default: break;
+            }
+            this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
+            return;
+        }
+
         // PLAYER
         if (entity instanceof Player) {
             // Mouse Shoot
@@ -78,19 +90,7 @@ public class Projectile {
                 targetY = (int) (this.gamePanel.mouseHandler.target.getY()
                     - this.gamePanel.player.screenY
                     + this.gamePanel.player.worldY);
-            // Space Shoot
-            } else {
-                switch (this.direction) {
-                    case UP:    this.velocityY = -this.speed; break;
-                    case DOWN:  this.velocityY = this.speed; break;
-                    case LEFT:  this.velocityX = -this.speed; break;
-                    case RIGHT: this.velocityX = this.speed; break;
-                    default: break;
-                }
-                this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
-                return;
             }
-
         // ENTITY
         } else {
             targetX = this.target.worldX;
