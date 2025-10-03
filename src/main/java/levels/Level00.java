@@ -57,10 +57,14 @@ public class Level00 extends LevelBase {
         this.gamePanel.ui.displayDialog("Move using [w] [a] [s] [d] keys. Press " + KeyHandler.SPACEBAR + " to talk.");
         this.pigs = Arrays.asList(
             new Animal(gamePanel, 20, 8),
-            new Animal(gamePanel, 20, 12),
-            new Animal(gamePanel, 20, 16)
+            new Animal(gamePanel, 20, 12)
         );
         addNPC(this.pigs);
+
+            
+        Animal animal = new Animal(gamePanel, 20, 9);
+        animal.name = "TEST";
+        addNPC(animal); 
 
         this.oldmanPigs = new NPCOld(gamePanel, 22, 15) {
             @Override

@@ -119,6 +119,11 @@ public class Collision {
     }
 
     public Entity getCollidEntity(Entity entity, Entity target) {
+            
+        if (entity == target || entity.predictiveCollisionSelf == target) {
+            return null;
+        }
+
         Entity collisionEntity = null;
 
         entity.solidArea.x = entity.worldX + entity.solidArea.x;
@@ -142,7 +147,6 @@ public class Collision {
         }
         if (
             !target.isDead &&
-            entity != target &&
             entity.solidArea.intersects(target.solidArea)
         ){
             entity.collisionOn = true;
