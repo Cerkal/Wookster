@@ -60,7 +60,6 @@ public class Level00 extends LevelBase {
             new Animal(gamePanel, 20, 12)
         );
         addNPC(this.pigs);
-
             
         Animal animal = new Animal(gamePanel, 20, 9);
         animal.name = "TEST";

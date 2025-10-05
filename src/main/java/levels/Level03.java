@@ -83,7 +83,7 @@ public class Level03 extends LevelBase {
                 new Point(29, 16)
             )
         );
-        this.vendor.setMoveStatus(MoveStatus.WANDER);
+        this.vendor.changeState(MoveStatus.WANDER);
         this.vendor.name = "Bucket Head";
         this.vendor.setHat(Constants.WOOKSER_BUCKET_HAT);
         this.vendor.setVendor(
@@ -130,7 +130,7 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         this.mom.setDialogue(lines);
-        this.mom.setMoveStatus(MoveStatus.FOLLOW);
+        this.mom.changeState(MoveStatus.FOLLOW);
         addNPC(this.mom);
 
         this.warner = new NPCGeneric(gamePanel, 15, 23) {
@@ -145,50 +145,50 @@ public class Level03 extends LevelBase {
         };
         String[] warnerDialogue01 = {"Have you heard about the town run by ghouls?", "Just kidding."};
         this.warner.setDialogue(warnerDialogue01);
-        this.warner.setWander();
+        this.warner.changeState(MoveStatus.WANDER);
         this.warner.setArea(
             List.of(
                 new Point(12, 22),
                 new Point(19, 28)
                 )
             );
-        this.warner.setMoveStatus(MoveStatus.WANDER);
+        this.warner.changeState(MoveStatus.WANDER);
         this.warner.setHat(Constants.WOOKSER_TOP_HAT);
         addNPC(this.warner);
 
         this.villager01 = new NPCGeneric(gamePanel, 31, 26);
         String[] villagerDialogue01 = {"Don't ask me about this hat."};
         this.villager01.setDialogue(villagerDialogue01);
-        this.villager01.setWander();
+        this.villager01.changeState(MoveStatus.WANDER);
         this.villager01.setArea(
             List.of(
                 new Point(12, 22),
                 new Point(40, 30)
                 )
             );
-        this.villager01.setMoveStatus(MoveStatus.WANDER);
+        this.villager01.changeState(MoveStatus.WANDER);
         this.villager01.setHat(Constants.WOOKSER_BALLA_HAT);
         addNPC(this.villager01);
 
         this.villager02 = new NPCGeneric(gamePanel, 36, 23);
         String[] villagerDialogue02 = {"Hey, I'm just a villager. Don't mind me."};
         this.villager02.setDialogue(villagerDialogue02);
-        this.villager02.setWander();
+        this.villager02.changeState(MoveStatus.WANDER);
         this.villager02.setArea(
             List.of(
                 new Point(12, 22),
                 new Point(40, 30)
                 )
             );
-        this.villager02.setMoveStatus(MoveStatus.WANDER);
+        this.villager02.changeState(MoveStatus.WANDER);
         this.villager02.setHat(Constants.WOOKSER_TINY_HAT);
         addNPC(this.villager02);
 
         this.villager03 = new NPCGeneric(gamePanel, 14, 12);
         String[] villagerDialogue03 = {"Hey, I'm just a villager. Don't mind me."};
         this.villager03.setDialogue(villagerDialogue03);
-        this.villager03.setWander();
-        this.villager03.setMoveStatus(MoveStatus.WANDER);
+        this.villager03.changeState(MoveStatus.WANDER);
+        this.villager03.changeState(MoveStatus.WANDER);
         this.villager03.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(this.villager03);
     }
@@ -263,7 +263,7 @@ public class Level03 extends LevelBase {
                 this.mom.getRawY() > 11 && this.mom.getRawY() < 16
             ){
                 this.mom.setArea(List.of(new Point(33, 11), new Point(40, 16)));
-                this.mom.setMoveStatus(MoveStatus.WANDER);
+                this.mom.changeState(MoveStatus.WANDER);
                 String[] line = {
                     "We made it!",
                     "There's a chest with some goodies in it.",
@@ -280,48 +280,42 @@ public class Level03 extends LevelBase {
             this.trooper03 == null
         ){
             this.trooper01 = new NPCTrooper(this.gamePanel, 15, 40);
-            this.trooper01.setMoveStatus(MoveStatus.WANDER);
+            this.trooper01.changeState(MoveStatus.WANDER);
             addNPC(this.trooper01);
             this.trooper02 = new NPCTrooper(this.gamePanel, 16, 40);
-            this.trooper02.setMoveStatus(MoveStatus.WANDER);
+            this.trooper02.changeState(MoveStatus.WANDER);
             addNPC(this.trooper02);
             this.trooper03 = new NPCTrooper(this.gamePanel, 17, 40);
-            this.trooper03.setMoveStatus(MoveStatus.WANDER);
+            this.trooper03.changeState(MoveStatus.WANDER);
             addNPC(this.trooper03);
 
             this.warner.willChase = true;
             this.warner.defaultSpeed = 4;
-            this.warner.setDefaultSpeed();
             this.warner.setLocation(new Point(20, 19));
-            this.warner.clearMoveQueue();
-            this.warner.setMoveStatus(MoveStatus.FOLLOW);
+            this.warner.clearPath();
+            this.warner.changeState(MoveStatus.FOLLOW);
             String[] warnerLine = {
                 "Troopers! Attacking from the south! Protect the village!",
             };
             this.warner.setDialogue(warnerLine);
 
             this.villager01.speed = 4;
-            this.villager01.setDefaultSpeed();
-            this.villager01.setMoveStatus(MoveStatus.FRENZY);
+            this.villager01.changeState(MoveStatus.FRENZY);
 
             this.villager02.speed = 4;
-            this.villager02.setDefaultSpeed();
-            this.villager02.setMoveStatus(MoveStatus.FRENZY);
+            this.villager02.changeState(MoveStatus.FRENZY);
 
             this.villager03.speed = 4;
-            this.villager02.setDefaultSpeed();
-            this.villager03.setMoveStatus(MoveStatus.FRENZY);
+            this.villager03.changeState(MoveStatus.FRENZY);
 
             this.vendor.speed = 4;
-            this.vendor.setDefaultSpeed();
-            this.vendor.setMoveStatus(MoveStatus.FRENZY);
+            this.vendor.changeState(MoveStatus.FRENZY);
         }
 
         if (this.gamePanel.player.collisionEntity == this.warner && this.attackVillage) {
             this.warner.speak();
             this.warner.defaultSpeed = 4;
-            this.warner.setDefaultSpeed();
-            this.warner.setMoveStatus(MoveStatus.FRENZY);
+            this.warner.changeState(MoveStatus.FRENZY);
             this.attackVillage = false;
         }
     }

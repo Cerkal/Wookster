@@ -61,7 +61,9 @@ public class Projectile {
         this.entity = entity;
         this.worldX = entity.worldX;
         this.worldY = entity.worldY;
+    }
 
+    public void init() {
         mouseAimSet = isMouseAimSet();
 
         int targetX = 0;
@@ -147,6 +149,7 @@ public class Projectile {
     }
 
     public void setImage(String image) {
+        if (this.image != null) { return; }
         try {
             this.originalImage = ImageIO.read(getClass().getResourceAsStream(image));
             this.image = this.originalImage;

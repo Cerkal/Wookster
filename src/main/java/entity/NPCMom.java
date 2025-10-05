@@ -6,17 +6,13 @@ import main.Constants;
 import main.GamePanel;
 import objects.weapons.Weapon.WeaponType;
 
-public class NPCMom extends Entity {
+public class NPCMom extends NPCGeneric {
 
     public NPCMom(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
-        this.direction = Direction.DOWN;
-        this.speed = 3;
-        this.damageSound = Constants.SOUND_HURT;
-        this.entityType = EntityType.NPC;
+        this.defaultSpeed = 3;
         this.name = "Mom";
         this.willChase = false;
-        this.isFriendly = true;
         this.isNeeded = true;
         this.primaryWeapon = null;
         setHat(Constants.WOOKSER_MOM_HAT);

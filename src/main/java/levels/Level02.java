@@ -47,13 +47,13 @@ public class Level02 extends LevelBase {
         addNPC(new NPCTrooper(this.gamePanel, 11, 40));
         addNPC(new NPCTrooper(this.gamePanel, 29, 8));
         NPCTrooper trooper = new NPCTrooper(this.gamePanel, 36, 32);
-        trooper.setMoveStatus(MoveStatus.WANDER);
+        trooper.changeState(MoveStatus.WANDER);
         addNPC(trooper);
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {
             @Override
             public void postDialogAction() {
-                setFollow();
+                changeState(MoveStatus.FOLLOW);
                 Level02 level = (Level02) gamePanel.levelManager.getCurrentLevel();
                 level.signObject.removeObject();
                 if (gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM)) {
@@ -79,7 +79,7 @@ public class Level02 extends LevelBase {
         this.vendor = new NPCVendor(gamePanel, 12, 14);
         this.vendor.setDialogue(Dialogue.LEVEL_02_VENDOR_INTRO);
         this.vendor.addCredits(Utils.generateRandomInt(30, 50));
-        this.vendor.setMoveStatus(MoveStatus.WANDER);
+        this.vendor.changeState(MoveStatus.WANDER);
         this.vendor.name = "Ammo Andy";
         this.vendor.priceModifier = 3;
         this.vendor.setHat(Constants.WOOKSER_BLUE_HAT);

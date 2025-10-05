@@ -81,7 +81,8 @@ public class BlasterWeapon extends Weapon {
             this.lastShot = this.gamePanel.gameTime;
             if (entity instanceof Player) this.removeAmmo();
             this.playSound();
-            this.gamePanel.projectileManager.add(getProjectile(this.entity));
+            Projectile projectile = getProjectile(this.entity);
+            this.gamePanel.projectileManager.add(projectile);
         }
     }
 }

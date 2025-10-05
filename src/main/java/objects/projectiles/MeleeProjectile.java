@@ -10,7 +10,6 @@ public class MeleeProjectile extends Projectile {
 
     public MeleeProjectile(GamePanel gamePanel, Entity entity, int hold) {
         super(gamePanel, entity);
-        this.speed = 0;
         this.damage = getDamageFromHold(hold);
         this.setImage(Constants.EFFECT_ALERT);
         this.solidArea.x = Constants.TILE_SIZE/4;
@@ -19,7 +18,7 @@ public class MeleeProjectile extends Projectile {
         this.solidArea.width = Constants.TILE_SIZE/2;
         this.solidAreaDefaultX = this.solidArea.x;
         this.solidAreaDefaultY = this.solidArea.y;
-        setPosition();
+        init();
     }
 
     public MeleeProjectile(GamePanel gamePanel, int hold) {

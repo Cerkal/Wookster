@@ -45,6 +45,7 @@ public class Pathfinder {
             current = cameFrom.get(current);
         }
         Collections.reverse(path);
+        path.remove(0); // Remove the current location
         return path;
     }
 
@@ -147,60 +148,30 @@ public class Pathfinder {
         return randomFrenzyPoint();
     }
 
-    public Point getPushBackLocationFollow(Entity entity, Entity collisonEntity) {
-        List<Point> points = new ArrayList<>();
-        int dx = collisonEntity.worldX - entity.worldX;
-        int dy = collisonEntity.worldY - entity.worldY;
-        int startX, endX, startY, endY;
-        int size = 3;
+    public Point getPushBackLocationFollow(Entity entity, Entity collidingEntity) {
+        int dx = collidingEntity.worldX - entity.worldX;
+        int dy = collidingEntity.worldY - entity.worldY;
+        int maxDistSq = -1;
+        Point furthest = null;
 
-        if (dx < 0) {
-            startX = entity.getRawX() + 1;
-            endX = entity.getRawX() + size;
-        } else if (dx > 0) {
-            startX = entity.getRawX() - size;
-            endX = entity.getRawX() - 1;
-        } else {
-            startX = entity.getRawX() - size/2;
-            endX = entity.getRawX() + size/2;
-        }
-
-        if (dy < 0) {
-            startY = entity.getRawY() + 1;
-            endY = entity.getRawY() + size;
-        } else if (dy > 0) {
-            startY = entity.getRawY() - size;
-            endY = entity.getRawY() - 1;
-        } else {
-            startY = entity.getRawY() - size/2;
-            endY = entity.getRawY() + size/2;
-        }
-
-        // Clamp to map bounds
-        int maxX = Constants.MAX_WORLD_COL - 1;
-        int maxY = Constants.MAX_WORLD_ROW - 1;
-        startX = Math.max(0, Math.min(startX, maxX));
-        endX = Math.max(0, Math.min(endX, maxX));
-        startY = Math.max(0, Math.min(startY, maxY));
-        endY = Math.max(0, Math.min(endY, maxY));
-
-        // Ensure correct iteration direction
-        int stepX = startX <= endX ? 1 : -1;
-        int stepY = startY <= endY ? 1 : -1;
-
-        for (int x = startX; stepX > 0 ? x <= endX : x >= endX; x += stepX) {
-            for (int y = startY; stepY > 0 ? y <= endY : y >= endY; y += stepY) {
-                if (isTileWalkable(x, y)) {
-                    points.add(new Point(x, y));
+        if (dx != 0 || dy != 0) {
+            int ix = dx != 0 ? dx / Math.abs(dx) * -1 : 0;
+            int iy = dy != 0 ? dy / Math.abs(dy) * -1 : 0;
+            for (int y = entity.getRawY(); y > 0 && y < Constants.MAX_WORLD_ROW; y += (iy == 0 ? 1 : iy)) {
+                for (int x =entity. getRawX(); x > 0 && x < Constants.MAX_WORLD_COL; x += (ix == 0 ? 1 : ix)) {
+                    if (isTileWalkable(x, y)) {
+                        int distSq = (x - entity.getRawX()) * (x - entity.getRawX()) + (y - entity.getRawY()) * (y - entity.getRawY());
+                        if (distSq > maxDistSq) {
+                            maxDistSq = distSq;
+                            furthest = new Point(x, y);
+                        }
+                    }
                 }
             }
         }
-        if (!points.isEmpty()) {
-            int randomPoint = Utils.generateRandomInt(0, points.size() - 1);
-            return points.get(randomPoint);
+        if (furthest != null) {
+            return furthest;
         }
         return randomFrenzyPoint();
     }
-
-    
 }

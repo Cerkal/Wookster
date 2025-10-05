@@ -15,6 +15,7 @@ public class ArrowProjectile extends Projectile {
         this.price = PRICE;
         this.damage = getDamageFromSpeed(speed);
         this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
+        init();
     }
 
     public ArrowProjectile(GamePanel gamePanel, int speed) {

@@ -10,7 +10,7 @@ public class Animal extends Entity {
     public Animal(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
-        this.speed = 2;
+        this.defaultSpeed = 2;
         this.runSpeed = 2;
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ANIMAL;
@@ -24,9 +24,31 @@ public class Animal extends Entity {
         this.maxHealth = 20;
         this.health = this.maxHealth;
         this.weapons = null;
-        this.isFriendly = false;
+        this.isFriendly = true;
         this.isFrenzy = true;
-        this.moveStatus = MoveStatus.FRENZY;
+        this.defaultMoveStatus = MoveStatus.FRENZY;
+        this.moveStatus = this.defaultMoveStatus;
+    }
+
+    @Override
+    public void takeDamage(int amount, Entity attacker) {
+        super.takeDamage(amount, attacker);
+        setPath(this.gamePanel.pathfinder.findPath(getLocation(), this.getPathLocation(attacker)));
+    }
+
+    @Override
+    protected boolean predictiveCollision(int targetX, int targetY) {
+        if (this.isDead == true) { return false; }
+        this.predictiveCollision.updatePredictive(this);
+        this.predictiveCollision.speed = 10;
+        moveEntityToTarget(this.predictiveCollision, targetX, targetY);
+        boolean willCollideWithTile = this.gamePanel.collision.checkTile(this.predictiveCollision);
+        if (willCollideWithTile || this.collisionOn) {
+            return true;
+        }
+        boolean willCollideWithEntity = this.gamePanel.collision.entityCollision(this.predictiveCollision) != null;
+        boolean willCollideWithPlayer = this.gamePanel.collision.getCollidEntity(this.predictiveCollision, this.gamePanel.getPlayer()) != null;
+        return willCollideWithEntity || willCollideWithPlayer;
     }
 
     @Override

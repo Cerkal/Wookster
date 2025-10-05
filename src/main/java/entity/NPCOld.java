@@ -5,16 +5,12 @@ import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
 import main.GamePanel;
 
-public class NPCOld extends Entity {
+public class NPCOld extends NPCGeneric {
 
     public NPCOld(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
-        this.direction = Direction.DOWN;
-        this.speed = 2;
-        this.entityType = EntityType.NPC;
         this.name = "Old Man";
         this.movable = false;
-        this.isFriendly = true;
         this.invincable = true;
     }
 
