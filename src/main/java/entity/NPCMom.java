@@ -16,6 +16,7 @@ public class NPCMom extends NPCGeneric {
         this.isNeeded = true;
         this.primaryWeapon = null;
         setHat(Constants.WOOKSER_MOM_HAT);
+        setDefaultState(MoveStatus.IDLE);
     }
 
     @Override

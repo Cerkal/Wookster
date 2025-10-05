@@ -70,6 +70,7 @@ public abstract class Entity {
     Entity collisionEntity = null;
     Entity collisionPlayer = null;
     int collisionCounter;
+    int followCollisionCounter;
     public List<Point> areaPoints = new ArrayList<>();
     public boolean pushback = true;
     public Entity predictiveCollision;
@@ -153,17 +154,21 @@ public abstract class Entity {
                 if (refreshPath(e)) {
                     e.speed = e.defaultSpeed;
                     Entity target = e.attackingTarget;
-                    System.out.println("Setting path from chase from move status update");
-                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), target.getLocation()));
+                    if (target != null) {
+                        System.out.println("Setting path from chase from move status update");
+                        e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), target.getLocation()));
+                    }
                 }
             }
         },
         FOLLOW {
             @Override
             void update(Entity e) {
-                e.speed = e.defaultSpeed;
-                Entity leader = e.gamePanel.getPlayer();
-                e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), leader.getLocation()));
+                if (refreshPath(e)) {
+                    e.speed = e.defaultSpeed;
+                    Entity leader = e.gamePanel.getPlayer();
+                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), leader.getLocation()));
+                }
             }
         },
         FRENZY {
@@ -171,7 +176,7 @@ public abstract class Entity {
             void update(Entity e) {
                 if (refreshPath(e)) {
                     e.speed = e.defaultSpeed;
-                    Point frenzyTarget = e.gamePanel.pathfinder.randomFrenzyPoint();
+                    Point frenzyTarget = e.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(e.areaPoints);
                     e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), frenzyTarget));
                 }
             }
@@ -249,11 +254,22 @@ public abstract class Entity {
         }
 
         if ((collidedWithEntity || collidedWithPlayer)) {
-            if (collisionCounter == 0) {
-                Entity collisionEntity = collidedWithPlayer ? this.gamePanel.player : this.collisionEntity;
-                setPathPoint(getPathLocation(collisionEntity));
-                System.out.println("Setting path from collision");
-                collisionCounter = this.speed;
+            if (this.moveStatus == MoveStatus.FOLLOW && collidedWithPlayer) {
+                followCollisionCounter++;
+                if (followCollisionCounter > 150) {
+                    Point pushBack = this.gamePanel.pathfinder.getPushBackLocationFollow(this, this.gamePanel.player);
+                    System.out.println("Pushing back to: " + pushBack);
+                    actionTimeout(1000);
+                    setPathPoint(pushBack);
+                    followCollisionCounter = 0;
+                }
+            } else {
+                if (collisionCounter == 0) {
+                    Entity collisionEntity = collidedWithPlayer ? this.gamePanel.player : this.collisionEntity;
+                    System.out.println("Setting path from collision");
+                    setPathPoint(getPathLocation(collisionEntity));
+                    collisionCounter = this.speed;
+                }
             }
         }
 
@@ -263,27 +279,28 @@ public abstract class Entity {
     }
 
     private void checkVisibility() {
-        if (this.movable == false) { return; }
-        if (this.moveStatus == MoveStatus.CHASING && this.attackingTarget != null) { return; }
+        if (this.moveStatus == MoveStatus.FOLLOW) { return; }
         if (this.isFriendly || this.moveStatus == MoveStatus.FRENZY) { return; }
 
         List<Entity> entities = new ArrayList<>(this.gamePanel.npcs);
         entities.add(this.gamePanel.player);
 
         for (Entity entity : entities) {
-            if (entity.isDead) continue;
             if (this.getClass() == entity.getClass() || this == entity) continue;
             boolean target = this.gamePanel.collision.checkLineTileCollision(entity, this);
             
-            if (this.attackingTarget == null && target) {
+            if (this.attackingTarget == null && target && entity.isDead == false) {
                 this.attackingTarget = entity;
-            }
-
-            if ((this.attackingTarget == entity)) {
                 this.moveStatus = MoveStatus.CHASING;
                 clearPath();
                 actionTimeout();
                 System.out.println(this.name + " attacking: " + this.attackingTarget + " going to chase");
+            }
+
+            if ((this.attackingTarget == entity)) {
+                if (entity.isDead) {
+                    this.attackingTarget = null;
+                }
             } 
         }
         return;
@@ -298,6 +315,9 @@ public abstract class Entity {
         ){
             return;
         }
+
+        boolean canSeeTarget = this.gamePanel.collision.checkLineTileCollision(this.attackingTarget, this);
+        if (!canSeeTarget) return;
 
         int buffer = 1;
         int locBuffer = Constants.TILE_SIZE;
@@ -377,7 +397,7 @@ public abstract class Entity {
             this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
             if (predictiveCollision(targetX, this.worldY)) {
                 setPathPoint(getPathLocation(this.attackingTarget));
-                System.out.println("Setting path from chase from move predictive");
+                System.out.println("Setting path from move predictive");
             } else {
                 moveEntityToTarget(this, targetX, this.worldY);
             }
@@ -385,7 +405,7 @@ public abstract class Entity {
             this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
             if (predictiveCollision(this.worldX, targetY)) {
                 setPathPoint(getPathLocation(this.attackingTarget));
-                System.out.println("Setting path from chase from move predictive");
+                System.out.println("Setting path from move predictive");
             } else {
                 moveEntityToTarget(this, this.worldX, targetY);
             }
@@ -394,9 +414,14 @@ public abstract class Entity {
 
     protected boolean predictiveCollision(int targetX, int targetY) {
         if (this.isDead == true) { return false; }
+        if (this.moveStatus == MoveStatus.FOLLOW) { return false; }
         this.predictiveCollision.updatePredictive(this);
         this.predictiveCollision.speed = 10;
         moveEntityToTarget(this.predictiveCollision, targetX, targetY);
+        boolean willCollideWithTile = this.gamePanel.collision.checkTile(this.predictiveCollision);
+        if (willCollideWithTile || this.collisionOn) {
+            return true;
+        }
         boolean willCollideWithEntity = this.gamePanel.collision.entityCollision(this.predictiveCollision) != null;
         boolean willCollideWithPlayer = this.gamePanel.collision.getCollidEntity(this.predictiveCollision, this.gamePanel.getPlayer()) != null;
         return willCollideWithEntity || willCollideWithPlayer;
@@ -428,6 +453,7 @@ public abstract class Entity {
             this.defaultMoveStatus != this.moveStatus
         ){
             System.out.println("Entity: " + this.name + " going from " + this.moveStatus + " back to " + this.defaultMoveStatus);
+            clearPath();
             this.defaults.revertToDefault(this);
         }
     }
@@ -435,6 +461,12 @@ public abstract class Entity {
     public void changeState(MoveStatus newState) {
         if (this.moveStatus == newState) return;
         this.moveStatus = newState;
+        this.moveStatus.onEnter(this);
+    }
+
+    public void setDefaultState(MoveStatus moveStatus) {
+        this.moveStatus = moveStatus;
+        this.defaultMoveStatus = moveStatus;
         this.moveStatus.onEnter(this);
     }
 
@@ -474,8 +506,12 @@ public abstract class Entity {
     }
 
     private void actionTimeout() {
+        actionTimeout(this.attackingTimeout);
+    }
+
+    private void actionTimeout(int timeout) {
         long gameTimeMS = this.gamePanel.gameTime / Constants.MILLISECOND;
-        this.stateExpireTime = gameTimeMS + this.attackingTimeout;
+        this.stateExpireTime = gameTimeMS + timeout;
         System.out.println("Action started at : " + gameTimeMS + " will expire at: " + this.stateExpireTime);
     }
 
@@ -486,6 +522,58 @@ public abstract class Entity {
             this.weapon.shoot(this);
         }
     }
+
+    public int getRawX() {
+        return this.worldX / Constants.TILE_SIZE;
+    }
+
+    public int getRawY() {
+        return this.worldY / Constants.TILE_SIZE;
+    }
+
+    protected Point getPathLocation(Entity entity) {
+        Point point = null;
+        switch (this.moveStatus) {
+            case FOLLOW:
+                System.out.println("getPathLocation: follow");
+                point = this.gamePanel.getPlayer().getLocation();
+                break;
+            case WANDER:
+                System.out.println("getPathLocation: wander");
+                point = this.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(this.areaPoints);
+                break;
+            case CHASING:
+                if (this.attackingTarget != null && entity != this.attackingTarget) {
+                    System.out.println("getPathLocation: chasing / attacking is not null");
+                    point = this.attackingTarget.getLocation();
+                } else {
+                    System.out.println("getPathLocation: chasing / attacking is null or not attacker so defaulting");
+                    point = this.gamePanel.pathfinder.randomFrenzyPoint();
+                }
+                break;
+            default:
+                point = this.gamePanel.pathfinder.randomFrenzyPoint();
+                System.out.println("getPathLocation: default");
+                break;
+        }
+        return point;
+    }
+
+    public void setLocation(int x, int y) {
+        this.worldX = x * Constants.TILE_SIZE;
+        this.worldY = y * Constants.TILE_SIZE;
+    }
+
+    public void setLocation(Point point) {
+        this.worldX = point.x * Constants.TILE_SIZE;
+        this.worldY = point.y * Constants.TILE_SIZE;
+    }
+
+    public Point getLocation() {
+        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
+    }
+
+    // DIALOGUE METHODS
 
     public void speak() {
         if (this.dialogue == null) { return; }
@@ -517,6 +605,12 @@ public abstract class Entity {
         }
         return null;
     }
+
+    public void setDialogue(String[] lines) {
+        this.dialogue = lines;
+    }
+
+    // DAMAGE METHODS
 
     public void takeDamage(int amount, Entity attacker) {
         if (this.invincable) { return; }
@@ -582,64 +676,6 @@ public abstract class Entity {
         return (int) ((this.health * 100.0) / this.maxHealth);
     }
 
-    public int getRawX() {
-        return this.worldX / Constants.TILE_SIZE;
-    }
-
-    public int getRawY() {
-        return this.worldY / Constants.TILE_SIZE;
-    }
-
-    public void setDialogue(String[] lines) {
-        this.dialogue = lines;
-    }
-
-    protected Point getPathLocation(Entity entity) {
-        Point point = null;
-        if (entity == null) {
-            System.out.println("getPathLocation: null");
-            return this.gamePanel.pathfinder.randomFrenzyPoint();
-        }
-        switch (this.moveStatus) {
-            case FOLLOW:
-                System.out.println("getPathLocation: follow");
-                point = this.gamePanel.pathfinder.getPushBackLocationFollow(this, this.gamePanel.getPlayer());
-                break;
-            case WANDER:
-                System.out.println("getPathLocation: wander");
-                point = this.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(this.areaPoints);
-                break;
-            case CHASING:
-                if (this.attackingTarget != null) {
-                    System.out.println("getPathLocation: chasing / attacking is not null");
-                    point = this.attackingTarget.getLocation();
-                } else {
-                    System.out.println("getPathLocation: chasing / attacking is null so defaulting");
-                    point = this.gamePanel.pathfinder.randomFrenzyPoint();
-                }
-                break;
-            default:
-                point = this.gamePanel.pathfinder.randomFrenzyPoint();
-                System.out.println("getPathLocation: default");
-                break;
-        }
-        return point;
-    }
-
-    public void setLocation(int x, int y) {
-        this.worldX = x * Constants.TILE_SIZE;
-        this.worldY = y * Constants.TILE_SIZE;
-    }
-
-    public void setLocation(Point point) {
-        this.worldX = point.x * Constants.TILE_SIZE;
-        this.worldY = point.y * Constants.TILE_SIZE;
-    }
-
-    public Point getLocation() {
-        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
-    }
-
     // DRAW METHODS
 
     public void draw(Graphics2D graphics2D) {
@@ -673,7 +709,8 @@ public abstract class Entity {
             solidArea.width,
             solidArea.height
         );
-        graphics2D.drawString("(" + this.worldX + ", " + this.worldY + ")", screenX, screenY);
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawString("(" + this.worldX + ", " + this.worldY + ")", screenX, screenY - 30);
     }
 
     protected void drawEffect(Graphics2D graphics2D) {

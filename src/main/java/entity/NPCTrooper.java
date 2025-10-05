@@ -15,7 +15,6 @@ public class NPCTrooper extends Entity {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
         this.defaultSpeed = 2;
-        this.defaultMoveStatus = MoveStatus.WANDER;
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
@@ -26,6 +25,7 @@ public class NPCTrooper extends Entity {
         this.primaryWeapon = new BlasterWeapon(gamePanel, this);
         this.aggression = 50;
         this.accuracy = 10;
+        setDefaultState(MoveStatus.WANDER);
     }
 
     @Override

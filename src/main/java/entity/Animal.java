@@ -37,21 +37,6 @@ public class Animal extends Entity {
     }
 
     @Override
-    protected boolean predictiveCollision(int targetX, int targetY) {
-        if (this.isDead == true) { return false; }
-        this.predictiveCollision.updatePredictive(this);
-        this.predictiveCollision.speed = 10;
-        moveEntityToTarget(this.predictiveCollision, targetX, targetY);
-        boolean willCollideWithTile = this.gamePanel.collision.checkTile(this.predictiveCollision);
-        if (willCollideWithTile || this.collisionOn) {
-            return true;
-        }
-        boolean willCollideWithEntity = this.gamePanel.collision.entityCollision(this.predictiveCollision) != null;
-        boolean willCollideWithPlayer = this.gamePanel.collision.getCollidEntity(this.predictiveCollision, this.gamePanel.getPlayer()) != null;
-        return willCollideWithEntity || willCollideWithPlayer;
-    }
-
-    @Override
     protected void loadSprites() {
         String m = SpriteAnimation.MOVE.name();
         spriteManager.setSprite(m, new Sprite(Direction.UP, Constants.PIG_IMAGE_UP_00));

@@ -16,8 +16,9 @@ public class NPCGeneric extends Entity {
         this.entityType = EntityType.NPC;
         this.damageSound = Constants.SOUND_HURT;
         this.name = "Generic";
-        this.movable = false;
+        this.movable = true;
         this.isFriendly = true;
+        setDefaultState(MoveStatus.WANDER);
     }
 
     @Override

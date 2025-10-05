@@ -12,6 +12,7 @@ public class NPCOld extends NPCGeneric {
         this.name = "Old Man";
         this.movable = false;
         this.invincable = true;
+        setDefaultState(MoveStatus.IDLE);
     }
 
     @Override

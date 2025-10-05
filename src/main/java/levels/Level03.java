@@ -130,7 +130,7 @@ public class Level03 extends LevelBase {
             lines = berries;
         }
         this.mom.setDialogue(lines);
-        this.mom.changeState(MoveStatus.FOLLOW);
+        this.mom.setDefaultState(MoveStatus.FOLLOW);
         addNPC(this.mom);
 
         this.warner = new NPCGeneric(gamePanel, 15, 23) {
@@ -263,7 +263,7 @@ public class Level03 extends LevelBase {
                 this.mom.getRawY() > 11 && this.mom.getRawY() < 16
             ){
                 this.mom.setArea(List.of(new Point(33, 11), new Point(40, 16)));
-                this.mom.changeState(MoveStatus.WANDER);
+                this.mom.setDefaultState(MoveStatus.WANDER);
                 String[] line = {
                     "We made it!",
                     "There's a chest with some goodies in it.",

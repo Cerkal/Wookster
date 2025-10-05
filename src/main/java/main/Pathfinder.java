@@ -102,52 +102,6 @@ public class Pathfinder {
         return false;
     }
 
-    public Point getPushBackLocationFollow(Entity entity) {
-        int minDistance = 5;
-        int maxDistance = 10; // You can increase this if you want to search farther
-        int ex = entity.getRawX();
-        int ey = entity.getRawY();
-
-        // Direction vectors: UP(0,-1), DOWN(0,1), LEFT(-1,0), RIGHT(1,0)
-        int dx = 0, dy = 0;
-        switch (entity.direction) {
-            case UP:    dy = 1; break;   // Opposite of UP is DOWN
-            case DOWN:  dy = -1; break;  // Opposite of DOWN is UP
-            case LEFT:  dx = 1; break;   // Opposite of LEFT is RIGHT
-            case RIGHT: dx = -1; break;  // Opposite of RIGHT is LEFT
-            default: break;
-        }
-
-        // Try to find a walkable tile in the opposite direction, at least minDistance away
-        for (int dist = maxDistance; dist >= minDistance; dist--) {
-            int nx = ex + dx * dist;
-            int ny = ey + dy * dist;
-            // Clamp to map bounds
-            if (nx < 0 || ny < 0 || nx >= Constants.MAX_WORLD_COL || ny >= Constants.MAX_WORLD_ROW) continue;
-            if (isTileWalkable(nx, ny)) {
-                return new Point(nx, ny);
-            }
-        }
-
-        // If not found, try to find any walkable tile at least minDistance away in any direction
-        for (int dist = maxDistance; dist >= minDistance; dist--) {
-            for (int ox = -dist; ox <= dist; ox++) {
-                for (int oy = -dist; oy <= dist; oy++) {
-                    if (Math.abs(ox) + Math.abs(oy) < minDistance) continue;
-                    int nx = ex + ox;
-                    int ny = ey + oy;
-                    if (nx < 0 || ny < 0 || nx >= Constants.MAX_WORLD_COL || ny >= Constants.MAX_WORLD_ROW) continue;
-                    if (isTileWalkable(nx, ny)) {
-                        return new Point(nx, ny);
-                    }
-                }
-            }
-        }
-
-        // Fallback: random walkable point
-        return randomFrenzyPoint();
-    }
-
     public Point getPushBackLocationFollow(Entity entity, Entity collidingEntity) {
         int dx = collidingEntity.worldX - entity.worldX;
         int dy = collidingEntity.worldY - entity.worldY;

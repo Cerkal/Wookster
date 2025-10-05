@@ -20,6 +20,7 @@ public class NPCVendor extends NPCGeneric {
         this.pushback = false;
         this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
         this.primaryWeapon = new CrossbowWeapon(gamePanel, this);
+        setDefaultState(MoveStatus.WANDER);
     }
 
     @Override
