@@ -12,7 +12,6 @@ public class NPCMom extends NPCGeneric {
         super(gamePanel, worldX, worldY);
         this.defaultSpeed = 3;
         this.name = "Mom";
-        this.willChase = false;
         this.isNeeded = true;
         this.primaryWeapon = null;
         setHat(Constants.WOOKSER_MOM_HAT);

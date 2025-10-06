@@ -18,7 +18,6 @@ public class NPCTrooper extends Entity {
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ENEMY;
         this.name = "Trooper";
-        this.willChase = true;
         this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
         this.weapons.put(WeaponType.BLASTER, new BlasterWeapon(gamePanel, this));
         this.isFrenzy = false;

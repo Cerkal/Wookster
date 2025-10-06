@@ -51,7 +51,9 @@ public abstract class Entity {
     public int runSpeed = 4;
     public Direction direction, startingDirection;
     public MoveStatus moveStatus = MoveStatus.IDLE;
-    MoveStatus defaultMoveStatus = MoveStatus.IDLE;
+    
+    // Debug
+    public boolean debugEntity;
 
     // Sprite
     protected BufferedImage hat;
@@ -78,7 +80,6 @@ public abstract class Entity {
 
     // Alert
     public boolean isFriendly;
-    public boolean willChase;
     protected Queue<Point> moveQueue;
     protected boolean isNeeded;
     protected boolean isFrenzy;
@@ -155,7 +156,7 @@ public abstract class Entity {
                     e.speed = e.defaultSpeed;
                     Entity target = e.attackingTarget;
                     if (target != null) {
-                        System.out.println("Setting path from chase from move status update");
+                        e.printDebugData("Setting path from chase from move status update");
                         e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), target.getLocation()));
                     }
                 }
@@ -204,7 +205,6 @@ public abstract class Entity {
         this.direction = Direction.DOWN;
         this.attackingTimeout = DEFAULT_TIMEOUT;
         this.moveStatus = MoveStatus.IDLE;
-        this.defaultMoveStatus = this.moveStatus;
         this.speed = this.defaultSpeed;
         this.weapons.put(WeaponType.FIST, new FistWeapon(this.gamePanel, this));
         this.loadSprites();
@@ -254,11 +254,13 @@ public abstract class Entity {
         }
 
         if ((collidedWithEntity || collidedWithPlayer)) {
+            // TODO: FIX
             if (this.moveStatus == MoveStatus.FOLLOW && collidedWithPlayer) {
                 followCollisionCounter++;
                 if (followCollisionCounter > 150) {
+                    this.changeState(MoveStatus.FRENZY);
                     Point pushBack = this.gamePanel.pathfinder.getPushBackLocationFollow(this, this.gamePanel.player);
-                    System.out.println("Pushing back to: " + pushBack);
+                    printDebugData("Pushing back to: " + pushBack);
                     actionTimeout(1000);
                     setPathPoint(pushBack);
                     followCollisionCounter = 0;
@@ -266,7 +268,7 @@ public abstract class Entity {
             } else {
                 if (collisionCounter == 0) {
                     Entity collisionEntity = collidedWithPlayer ? this.gamePanel.player : this.collisionEntity;
-                    System.out.println("Setting path from collision");
+                    printDebugData("Setting path from collision");
                     setPathPoint(getPathLocation(collisionEntity));
                     collisionCounter = this.speed;
                 }
@@ -291,16 +293,14 @@ public abstract class Entity {
             
             if (this.attackingTarget == null && target && entity.isDead == false) {
                 this.attackingTarget = entity;
-                this.moveStatus = MoveStatus.CHASING;
                 clearPath();
                 actionTimeout();
-                System.out.println(this.name + " attacking: " + this.attackingTarget + " going to chase");
+                changeState(MoveStatus.CHASING);
+                printDebugData(this.name + " attacking: " + this.attackingTarget + " going to chase");
             }
 
-            if ((this.attackingTarget == entity)) {
-                if (entity.isDead) {
-                    this.attackingTarget = null;
-                }
+            if (this.attackingTarget == entity && entity.isDead) {
+                this.attackingTarget = null;
             } 
         }
         return;
@@ -315,9 +315,6 @@ public abstract class Entity {
         ){
             return;
         }
-
-        boolean canSeeTarget = this.gamePanel.collision.checkLineTileCollision(this.attackingTarget, this);
-        if (!canSeeTarget) return;
 
         int buffer = 1;
         int locBuffer = Constants.TILE_SIZE;
@@ -349,10 +346,12 @@ public abstract class Entity {
                 break;
         }
 
-        if (inLine) {
+        boolean canSeeTarget = this.gamePanel.collision.checkLineTileCollision(this.attackingTarget, this);
+
+        if (inLine && canSeeTarget) {
             this.primaryWeapon.shoot(this);
         }
-        if (closeEnough) {
+        if (closeEnough && canSeeTarget) {
             this.movable = false;
             this.isMoving = false;
             this.attacking = true;
@@ -397,7 +396,7 @@ public abstract class Entity {
             this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
             if (predictiveCollision(targetX, this.worldY)) {
                 setPathPoint(getPathLocation(this.attackingTarget));
-                System.out.println("Setting path from move predictive");
+                printDebugData("Setting path from move predictive");
             } else {
                 moveEntityToTarget(this, targetX, this.worldY);
             }
@@ -405,7 +404,7 @@ public abstract class Entity {
             this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
             if (predictiveCollision(this.worldX, targetY)) {
                 setPathPoint(getPathLocation(this.attackingTarget));
-                System.out.println("Setting path from move predictive");
+                printDebugData("Setting path from move predictive");
             } else {
                 moveEntityToTarget(this, this.worldX, targetY);
             }
@@ -450,9 +449,10 @@ public abstract class Entity {
     private void checkTimeout() {
         if (
             this.gamePanel.gameTime / Constants.MILLISECOND > this.stateExpireTime &&
-            this.defaultMoveStatus != this.moveStatus
+            this.defaults != null &&
+            this.defaults.moveStatus != this.moveStatus
         ){
-            System.out.println("Entity: " + this.name + " going from " + this.moveStatus + " back to " + this.defaultMoveStatus);
+            printDebugData("Entity: " + this.name + " going from " + this.moveStatus + " back to " + this.defaults.moveStatus);
             clearPath();
             this.defaults.revertToDefault(this);
         }
@@ -466,7 +466,7 @@ public abstract class Entity {
 
     public void setDefaultState(MoveStatus moveStatus) {
         this.moveStatus = moveStatus;
-        this.defaultMoveStatus = moveStatus;
+        this.defaults = new Defaults(this);
         this.moveStatus.onEnter(this);
     }
 
@@ -489,7 +489,7 @@ public abstract class Entity {
     }
 
     private boolean isBackAtStart() {
-        if (this.moveQueue.isEmpty() && this.defaultMoveStatus == MoveStatus.IDLE) {
+        if (this.moveQueue.isEmpty() && this.defaults.moveStatus == MoveStatus.IDLE) {
             int x = this.getLocation().x;
             int y = this.getLocation().y;
             if (
@@ -512,7 +512,7 @@ public abstract class Entity {
     private void actionTimeout(int timeout) {
         long gameTimeMS = this.gamePanel.gameTime / Constants.MILLISECOND;
         this.stateExpireTime = gameTimeMS + timeout;
-        System.out.println("Action started at : " + gameTimeMS + " will expire at: " + this.stateExpireTime);
+        printDebugData("Action started at : " + gameTimeMS + " will expire at: " + this.stateExpireTime);
     }
 
     public void handlePlayerCollision() {
@@ -535,25 +535,25 @@ public abstract class Entity {
         Point point = null;
         switch (this.moveStatus) {
             case FOLLOW:
-                System.out.println("getPathLocation: follow");
+                printDebugData("getPathLocation: follow");
                 point = this.gamePanel.getPlayer().getLocation();
                 break;
             case WANDER:
-                System.out.println("getPathLocation: wander");
+                printDebugData("getPathLocation: wander");
                 point = this.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(this.areaPoints);
                 break;
             case CHASING:
                 if (this.attackingTarget != null && entity != this.attackingTarget) {
-                    System.out.println("getPathLocation: chasing / attacking is not null");
+                    printDebugData("getPathLocation: chasing / attacking is not null");
                     point = this.attackingTarget.getLocation();
                 } else {
-                    System.out.println("getPathLocation: chasing / attacking is null or not attacker so defaulting");
+                    printDebugData("getPathLocation: chasing / attacking is null or not attacker so defaulting");
                     point = this.gamePanel.pathfinder.randomFrenzyPoint();
                 }
                 break;
             default:
                 point = this.gamePanel.pathfinder.randomFrenzyPoint();
-                System.out.println("getPathLocation: default");
+                printDebugData("getPathLocation: default");
                 break;
         }
         return point;
@@ -631,7 +631,7 @@ public abstract class Entity {
         if (this instanceof Player) { return; }
         if (this.getClass() == attacker.getClass()) { return; }
 
-        System.out.println(this.entityType + ": " + getCurrentHealth());
+        printDebugData(this.entityType + ": " + getCurrentHealth());
 
         if (
             (attacker instanceof Player && this.warned) ||
@@ -641,7 +641,6 @@ public abstract class Entity {
                 this.attackingTarget = attacker;
                 this.isFriendly = false;
                 this.movable = true;
-                this.willChase = true;
                 actionTimeout();
                 changeState(MoveStatus.CHASING);
             } else {
@@ -745,11 +744,16 @@ public abstract class Entity {
         }
     }
 
+    private void printDebugData(String message) {
+        if (this.debugEntity) {
+            System.out.println(message);
+        }
+    }
+
     // VENDOR METHODS
 
     public void setVendor(List<InventoryItem> items) {
         this.isVendor = true;
-        this.willChase = true;
         for (InventoryItem item : items) {
             this.inventory.put(item.name, new ArrayList<>(List.of(item)));
         }
@@ -918,7 +922,6 @@ public abstract class Entity {
 
     class Defaults {
         public boolean attacking;
-        public boolean willChase;
         public boolean movable;
         public boolean isFriendly;
         public boolean warned;
@@ -928,7 +931,6 @@ public abstract class Entity {
 
         public Defaults(Entity entity) {
             this.attacking = entity.attacking;
-            this.willChase = entity.willChase;
             this.movable = entity.movable;
             this.isFriendly = entity.isFriendly;
             this.warned = entity.warned;
@@ -939,7 +941,6 @@ public abstract class Entity {
 
         public void revertToDefault(Entity entity) {
             entity.attacking = this.attacking;
-            entity.willChase = this.willChase;
             entity.movable = this.movable;
             entity.isFriendly = this.isFriendly;
             entity.warned = this.warned;
