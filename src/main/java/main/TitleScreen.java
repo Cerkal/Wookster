@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +21,11 @@ public class TitleScreen {
     HashMap<String, Integer> screenIndex = new HashMap<>();
 
     public static final String MAIN_SCREEN = Constants.GAME_TITLE;
-    final static String GAME_TITLE = Constants.GAME_TITLE;
-    final static String SETTINGS_SCREEN = Constants.GAME_TITLE_SCREEN_SETTINGS;
-    final static String LOAD_SCREEN = Constants.GAME_TITLE_SCREEN_LOAD_GAME;
-    final static String DEFAULT_SCREEN = MAIN_SCREEN;
+    public final static String GAME_TITLE = Constants.GAME_TITLE;
+    public final static String SETTINGS_SCREEN = Constants.GAME_TITLE_SCREEN_SETTINGS;
+    public final static String LOAD_SCREEN = Constants.GAME_TITLE_SCREEN_LOAD_GAME;
+    public final static String SAVE_SCREEN = Constants.GAME_TITLE_SCREEN_SAVE_GAME;
+    public final static String DEFAULT_SCREEN = MAIN_SCREEN;
 
     final Option BACK_BUTTON = new Option(Constants.GAME_TITLE_BACK_BUTTON) {
         @Override
@@ -64,14 +66,16 @@ public class TitleScreen {
                         new Option(Constants.GAME_TITLE_SCREEN_LOAD_GAME) {
                             @Override
                             public void action(GamePanel gamePanel) {
-                                gamePanel.loadGame();
+                                // gamePanel.loadGame();
+                                gamePanel.ui.titleScreen.switchScreen(LOAD_SCREEN);
                             }
                         },
                         new Option(Constants.GAME_TITLE_SCREEN_SAVE_GAME) {
                             @Override
                             public void action(GamePanel gamePanel) {
-                                gamePanel.config.saveConfig(); 
-                                gamePanel.gameState = GameState.PLAY;
+                                // gamePanel.config.saveConfig();
+                                // gamePanel.gameState = GameState.PLAY;
+                                gamePanel.ui.titleScreen.switchScreen(SAVE_SCREEN);
                             }
                         },
                         new Option(Constants.GAME_TITLE_SCREEN_SETTINGS) {
@@ -191,6 +195,35 @@ public class TitleScreen {
             )
         );
 
+        List<Option> saveOptions = new ArrayList<>();
+        for (int i = 0; i < Config.SAVE_SLOT_COUNT; i++) {
+            final int slotIndex = i;
+            saveOptions.add(new Option(getSlotInfo(i, gamePanel.config)) {
+                @Override
+                public void action(GamePanel gamePanel) {
+                    gamePanel.config.setCurrentSlot(slotIndex);
+                    gamePanel.config.saveConfig();
+                }
+            });
+        }
+        saveOptions.add(BACK_BUTTON);
+        addScreen(new Screen(SAVE_SCREEN, saveOptions, false, 280));
+
+        List<Option> loadOptions = new ArrayList<>();
+        for (int i = 0; i < Config.SAVE_SLOT_COUNT; i++) {
+            final int slotIndex = i;
+            loadOptions.add(new Option(getSlotInfo(i, gamePanel.config)) {
+                @Override
+                public void action(GamePanel gamePanel) {
+                    gamePanel.config.setCurrentSlot(slotIndex);
+                    gamePanel.config.loadConfig();
+                    // Optionally, start game or update UI here
+                }
+            });
+        }
+        loadOptions.add(BACK_BUTTON);
+        addScreen(new Screen(LOAD_SCREEN, loadOptions, false, 280));
+
         this.currentScreen = this.screens.get(DEFAULT_SCREEN);
     }
 
@@ -217,5 +250,16 @@ public class TitleScreen {
             settings.put(option.name, option.getValue());
         }
         return settings;
+    }
+
+    private String getSlotInfo(int slot, Config config) {
+        File file = new File(this.gamePanel.config.saveFile.getParentFile(), Constants.SAVE_FILE_SLOTS.get(slot));
+        if (file.exists()) {
+            long lastModified = file.lastModified();
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return "Slot " + (slot + 1) + ": Saved " + sdf.format(new java.util.Date(lastModified));
+        } else {
+            return "Slot " + (slot + 1) + ": Empty";
+        }
     }
 }

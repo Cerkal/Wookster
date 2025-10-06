@@ -106,8 +106,15 @@ public class Constants {
     public static final String TARGET_CURSOR_WHITE_SMALL = "/menu/target_white_small.png";
     
     // Files
-    public static final String SAVE_FILE = "save.json";
     public static final String LOG_FILE = "Wookster.log";
+    public static final String SAVE_FILE_SLOT_01 = "save_01.json";
+    public static final String SAVE_FILE_SLOT_02 = "save_02.json";
+    public static final String SAVE_FILE_SLOT_03 = "save_03.json";
+    public static final List<String> SAVE_FILE_SLOTS = new ArrayList<>(List.of(
+        SAVE_FILE_SLOT_01,
+        SAVE_FILE_SLOT_02,
+        SAVE_FILE_SLOT_03
+    ));
 
     // Objects
     public static final String OBJECT_DOOR_IMAGE = "/objects/door.png";

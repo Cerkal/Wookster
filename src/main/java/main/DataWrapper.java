@@ -19,6 +19,7 @@ public class DataWrapper {
     HashMap<String, Quest> currentQuests = new HashMap<>();
     HashMap<String, Quest> completedQuests = new HashMap<>();
     HashMap<String, Integer> settingsMap = new HashMap<>();
+    String saveSlot = Constants.SAVE_FILE_SLOT_01;
 
     public HashMap<String, Quest> getCompletedQuests() {
         return this.completedQuests;

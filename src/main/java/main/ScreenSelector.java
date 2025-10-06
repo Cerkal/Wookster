@@ -84,7 +84,7 @@ public class ScreenSelector implements KeyListener {
         if (index >= 0 && index < screens.size()) {
             screens.set(index, list);
         } else {
-            throw new IndexOutOfBoundsException("Invalid screen index: " + index);
+            screens.add(list);
         }
     }
 

@@ -73,7 +73,7 @@ public class Level02 extends LevelBase {
         mom.pushback = false;
         addNPC(mom);
 
-        this.gamePanel.eventHandler.setRandomDamageTile(5);
+        // this.gamePanel.eventHandler.setRandomDamageTile(5);
 
         // Vendor
         this.vendor = new NPCVendor(gamePanel, 12, 14);

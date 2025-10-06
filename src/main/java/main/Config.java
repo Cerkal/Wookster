@@ -17,7 +17,10 @@ public class Config {
     private final GamePanel gamePanel;
     public DataWrapper dataWrapper;
 
-    private final File saveFile;
+    public File saveFile;
+
+    public static final int SAVE_SLOT_COUNT = Constants.SAVE_FILE_SLOTS.size();
+    private int currentSlot = 0;
 
     public Config(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -27,9 +30,8 @@ public class Config {
 
     private File getSaveFile() {
         File dir;
-
-        if (new File(Constants.SAVE_FILE).exists() || System.getProperty("portable") != null) {
-            dir = new File("."); // Same dir as portable
+        if (new File(Constants.SAVE_FILE_SLOT_01).exists() || System.getProperty("portable") != null) {
+            dir = new File(".");
         } else {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
@@ -41,14 +43,14 @@ public class Config {
             }
             if (!dir.exists()) dir.mkdirs();
         }
-        return new File(dir, Constants.SAVE_FILE);
+        return new File(dir, Constants.SAVE_FILE_SLOTS.get(currentSlot));
     }
 
     public void saveConfig() {
         System.out.println("Saving...");
+        this.dataWrapper.saveSlot = Constants.SAVE_FILE_SLOTS.get(currentSlot);
         String data = this.dataWrapper.getDataForSave(this.gamePanel);
         save(data);
-        // printPrettyString(data);
     }
 
     private void save(String data) {
@@ -105,7 +107,15 @@ public class Config {
     }
 
     public boolean hasSavedFile() {
-        if (!saveFile.exists()) {
+        boolean found = false;
+        for (String slotFile : Constants.SAVE_FILE_SLOTS) {
+            File file = new File(saveFile.getParentFile(), slotFile);
+            if (file.exists()) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
             System.out.println("No saved file, must be a new game");
             System.out.println("Writing default settings...");
             save(Constants.DEFAULT_SETTINGS);
@@ -184,5 +194,15 @@ public class Config {
                 }
             }
         }
+    }
+
+    public void setCurrentSlot(int slot) {
+        if (slot >= 0 && slot < SAVE_SLOT_COUNT) {
+            this.currentSlot = slot;
+            this.saveFile = getSaveFile();
+        }
+    }
+    public int getCurrentSlot() {
+        return this.currentSlot;
     }
 }
