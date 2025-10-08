@@ -3,6 +3,7 @@ package entity;
 import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
+import main.Dialogue;
 import main.GamePanel;
 import objects.weapons.Weapon.WeaponType;
 
@@ -10,12 +11,24 @@ public class NPCGeneric extends Entity {
 
     public NPCGeneric(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
+        this.defaultSpeed = 2;
         this.direction = Direction.DOWN;
-        this.speed = 2;
         this.entityType = EntityType.NPC;
+        this.damageSound = Constants.SOUND_HURT;
         this.name = "Generic";
-        this.movable = false;
+        this.movable = true;
         this.isFriendly = true;
+        setDefaultState(MoveStatus.WANDER);
+    }
+
+    @Override
+    public void takeDamage(int amount, Entity attacker) {
+        super.takeDamage(amount, attacker);
+        if (this.isFriendly && attacker instanceof Player && !this.warned) {
+            if (this.warningMessage == null) { this.warningMessage = Dialogue.DEFAULT_WARNING[0]; }
+            this.gamePanel.ui.displayDialog(this.warningMessage);
+            this.warned = true;
+        }
     }
 
     @Override

@@ -8,23 +8,19 @@ import main.GamePanel.GameState;
 import objects.weapons.CrossbowWeapon;
 import objects.weapons.Weapon.WeaponType;
 
-public class NPCVendor extends Entity {
+public class NPCVendor extends NPCGeneric {
 
     final static int DEFAULT_ATTACK_TIMEOUT = 10000;
 
     public NPCVendor(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
-        this.direction = Direction.DOWN;
-        this.speed = 3;
-        this.damageSound = Constants.SOUND_HURT;
-        this.entityType = EntityType.NPC;
+        this.defaultSpeed = 3;
         this.name = "Vendor";
-        this.isFriendly = true;
-        this.isNeeded = false;
         this.aggression = 50;
         this.pushback = false;
         this.attackingTimeout = DEFAULT_ATTACK_TIMEOUT;
         this.primaryWeapon = new CrossbowWeapon(gamePanel, this);
+        setDefaultState(MoveStatus.WANDER);
     }
 
     @Override

@@ -66,6 +66,7 @@ public class GamePanel extends Canvas implements Runnable {
 
     public GameState gameState = GameState.TITLE;
     public TileManager tileManager = new TileManager(this);
+    public Pathfinder pathfinder = new Pathfinder(this);
     public KeyHandler keyHandler = new KeyHandler(this);
     public MouseHandler mouseHandler = new MouseHandler(this);
     public MouseMoveHandler mouseMoveHandler = new MouseMoveHandler(this);
@@ -379,5 +380,9 @@ public class GamePanel extends Canvas implements Runnable {
         } else {
             targetMouse();
         }
+    }
+
+    public Entity getPlayer() {
+        return this.player;
     }
 }

@@ -10,7 +10,7 @@ public class NPCDroids extends Entity {
     public NPCDroids(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
-        this.speed = 2;
+        this.defaultSpeed = 2;
         this.setDialogue();
         this.entityType = EntityType.NPC;
         this.name = "Droids";

@@ -7,13 +7,10 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import javax.imageio.ImageIO;
@@ -25,7 +22,6 @@ import effects.BloodEffect;
 import effects.Effect;
 import entity.SpriteManager.Sprite;
 import main.Constants;
-import main.Dialogue;
 import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
@@ -34,7 +30,6 @@ import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
 import objects.weapons.Weapon.WeaponType;
-import tile.TileManager.TileLocation;
 
 public abstract class Entity {
 
@@ -49,14 +44,16 @@ public abstract class Entity {
 
     public enum Direction { UP, DOWN, LEFT, RIGHT }
     public enum EntityType { PLAYER, NPC, ENEMY, ANIMAL }
-    public enum MoveStatus { IDEL, CHASING, WANDER, FRENZY, FOLLOW }
 
     // Location
     public int worldX, worldY, startingX, startingY;
     public int speed, defaultSpeed;
+    public int runSpeed = 4;
     public Direction direction, startingDirection;
-    public MoveStatus moveStatus = MoveStatus.IDEL;
-    MoveStatus defaultMoveStatus = MoveStatus.IDEL;
+    public MoveStatus moveStatus = MoveStatus.IDLE;
+    
+    // Debug
+    public boolean debugEntity;
 
     // Sprite
     protected BufferedImage hat;
@@ -75,13 +72,14 @@ public abstract class Entity {
     Entity collisionEntity = null;
     Entity collisionPlayer = null;
     int collisionCounter;
+    int followCollisionCounter;
     public List<Point> areaPoints = new ArrayList<>();
     public boolean pushback = true;
+    public Entity predictiveCollision;
+    public Entity predictiveCollisionSelf;
 
     // Alert
     public boolean isFriendly;
-    public boolean willChase;
-    public boolean isAlerted;
     protected Queue<Point> moveQueue;
     protected boolean isNeeded;
     protected boolean isFrenzy;
@@ -92,12 +90,14 @@ public abstract class Entity {
     protected boolean timerStarted;
     protected Entity attackingTarget;
     protected int attackingTimeout;
-    protected Point frenzyTarget = null;
     Defaults defaults;
 
-    // Wander behavior
-    public boolean wander = false;
-    public long wanderTimer;
+    // Pathfinding
+    protected List<Point> currentPath = new ArrayList<>();
+    protected int pathIndex = 0;
+
+    // Timeouts
+    protected long stateExpireTime = 0;
 
     // Entity Values
     public EntityType entityType;
@@ -124,6 +124,75 @@ public abstract class Entity {
     public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
     public int priceModifier = 1;
 
+
+    // MOVEMENT STATES
+
+    public enum MoveStatus {
+        IDLE {
+            @Override
+            void update(Entity e) {
+                // Idle means do nothing
+            }
+
+            @Override
+            void onEnter(Entity e) {
+                e.setPath(null); // clear path
+            }
+        },
+        WANDER {
+            @Override
+            void update(Entity e) {
+                if (refreshPath(e)) {
+                    e.speed = e.defaultSpeed / 2;
+                    Point wanderTarget = e.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(e.areaPoints);
+                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), wanderTarget));
+                }
+            }
+        },
+        CHASING {
+            @Override
+            void update(Entity e) {
+                if (refreshPath(e)) {
+                    e.speed = e.defaultSpeed;
+                    Entity target = e.attackingTarget;
+                    if (target != null) {
+                        e.printDebugData("Setting path from chase from move status update");
+                        e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), target.getLocation()));
+                    }
+                }
+            }
+        },
+        FOLLOW {
+            @Override
+            void update(Entity e) {
+                if (refreshPath(e)) {
+                    e.speed = e.defaultSpeed;
+                    Entity leader = e.gamePanel.getPlayer();
+                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), leader.getLocation()));
+                }
+            }
+        },
+        FRENZY {
+            @Override
+            void update(Entity e) {
+                if (refreshPath(e)) {
+                    e.speed = e.defaultSpeed;
+                    Point frenzyTarget = e.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(e.areaPoints);
+                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), frenzyTarget));
+                }
+            }
+        };
+
+        abstract void update(Entity e);
+        void onEnter(Entity e) {} // optional override
+    }
+
+    private static boolean refreshPath(Entity entity) {
+        return entity.pathIndex >= entity.currentPath.size() &&
+        entity.collisionPlayer == null &&
+        entity.collisionEntity == null;
+    }
+
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.solidArea = new Rectangle();
@@ -133,11 +202,13 @@ public abstract class Entity {
         this.solidArea.height = SOLID_AREA_HEIGHT;
         this.solidAreaDefaultX = this.solidArea.x;
         this.solidAreaDefaultY = this.solidArea.y;
+        this.direction = Direction.DOWN;
         this.attackingTimeout = DEFAULT_TIMEOUT;
-        this.moveStatus = MoveStatus.IDEL;
-        this.defaultMoveStatus = this.moveStatus;
+        this.moveStatus = MoveStatus.IDLE;
+        this.speed = this.defaultSpeed;
         this.weapons.put(WeaponType.FIST, new FistWeapon(this.gamePanel, this));
         this.loadSprites();
+        this.setPredictiveEntity();
     }
 
     public Entity(GamePanel gamePanel, int worldX, int worldY) {
@@ -149,169 +220,277 @@ public abstract class Entity {
         this.isMoving = false;
     }
 
+    public void setIsReady() {
+        this.defaults = new Defaults(this);
+        this.isReady = true;
+    }
+
     public void update() {
-        if (this.isDead) { return; }
-        if (!this.isReady) { return; }
+        if (isDead || !isReady) return;
         collision();
         checkVisibility();
-        switch (this.moveStatus) {
-            case MoveStatus.FRENZY:
-                checkFrenzy();
-                break;
-            case MoveStatus.CHASING:
-                checkLineOfFire();
-                checkChase();
-                break;
-            case MoveStatus.FOLLOW:
-                checkFollow();
-                break;
-            case MoveStatus.WANDER:
-                checkWander();
-                break;
-            case MoveStatus.IDEL:
-                checkIdel();
-                break;
-            default:
-                break;
-        }
+        checkLineOfFire();
+        moveStatus.update(this);
         handleMovement();
+        checkTimeout();
     }
 
-    private void checkIdel() {
-        if (isMoveQueueEmpty()) {
-            backToStart();
+    private void collision() {
+        if (this.moveStatus == MoveStatus.IDLE) return;
+        this.collisionOn = false;
+        this.gamePanel.collision.checkTile(this);
+        this.gamePanel.collision.objectCollision(this, false);
+
+        collisionEntity = this.gamePanel.collision.entityCollision(this);
+        collisionPlayer = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
+
+        boolean collidedWithEntity = collisionEntity != null;
+        boolean collidedWithPlayer = collisionPlayer != null;
+
+        if (collidedWithPlayer || collidedWithEntity) {
+            // handlePlayerCollision();
+        } else {
+            if (this.primaryWeapon != null) this.weapon = this.primaryWeapon;
+        }
+
+        if ((collidedWithEntity || collidedWithPlayer)) {
+            // TODO: FIX
+            if (this.moveStatus == MoveStatus.FOLLOW && collidedWithPlayer) {
+                followCollisionCounter++;
+                if (followCollisionCounter > 150) {
+                    this.changeState(MoveStatus.FRENZY);
+                    Point pushBack = this.gamePanel.pathfinder.getPushBackLocationFollow(this, this.gamePanel.player);
+                    printDebugData("Pushing back to: " + pushBack);
+                    actionTimeout(1000);
+                    setPathPoint(pushBack);
+                    followCollisionCounter = 0;
+                }
+            } else {
+                if (collisionCounter == 0) {
+                    Entity collisionEntity = collidedWithPlayer ? this.gamePanel.player : this.collisionEntity;
+                    printDebugData("Setting path from collision");
+                    setPathPoint(getPathLocation(collisionEntity));
+                    collisionCounter = this.speed;
+                }
+            }
+        }
+
+        if (collisionCounter > 0) {
+            collisionCounter--;
         }
     }
 
-    private void checkWander() {
-        if (isMoveQueueEmpty()) {
-            int defaultValue = setDefaultSpeed();
-            this.speed = (int) (defaultValue *= .5);
-            startFrenzy(getFrenzyLocation());
+    private void checkVisibility() {
+        if (this.moveStatus == MoveStatus.FOLLOW) { return; }
+        if (this.isFriendly || this.moveStatus == MoveStatus.FRENZY) { return; }
+
+        List<Entity> entities = new ArrayList<>(this.gamePanel.npcs);
+        entities.add(this.gamePanel.player);
+
+        for (Entity entity : entities) {
+            if (this.getClass() == entity.getClass() || this == entity) continue;
+            boolean target = this.gamePanel.collision.checkLineTileCollision(entity, this);
+            
+            if (this.attackingTarget == null && target && entity.isDead == false) {
+                this.attackingTarget = entity;
+                clearPath();
+                System.out.println("Entity: " + this.name + " spotted target: " + entity.name);
+                actionTimeout();
+                changeState(MoveStatus.CHASING);
+                printDebugData(this.name + " attacking: " + this.attackingTarget + " going to chase");
+            }
+
+            if (this.attackingTarget == entity && entity.isDead) {
+                this.attackingTarget = null;
+            } 
         }
+        return;
     }
 
-    private void checkFollow() {
-        if (this.moveQueue == null || this.moveQueue.isEmpty()) queueChase();
-    }
+    private void checkLineOfFire() {
+        if (
+            this.isFriendly ||
+            this.primaryWeapon == null ||
+            this.primaryWeapon instanceof MeleeWeapon ||
+            this.attackingTarget == null
+        ){
+            return;
+        }
 
-    public void setWander() {
-        this.isFrenzy = true;
+        int buffer = 1;
+        int locBuffer = Constants.TILE_SIZE;
+        int entityX = getLocation().x;
+        int entityY = getLocation().y;
+        int attackingX = this.attackingTarget.getLocation().x;
+        int attackingY = this.attackingTarget.getLocation().y;
+
+        boolean inLine = false;
+        boolean closeEnough = false;
         this.movable = true;
-        this.moveStatus = MoveStatus.WANDER;
-    }
-        
-    public void setChase() {
-        this.moveStatus = MoveStatus.CHASING;
-        queueChase();
+
+        switch (this.direction) {
+            case UP:
+                inLine = entityY > attackingY && Math.abs(entityX - attackingX) <= buffer;
+                closeEnough = Math.abs(entityY - attackingY) < 5 && Math.abs(this.worldX - this.attackingTarget.worldX) <= locBuffer;
+                break;
+            case DOWN:
+                inLine = entityY < attackingY && Math.abs(entityX - attackingX) <= buffer;
+                closeEnough = Math.abs(entityY - attackingY) < 5 && Math.abs(this.worldX - this.attackingTarget.worldX) <= locBuffer;
+                break;
+            case RIGHT:
+                inLine = entityX < attackingX && Math.abs(entityY - attackingY) <= buffer;
+                closeEnough = Math.abs(entityX - attackingX) < 5 && Math.abs(this.worldY - this.attackingTarget.worldY) <= locBuffer;
+                break;
+            case LEFT:
+                inLine = entityX > attackingX && Math.abs(entityY - attackingY) <= buffer;
+                closeEnough = Math.abs(entityX - attackingX) < 5 && Math.abs(this.worldY - this.attackingTarget.worldY) <= locBuffer;
+                break;
+        }
+
+        boolean canSeeTarget = this.gamePanel.collision.checkLineTileCollision(this.attackingTarget, this);
+
+        if (inLine && canSeeTarget) {
+            this.primaryWeapon.shoot(this);
+        }
+        if (closeEnough && canSeeTarget) {
+            this.movable = false;
+            this.isMoving = false;
+            this.attacking = true;
+        }
     }
 
-    private void checkChase() {
-        if (this.attackingTarget != null && this.attackingTarget.isDead) {
-            this.attackingTarget = null;
+    // MOVEMENT METHODS
+
+    protected void handleMovement() {
+        try {
+            if (currentPath == null || pathIndex >= currentPath.size()) return;
+            moveEntityStep(currentPath.get(pathIndex));
+
+            // reached this step?
+            Point step = currentPath.get(pathIndex);
+            if (
+                Math.abs(this.worldX - step.x * Constants.TILE_SIZE) <= this.speed &&
+                Math.abs(this.worldY - step.y * Constants.TILE_SIZE) <= this.speed
+            ) {
+                Point nextPoint = this.currentPath.get(pathIndex);
+                snapToGrid(nextPoint);
+                pathIndex++;
+            }
+        } catch (Exception e) {
+            // Updated while running, thrown exception. We ignore.
+        }
+    }
+
+    private void snapToGrid(Point tilePoint) {
+        this.worldX = tilePoint.x * Constants.TILE_SIZE;
+        this.worldY = tilePoint.y * Constants.TILE_SIZE;
+    }
+
+    private void moveEntityStep(Point point) {
+        int targetX = point.x * Constants.TILE_SIZE;
+        int targetY = point.y * Constants.TILE_SIZE;
+
+        int dx = targetX - this.worldX;
+        int dy = targetY - this.worldY;
+
+        if (dx != 0) {
+            this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+            if (predictiveCollision(targetX, this.worldY)) {
+                setPathPoint(getPathLocation(this.attackingTarget));
+                printDebugData("Setting path from move predictive");
+            } else {
+                moveEntityToTarget(this, targetX, this.worldY);
+            }
+        } else if (dy != 0) {
+            this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
+            if (predictiveCollision(this.worldX, targetY)) {
+                setPathPoint(getPathLocation(this.attackingTarget));
+                printDebugData("Setting path from move predictive");
+            } else {
+                moveEntityToTarget(this, this.worldX, targetY);
+            }
+        }
+    }
+
+    protected boolean predictiveCollision(int targetX, int targetY) {
+        if (this.isDead == true) { return false; }
+        if (this.moveStatus == MoveStatus.FOLLOW) { return false; }
+        this.predictiveCollision.updatePredictive(this);
+        this.predictiveCollision.speed = 10;
+        moveEntityToTarget(this.predictiveCollision, targetX, targetY);
+        boolean willCollideWithTile = this.gamePanel.collision.checkTile(this.predictiveCollision);
+        if (willCollideWithTile || this.collisionOn) {
+            return true;
+        }
+        boolean willCollideWithEntity = this.gamePanel.collision.entityCollision(this.predictiveCollision) != null;
+        boolean willCollideWithPlayer = this.gamePanel.collision.getCollidEntity(this.predictiveCollision, this.gamePanel.getPlayer()) != null;
+        return willCollideWithEntity || willCollideWithPlayer;
+    }
+    
+    protected void moveEntityToTarget(Entity entity, int targetX, int targetY) {
+        if (entity.isDead == true || this.movable == false) { return; }
+        if (!this.collisionOn) {
+            entity.isMoving = true;
+            if (entity.worldX != targetX) {
+                if (entity.worldX < targetX) {
+                    entity.worldX += Math.min(speed, targetX - entity.worldX);
+                } else if (entity.worldX > targetX) {
+                    entity.worldX -= Math.min(speed, entity.worldX - targetX);
+                }
+            } else if (entity.worldY != targetY) {
+                if (entity.worldY < targetY) {
+                    entity.worldY += Math.min(speed, targetY - entity.worldY);
+                } else if (entity.worldY > targetY) {
+                    entity.worldY -= Math.min(speed, entity.worldY - targetY);
+                }
+            }
+        }
+    }
+
+    private void checkTimeout() {
+        if (
+            this.gamePanel.gameTime / Constants.MILLISECOND > this.stateExpireTime &&
+            this.defaults != null &&
+            this.defaults.moveStatus != this.moveStatus
+        ){
+            printDebugData("Entity: " + this.name + " going from " + this.moveStatus + " back to " + this.defaults.moveStatus);
+            clearPath();
             this.defaults.revertToDefault(this);
         }
     }
 
-    public void setFollow() {
-        this.isAlerted = true;
-        this.willChase = true;
-        this.pushback = true;
-        setDefaultSpeed();
-        this.moveStatus = MoveStatus.FOLLOW;
+    public void changeState(MoveStatus newState) {
+        if (this.moveStatus == newState) return;
+        this.moveStatus = newState;
+        this.moveStatus.onEnter(this);
     }
 
-    public void setMoveStatus(MoveStatus moveStatus) {
+    public void setDefaultState(MoveStatus moveStatus) {
         this.moveStatus = moveStatus;
-        this.defaultMoveStatus = moveStatus;
-        switch (moveStatus) {
-            case FOLLOW:
-                setFollow();
-                break;
-            case WANDER:
-                setWander();
-                break;
-            case IDEL:
-                break;
-            default:
-                break;
-        }
+        this.defaults = new Defaults(this);
+        this.moveStatus.onEnter(this);
+    }
+
+    public void setPath(List<Point> path) {
+        this.currentPath = path != null ? path : new ArrayList<>();
+        this.pathIndex = 0;
+    }
+
+    public void setPathPoint(Point point) {
+        setPath(this.gamePanel.pathfinder.findPath(this.getLocation(), point));
     }
 
     public void setArea(List<Point> points) {
         this.areaPoints = points;
     }
 
-    private void checkVisibility() {
-        if (this.movable == false) { return; }
-        this.canSeePlayer = this.gamePanel.collision.checkLineTileCollision(this.gamePanel.player, this);
-        
-        if ((this.canSeePlayer || this.isAlerted) && this.moveStatus != MoveStatus.FRENZY && !this.isFriendly) {
-            this.isAlerted = true;
-            if (this.moveStatus == MoveStatus.WANDER) {
-                setDefaultSpeed();
-                clearMoveQueue();
-            }
-            this.attackingTarget = this.attackingTarget == null ? this.gamePanel.player : this.attackingTarget;
-            actionTimeout();
-            setChase();
-        }
-    }
-
-     private void checkFrenzy() {
-        if (this.isFrenzy && isMoveQueueEmpty()) {
-            setDefaultSpeed();
-            startFrenzy(getFrenzyLocation());
-        }
-    }
-
-    private int setDefaultSpeed() {
-        if (this.defaultSpeed == 0) this.defaultSpeed = this.speed;
-        this.speed = this.defaultSpeed;
-        return this.speed;
-    }
-
-    protected void queueChase() {
-        if ((this.moveQueue == null || this.moveQueue.isEmpty()) && this.willChase) {
-            setDefaultSpeed();
-            List<Point> path = bfsShortestPath(
-                getLocation(),
-                getEnemy(this.attackingTarget).getLocation(),
-                this.gamePanel.tileManager.walkableTiles
-            );
-            getPath(path);
-        }
-    }
-
-    private void handleMovement() {
-        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
-            goTo();
-        }
-    }
-
-    private void goTo() {
-        if (this.movable == false) { return; }
-        if (this.moveQueue == null || this.moveQueue.isEmpty()) { return; }
-        Point point = this.moveQueue.peek();
-        if (point == null) { return; }
-
-        this.isMoving = true;
-
-        moveEntityStep(point);
-
-        int targetX = point.x * Constants.TILE_SIZE;
-        int targetY = point.y * Constants.TILE_SIZE;
-
-        if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
-            snapToGrid(point);
-            this.moveQueue.poll();
-        }
-
-        isBackAtStart();
+    public void clearPath() {
+        this.currentPath.clear();
+        this.pathIndex = 0;
     }
 
     private boolean isBackAtStart() {
-        if (this.moveQueue.isEmpty() && this.defaultMoveStatus == MoveStatus.IDEL) {
+        if (this.moveQueue.isEmpty() && this.defaults.moveStatus == MoveStatus.IDLE) {
             int x = this.getLocation().x;
             int y = this.getLocation().y;
             if (
@@ -328,37 +507,74 @@ public abstract class Entity {
     }
 
     private void actionTimeout() {
-        if (this.timerStarted) { return; }
-        
-        this.timerStarted = true;
-        Defaults defaults = new Defaults(this);
-        new Thread(() -> {
-            try {
-                Thread.sleep(DEFAULT_TIMEOUT);
-            } catch (InterruptedException ignored) {}
-            // Reset timer
-            this.timerStarted = false;
+        actionTimeout(this.attackingTimeout);
+    }
 
-            if (defaults.moveStatus != this.moveStatus) {
-                // Reset to old status
-                clearMoveQueue();
-                defaults.revertToDefault(this);
-                defaults.printDefaults(this, "Attacker 1");
-                defaults.printDefaults(this, "Attacker 2");
-                System.out.println("actionTimeout: " + this.name + " is going back to " + this.moveStatus.name() + ".");
-            }
-        }).start();
+    private void actionTimeout(int timeout) {
+        long gameTimeMS = this.gamePanel.gameTime / Constants.MILLISECOND;
+        this.stateExpireTime = gameTimeMS + timeout;
+        printDebugData("Action started at : " + gameTimeMS + " will expire at: " + this.stateExpireTime);
     }
 
     public void handlePlayerCollision() {
-        if (this.isFriendly || this.moveStatus == MoveStatus.FOLLOW) { return; }
-        if (this.isAlerted) {
-            if (this.weapons != null && this.weapons.containsKey(WeaponType.FIST)) {
-                this.weapon = this.weapons.get(WeaponType.FIST);
-                this.weapon.shoot(this);
-            }
+        if (this.isFriendly || this.moveStatus != MoveStatus.CHASING) { return; }
+        if (this.weapons != null && this.weapons.containsKey(WeaponType.FIST)) {
+            this.weapon = this.weapons.get(WeaponType.FIST);
+            this.weapon.shoot(this);
         }
     }
+
+    public int getRawX() {
+        return this.worldX / Constants.TILE_SIZE;
+    }
+
+    public int getRawY() {
+        return this.worldY / Constants.TILE_SIZE;
+    }
+
+    protected Point getPathLocation(Entity entity) {
+        Point point = null;
+        switch (this.moveStatus) {
+            case FOLLOW:
+                printDebugData("getPathLocation: follow");
+                point = this.gamePanel.getPlayer().getLocation();
+                break;
+            case WANDER:
+                printDebugData("getPathLocation: wander");
+                point = this.gamePanel.pathfinder.randomFrenzyPointWithinAreaSquare(this.areaPoints);
+                break;
+            case CHASING:
+                if (this.attackingTarget != null && entity != this.attackingTarget) {
+                    printDebugData("getPathLocation: chasing / attacking is not null");
+                    point = this.attackingTarget.getLocation();
+                } else {
+                    printDebugData("getPathLocation: chasing / attacking is null or not attacker so defaulting");
+                    point = this.gamePanel.pathfinder.randomFrenzyPoint();
+                }
+                break;
+            default:
+                point = this.gamePanel.pathfinder.randomFrenzyPoint();
+                printDebugData("getPathLocation: default");
+                break;
+        }
+        return point;
+    }
+
+    public void setLocation(int x, int y) {
+        this.worldX = x * Constants.TILE_SIZE;
+        this.worldY = y * Constants.TILE_SIZE;
+    }
+
+    public void setLocation(Point point) {
+        this.worldX = point.x * Constants.TILE_SIZE;
+        this.worldY = point.y * Constants.TILE_SIZE;
+    }
+
+    public Point getLocation() {
+        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
+    }
+
+    // DIALOGUE METHODS
 
     public void speak() {
         if (this.dialogue == null) { return; }
@@ -391,6 +607,12 @@ public abstract class Entity {
         return null;
     }
 
+    public void setDialogue(String[] lines) {
+        this.dialogue = lines;
+    }
+
+    // DAMAGE METHODS
+
     public void takeDamage(int amount, Entity attacker) {
         if (this.invincable) { return; }
         this.gamePanel.playSoundEffect(this.damageSound);
@@ -408,9 +630,9 @@ public abstract class Entity {
             return;
         }
         if (this instanceof Player) { return; }
-        this.isAlerted = true;
+        if (this.getClass() == attacker.getClass()) { return; }
 
-        System.out.println(this.entityType + ": " + getCurrentHealth());
+        printDebugData(this.entityType + ": " + getCurrentHealth());
 
         if (
             (attacker instanceof Player && this.warned) ||
@@ -418,37 +640,16 @@ public abstract class Entity {
         ){
             if (this.aggression >= 50) {
                 this.attackingTarget = attacker;
-                actionTimeout();
                 this.isFriendly = false;
                 this.movable = true;
-                this.willChase = true;
-                clearMoveQueue();
-                setChase();
+                actionTimeout();
+                changeState(MoveStatus.CHASING);
             } else {
                 this.attackingTarget = null;
-                setDefaultSpeed();
-                startFrenzy(getFrenzyLocation());
+                actionTimeout();
+                changeState(MoveStatus.FRENZY);
             }
         }
-        
-        if (this.isFriendly && attacker instanceof Player) {
-            if (this.warningMessage == null) { this.warningMessage = Dialogue.DEFAULT_WARNING[0]; }
-            this.gamePanel.ui.displayDialog(this.warningMessage);
-            this.warned = true;
-        }
-        if (this instanceof Animal) {
-            this.isFrenzy = true;
-            this.frenzyTarget = null;
-            if (this.moveQueue != null) {
-                clearMoveQueue();
-                this.frenzyTarget = getPushBackLocation(this.gamePanel.player);
-                startFrenzy(this.frenzyTarget);
-            }
-        }
-    }
-
-    private Entity getEnemy(Entity entity) {
-        return entity != null && !entity.isDead ? entity : this.gamePanel.player;
     }
 
     public Entity getAttackingTarget() {
@@ -475,25 +676,85 @@ public abstract class Entity {
         return (int) ((this.health * 100.0) / this.maxHealth);
     }
 
-    public int getRawX() {
-        return this.worldX / Constants.TILE_SIZE;
+    // DRAW METHODS
+
+    public void draw(Graphics2D graphics2D) {
+        getSpiteImage();
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+        if (
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            graphics2D.drawImage(
+                this.sprite.image,
+                screenX - this.sprite.xAdjust,
+                screenY - this.sprite.yAdjust,
+                null
+            );
+            drawDebugCollision(graphics2D, screenX, screenY);
+        }
+        drawEffect(graphics2D);
+        drawHat(graphics2D);
     }
 
-    public int getRawY() {
-        return this.worldY / Constants.TILE_SIZE;
+    protected void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
+        if (!this.gamePanel.debugCollision) { return; }
+        graphics2D.setColor(Color.RED);
+        graphics2D.drawRect(
+            screenX + solidArea.x,
+            screenY + solidArea.y,
+            solidArea.width,
+            solidArea.height
+        );
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.drawString("(" + this.worldX + ", " + this.worldY + ")", screenX, screenY - 30);
     }
 
-    public void setDialogue(String[] lines) {
-        this.dialogue = lines;
+    protected void drawEffect(Graphics2D graphics2D) {
+        if (this.effect != null) {
+            if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > 500) {
+                this.effect = null;
+            } else {
+                this.effect.worldX = this.worldX;
+                this.effect.worldY = this.worldY;
+                this.effect.draw(graphics2D);
+            }
+        }
     }
 
-    protected void getSpiteImage() {
-        this.sprite = this.spriteManager.getSprite(this);
+    protected void drawHat(Graphics2D graphics2D) {
+        if (this.hat == null) { return; }
+        if (this.isDead) { return; }
+        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
+        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
+        if (
+            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
+            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
+            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
+            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
+        ){
+            graphics2D.drawImage(
+                this.hat,
+                screenX,
+                screenY - 18,
+                null
+            );
+        }
     }
+
+    private void printDebugData(String message) {
+        if (this.debugEntity) {
+            System.out.println(message);
+        }
+    }
+
+    // VENDOR METHODS
 
     public void setVendor(List<InventoryItem> items) {
         this.isVendor = true;
-        this.willChase = true;
         for (InventoryItem item : items) {
             this.inventory.put(item.name, new ArrayList<>(List.of(item)));
         }
@@ -501,6 +762,47 @@ public abstract class Entity {
 
     public boolean isVendor() {
         return this.isVendor;
+    }
+
+    public void addCredits(int amount) {
+        InventoryItem item = new InventoryItem(
+            Constants.CREDITS,
+            amount,
+            false,
+            true,
+            false,
+            1
+        );
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count += amount;
+            displayInventoryMessage(item);
+        } else {
+            addInventoryItem(item);
+        }
+    }
+
+    public void removeCredits(int amount) {
+        if (this.inventory.containsKey(Constants.CREDITS)) {
+            this.inventory.get(Constants.CREDITS).get(0).count -= amount;
+        }
+    }
+
+    public int getCredits() {
+        return this.inventory.get(Constants.CREDITS).get(0).count;
+    }
+
+    public void addInventoryItem(InventoryItem item) {
+        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
+        displayInventoryMessage(item);
+    }
+
+    private void displayInventoryMessage(InventoryItem item) {
+        if (this instanceof Player == false || this.gamePanel.gameState == GameState.VENDOR) { return; }
+        if (item.count > 1) {
+            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
+        } else {
+            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
+        }
     }
 
     public void addInventoryItemFromVendor(InventoryItem item) {
@@ -577,102 +879,13 @@ public abstract class Entity {
         return selectableList;
     }
 
+    // SPRITE METHODS
+
+    protected void getSpiteImage() {
+        this.sprite = this.spriteManager.getSprite(this);
+    }
+
     protected abstract void loadSprites();
-
-    protected void drawDebugCollision(Graphics2D graphics2D, int screenX, int screenY) {
-        if (!this.gamePanel.debugCollision) { return; }
-        graphics2D.setColor(Color.RED);
-        graphics2D.drawRect(
-            screenX + solidArea.x,
-            screenY + solidArea.y,
-            solidArea.width,
-            solidArea.height
-        );
-    }
-
-    public int getCredits() {
-        return this.inventory.get(Constants.CREDITS).get(0).count;
-    }
-
-    public void addInventoryItem(InventoryItem item) {
-        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
-        displayInventoryMessage(item);
-    }
-
-    private void displayInventoryMessage(InventoryItem item) {
-        if (this instanceof Player == false || this.gamePanel.gameState == GameState.VENDOR) { return; }
-        if (item.count > 1) {
-            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
-        } else {
-            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
-        }
-    }
-
-    public void addCredits(int amount) {
-        InventoryItem item = new InventoryItem(
-            Constants.CREDITS,
-            amount,
-            false,
-            true,
-            false,
-            1
-        );
-        if (this.inventory.containsKey(Constants.CREDITS)) {
-            this.inventory.get(Constants.CREDITS).get(0).count += amount;
-            displayInventoryMessage(item);
-        } else {
-            addInventoryItem(item);
-        }
-    }
-
-    public void removeCredits(int amount) {
-        if (this.inventory.containsKey(Constants.CREDITS)) {
-            this.inventory.get(Constants.CREDITS).get(0).count -= amount;
-        }
-    }
-
-    private void collision() {
-        this.collisionOn = false;
-        this.gamePanel.collision.checkTile(this);
-        this.gamePanel.collision.objectCollision(this, false);
-
-        collisionEntity = this.gamePanel.collision.entityCollision(this);
-        collisionPlayer = this.gamePanel.collision.getCollidEntity(this, this.gamePanel.player);
-
-        boolean collidedWithEntity = collisionEntity != null;
-        boolean collidedWithPlayer = collisionPlayer != null;
-        
-        if (collidedWithPlayer || collidedWithEntity) {
-            handlePlayerCollision();
-            return;
-        } else {
-            if (this.primaryWeapon != null) this.weapon = this.primaryWeapon;
-        }
-
-        if ((collidedWithEntity || collidedWithPlayer)) {
-            if (
-                !this.pushback ||
-                this.moveStatus == MoveStatus.FOLLOW ||
-                this.moveStatus == MoveStatus.CHASING ||
-                this.moveStatus == MoveStatus.IDEL
-            ){
-                this.isMoving = false;
-                return;
-            }
-
-            collisionCounter++;
-            if (collisionCounter > this.speed * 2) {
-                if (collidedWithEntity) {
-                    this.frenzyTarget = getPushBackLocation(collisionEntity);
-                }
-                if (collidedWithPlayer) {
-                    this.frenzyTarget = getPushBackLocation(collisionPlayer);
-                }
-                startFrenzy(this.frenzyTarget);
-                collisionCounter = 0;
-            }
-        }
-    }
 
     public void setHat(String hatPath) {
         if (hatPath == null) { return; }
@@ -684,407 +897,58 @@ public abstract class Entity {
         }
     }
 
-    private void getPath(List<Point> path) {
-        if (path != null) {
-            this.moveQueue = new LinkedList<>();
-            Point last = null;
-            for (Point point : path) {
-                this.moveQueue.add(point);
-                last = point;
-            }
-            if (this.moveQueue.size() >= 1 && last != null && this.moveStatus == MoveStatus.FOLLOW) {
-                this.moveQueue.remove(last);
-            }
-        }
+    // PREDICTIVE METHODS
+
+    private void setPredictiveEntity() {
+        this.predictiveCollision = new Entity(this) {
+            @Override
+            protected void loadSprites() {}
+        };
     }
 
-    private void checkLineOfFire() {
-        if (this.isFriendly) { return; }
-        if (this.primaryWeapon == null) { return; }
-        if (this.primaryWeapon instanceof MeleeWeapon) { return; }
-        if (!this.isAlerted) { return; }
-        
-        int buffer = 1;
-        int entityX = getLocation().x;
-        int entityY = getLocation().y;
-        int attackingX = getEnemy(this.attackingTarget).getLocation().x;
-        int attackingY = getEnemy(this.attackingTarget).getLocation().y;
-
-        int locBuffer = Constants.TILE_SIZE;
-        this.movable = true;
-
-        switch (this.direction) {
-            case UP:
-                if (entityY <= attackingY) { return; }
-                if (entityX >= attackingX - buffer && entityX <= attackingX + buffer) {
-                    this.primaryWeapon.shoot(this);
-                }
-                if (this.worldX >= this.attackingTarget.worldX - locBuffer && this.worldX <= this.attackingTarget.worldX + locBuffer) {
-                    int diffY = Math.abs(entityY - attackingY);
-                    if (diffY < 5) {
-                        this.movable = false;
-                        this.isMoving = false;
-                        this.attacking = true;
-                    }
-                }
-                break;
-            case DOWN:
-                if (entityY >= attackingY) { return; }
-                if (entityX >= attackingX - buffer && entityX <= attackingX + buffer) {
-                    this.primaryWeapon.shoot(this);
-                }
-                if (this.worldX >= this.attackingTarget.worldX - locBuffer && this.worldX <= this.attackingTarget.worldX + locBuffer) {
-                    int diffY = Math.abs(entityY - attackingY);
-                    if (diffY < 5) {
-                        this.movable = false;
-                        this.isMoving = false;
-                        this.attacking = true;
-                    }
-                }
-                break;
-            case RIGHT:
-                if (entityX >= attackingX) { return; }
-                if (entityY >= attackingY - buffer && entityY <= attackingY + buffer) {
-                    this.primaryWeapon.shoot(this);
-                }
-                if (this.worldY >= this.attackingTarget.worldY - locBuffer && this.worldY <= this.attackingTarget.worldY + locBuffer) {
-                    int diffX = Math.abs(entityX - attackingX);
-                    if (diffX < 5) {
-                        this.movable = false;
-                        this.isMoving = false;
-                        this.attacking = true;
-                    }
-                }
-                break;
-            case LEFT:
-                if (entityX <= attackingX) { return; }
-                if (entityY >= attackingY - buffer && entityY <= attackingY + buffer) {
-                    this.primaryWeapon.shoot(this);
-                }
-                if (this.worldY >= this.attackingTarget.worldY - locBuffer && this.worldY <= this.attackingTarget.worldY + locBuffer) {
-                    int diffX = Math.abs(entityX - attackingX);
-                    if (diffX < 5) {
-                        this.movable = false;
-                        this.isMoving = false;
-                        this.attacking = true;
-                    }
-                }
-                break;
-        }
+    public Entity(Entity predictiveEntity) {
+        this.predictiveCollisionSelf = predictiveEntity;
+        updatePredictive(predictiveEntity);
     }
 
-    private void snapToGrid(Point tilePoint) {
-        this.worldX = tilePoint.x * Constants.TILE_SIZE;
-        this.worldY = tilePoint.y * Constants.TILE_SIZE;
-    }
-
-    private void moveEntityStep(Point point) {
-        int targetX = point.x * Constants.TILE_SIZE;
-        int targetY = point.y * Constants.TILE_SIZE;
-
-        int dx = targetX - this.worldX;
-        int dy = targetY - this.worldY;
-
-        if (dx != 0) {
-            this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
-            moveEntityToTarget(targetX, this.worldY);
-        } else if (dy != 0) {
-            this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
-            moveEntityToTarget(this.worldX, targetY);
-        }
-    }
-
-    private void moveEntityToTarget(int targetX, int targetY) {
-        if (this.isDead == true) { return; }
-        if (!this.collisionOn) {
-            this.isMoving = true;
-            if (this.worldX != targetX) {
-                if (this.worldX < targetX) {
-                    this.worldX += Math.min(speed, targetX - this.worldX);
-                } else if (this.worldX > targetX) {
-                    this.worldX -= Math.min(speed, this.worldX - targetX);
-                }
-            } else if (this.worldY != targetY) {
-                if (this.worldY < targetY) {
-                    this.worldY += Math.min(speed, targetY - this.worldY);
-                } else if (this.worldY > targetY) {
-                    this.worldY -= Math.min(speed, this.worldY - targetY);
-                }
-            }
-        } else {
-            this.isMoving = false;
-        }
-    }
-
-    protected List<Point> bfsShortestPath(Point start, Point goal, boolean[][] walkable) {
-        int width = this.gamePanel.tileManager.walkableTiles.length;
-        int height = this.gamePanel.tileManager.walkableTiles[0].length;
-        // Breadth-First Search
-        Queue<Point> queue = new LinkedList<>();
-        Map<Point, Point> cameFrom = new HashMap<>();
-        queue.add(start);
-        cameFrom.put(start, null);
-
-        int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}};
-
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
-            if (current.equals(goal)) {
-                List<Point> path = new ArrayList<>();
-                for (Point p = goal; p != null; p = cameFrom.get(p)) {
-                    path.add(p);
-                }
-                Collections.reverse(path);
-                return path;
-            }
-            for (int[] d : directions) {
-                int nx = current.x + d[0];
-                int ny = current.y + d[1];
-                Point neighbor = new Point(nx, ny);
-                if (nx >= 0 && ny >= 0 && nx < width && ny < height
-                    && walkable[nx][ny]
-                    && !cameFrom.containsKey(neighbor)) {
-                    queue.add(neighbor);
-                    cameFrom.put(neighbor, current);
-                }
-            }
-        }
-        return null;
-    }
-
-    private Point getFrenzyLocation() {
-        if (this.areaPoints != null && !this.areaPoints.isEmpty()) {
-            return this.gamePanel.tileManager.getRandomTileLocationsWithinArea(this.areaPoints);
-        }
-        List<Point> points = getDefaultPoints();
-        if (points != null && !points.isEmpty()) {
-            return points.get(Utils.generateRandomInt(0, points.size() - 1));
-        }
-        TileLocation tileLocation = this.gamePanel.tileManager.getRandomTileLocation();
-        return new Point(tileLocation.worldX, tileLocation.worldY);
-    }
-
-    protected List<Point> getDefaultPoints() {
-        this.areaPoints = List.of(
-            new Point(this.getLocation().x - DEFAULT_AREA_RADIUS, this.getLocation().x - DEFAULT_AREA_RADIUS),
-            new Point(this.getLocation().x + DEFAULT_AREA_RADIUS, this.getLocation().x + DEFAULT_AREA_RADIUS)
-        );
-        return areaPoints;
-    }
-
-    protected void drawEffect(Graphics2D graphics2D) {
-        if (this.effect != null) {
-            if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > 500) {
-                this.effect = null;
-            } else {
-                this.effect.worldX = this.worldX;
-                this.effect.worldY = this.worldY;
-                this.effect.draw(graphics2D);
-            }
-        }
-    }
-
-    private Point getPushBackLocation(Entity entity) {
-        int dx = entity.worldX - worldX;
-        int dy = entity.worldY - worldY;
-        List<Point> points = new ArrayList<Point>();
-        if (dx != 0 && dy != 0) {
-            int ix = dx / Math.abs(dx) * -1;
-            int iy = dy / Math.abs(dy) * -1;
-            for (int y = getRawY() - 1; y > 0 && y < Constants.MAX_SCREEN_ROW; y += iy) {
-                for (int x = getRawX() - 1; x > 0 && x < Constants.MAX_SCREEN_COL; x += ix) {
-                    if (this.gamePanel.tileManager.walkableTiles[x][y]) {
-                        points.add(new Point(x, y));
-                    }
-                }
-            }
-        }
-        if (points.size() > 0) {
-            return getPushBackLocFromWalkable(points);
-        }
-        return getFrenzyLocation();
-    }
-
-    private Point getPushBackLocFromWalkable(List<Point> points) {
-        this.frenzyTarget = points.get(Utils.generateRandomInt(0, points.size() - 1));
-        if (!getValidFrenzyPath()) {
-            points.remove(this.frenzyTarget);
-            if (points.isEmpty()) {
-                return getFrenzyLocation();
-            }
-            getPushBackLocFromWalkable(points);
-        }
-        return this.frenzyTarget;
-    }
-
-    private void startFrenzy(Point point) {
-        if (point != null && !getLocation().equals(point)) {
-            this.frenzyTarget = point;
-        } else {
-            this.frenzyTarget = getFrenzyLocation();
-        }
-        if (!getValidFrenzyPath()) startFrenzy(getFrenzyLocation());
-        moveFrenziedEntity();
-    }
-
-    private boolean getValidFrenzyPath() {
-        List<Point> path = bfsShortestPath(
-            getLocation(),
-            this.frenzyTarget,
-            this.gamePanel.tileManager.walkableTiles
-        );
-        if (path != null && !path.isEmpty()) {
-            path.removeFirst();
-            this.moveQueue = new LinkedList<>(path);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void moveFrenziedEntity() {
-        if (!movable) {
-            this.frenzyTarget = null;
-            this.isFrenzy = false;
-            return;
-        }
-        if (this.moveQueue != null && !this.moveQueue.isEmpty()) {
-            this.isMoving = true;
-            Point nextPoint = this.moveQueue.peek();
-            moveEntityStep(nextPoint);
-
-            int targetX = nextPoint.x * Constants.TILE_SIZE;
-            int targetY = nextPoint.y * Constants.TILE_SIZE;
-
-            if (Math.abs(this.worldX - targetX) <= speed && Math.abs(this.worldY - targetY) <= speed) {
-                snapToGrid(nextPoint);
-                this.moveQueue.poll();
-            }
-        }
-    }
-
-    private void backToStart() {
-        List<Point> path = bfsShortestPath(
-            getLocation(),
-            new Point(this.startingX, this.startingY),
-            this.gamePanel.tileManager.walkableTiles
-        );
-        if (path != null && !path.isEmpty()) {
-            this.moveQueue = new LinkedList<>(path);
-        }
-    }
-
-    private boolean isMoveQueueEmpty() {
-        return (this.moveQueue == null || (this.moveQueue != null && this.moveQueue.isEmpty()));
-    }
-
-    public void setLocation(int x, int y) {
-        this.worldX = x * Constants.TILE_SIZE;
-        this.worldY = y * Constants.TILE_SIZE;
-    }
-
-    public void setLocation(Point point) {
-        this.worldX = point.x * Constants.TILE_SIZE;
-        this.worldY = point.y * Constants.TILE_SIZE;
-    }
-
-    public Point getLocation() {
-        return new Point(this.worldX / Constants.TILE_SIZE, this.worldY / Constants.TILE_SIZE);
-    }
-
-    public void draw(Graphics2D graphics2D) {
-        getSpiteImage();
-        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
-        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
-        if (
-            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
-            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
-            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
-        ){
-            graphics2D.drawImage(
-                this.sprite.image,
-                screenX - this.sprite.xAdjust,
-                screenY - this.sprite.yAdjust,
-                null
-            );
-            drawDebugCollision(graphics2D, screenX, screenY);
-        }
-        drawEffect(graphics2D);
-        drawHat(graphics2D);
-    }
-
-    protected void drawHat(Graphics2D graphics2D) {
-        if (this.hat == null) { return; }
-        if (this.isDead) { return; }
-        int screenX = this.worldX - this.gamePanel.player.worldX + this.gamePanel.player.screenX;
-        int screenY = this.worldY - this.gamePanel.player.worldY + this.gamePanel.player.screenY;
-        if (
-            worldX + (Constants.TILE_SIZE) > (this.gamePanel.player.worldX - this.gamePanel.player.screenX) &&
-            worldX - (Constants.TILE_SIZE) < (this.gamePanel.player.worldX + this.gamePanel.player.screenX) &&
-            worldY + (Constants.TILE_SIZE) > (this.gamePanel.player.worldY - this.gamePanel.player.screenY) &&
-            worldY - (Constants.TILE_SIZE) < (this.gamePanel.player.worldY + this.gamePanel.player.screenY)
-        ){
-            graphics2D.drawImage(
-                this.hat,
-                screenX,
-                screenY - 18,
-                null
-            );
-        }
-    }
-
-    public void setIsReady() {
-        this.defaults = new Defaults(this);
-        this.isReady = true;
-    }
-
-    private void clearMoveQueue() {
-        if (this.moveQueue != null) {
-            this.moveQueue.clear();
-        }
+    protected void updatePredictive(Entity predictiveEntity) {
+        this.worldX = predictiveEntity.worldX;
+        this.worldY = predictiveEntity.worldY;
+        this.speed = predictiveEntity.speed;
+        this.solidArea = predictiveEntity.solidArea;
+        this.solidAreaDefaultX = predictiveEntity.solidArea.x;
+        this.solidAreaDefaultY = predictiveEntity.solidArea.y;
+        this.direction = predictiveEntity.direction;
     }
 
     class Defaults {
-        public boolean isAlerted;
         public boolean attacking;
-        public boolean willChase;
         public boolean movable;
         public boolean isFriendly;
         public boolean warned;
         public boolean isMoving;
         public MoveStatus moveStatus;
+        private Entity attackingTarget;
 
         public Defaults(Entity entity) {
-            this.isAlerted = entity.isAlerted;
             this.attacking = entity.attacking;
-            this.willChase = entity.willChase;
             this.movable = entity.movable;
             this.isFriendly = entity.isFriendly;
             this.warned = entity.warned;
             this.isMoving = entity.isMoving;
             this.moveStatus = entity.moveStatus;
+            this.attackingTarget = entity.attackingTarget;
         }
 
         public void revertToDefault(Entity entity) {
-            entity.isAlerted = this.isAlerted;
             entity.attacking = this.attacking;
-            entity.willChase = this.willChase;
             entity.movable = this.movable;
             entity.isFriendly = this.isFriendly;
             entity.warned = this.warned;
             entity.isMoving = this.isMoving;
-            entity.moveStatus = this.moveStatus;
-        }
-
-        public void printDefaults(Entity entity) {
-            Gson gson = new Gson();
-            String json = gson.toJson(this);
-            entity.gamePanel.config.printPrettyString(json);
-        }
-
-        public void printDefaults(Entity entity, String name) {
-            if (entity.name == name) printDefaults(entity);
+            entity.attackingTarget = this.attackingTarget;
+            entity.changeState(this.moveStatus);
         }
     }
+
 }

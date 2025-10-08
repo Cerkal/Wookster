@@ -58,7 +58,7 @@ public class Level00 extends LevelBase {
         this.pigs = Arrays.asList(
             new Animal(gamePanel, 20, 8),
             new Animal(gamePanel, 20, 12),
-            new Animal(gamePanel, 20, 16)
+            new Animal(gamePanel, 20, 9)
         );
         addNPC(this.pigs);
 

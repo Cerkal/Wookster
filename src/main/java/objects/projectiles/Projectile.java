@@ -32,7 +32,7 @@ public class Projectile {
     public int solidAreaDefaultX = solidArea.x;
     public int solidAreaDefaultY = solidArea.y;
 
-    public double npcDamage = .8;
+    public double npcDamage = .6;
     public int speed = 14;
     public int damage = 10;
 
@@ -61,7 +61,9 @@ public class Projectile {
         this.entity = entity;
         this.worldX = entity.worldX;
         this.worldY = entity.worldY;
+    }
 
+    public void init() {
         mouseAimSet = isMouseAimSet();
 
         int targetX = 0;
@@ -70,7 +72,7 @@ public class Projectile {
 
         // PLAYER
         if (entity instanceof Player) {
-            // Mouse Shoot
+            // MOUSR AIM
             if (mouseAimSet) {
                 targetX = (int) (this.gamePanel.mouseHandler.target.getX()
                     - this.gamePanel.player.screenX
@@ -78,7 +80,7 @@ public class Projectile {
                 targetY = (int) (this.gamePanel.mouseHandler.target.getY()
                     - this.gamePanel.player.screenY
                     + this.gamePanel.player.worldY);
-            // Space Shoot
+            // NO MOUSE AIM
             } else {
                 switch (this.direction) {
                     case UP:    this.velocityY = -this.speed; break;
@@ -87,12 +89,22 @@ public class Projectile {
                     case RIGHT: this.velocityX = this.speed; break;
                     default: break;
                 }
-                this.setImage(Constants.WEAPON_PROJECTILE_ARROW);
                 return;
             }
-
         // ENTITY
         } else {
+            // TARGET NULL
+            if (this.target == null) {
+                switch (this.direction) {
+                    case UP:    this.velocityY = -this.speed; break;
+                    case DOWN:  this.velocityY = this.speed; break;
+                    case LEFT:  this.velocityX = -this.speed; break;
+                    case RIGHT: this.velocityX = this.speed; break;
+                    default: break;
+                }
+                return;
+            }
+            // TARGET SET
             targetX = this.target.worldX;
             targetY = this.target.worldY;
         }
@@ -147,6 +159,7 @@ public class Projectile {
     }
 
     public void setImage(String image) {
+        if (this.image != null) { return; }
         try {
             this.originalImage = ImageIO.read(getClass().getResourceAsStream(image));
             this.image = this.originalImage;

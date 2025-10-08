@@ -262,4 +262,12 @@ public class TileManager {
             availableTiles.add(new TileLocation(x, y));
         }
     }
+
+
+    public boolean isTileWalkable(int x, int y) {
+        if (x < 0 || x >= walkableTiles.length || y < 0 || y >= walkableTiles[0].length) {
+            return false;
+        }
+        return walkableTiles[x][y];
+    }
 }

@@ -10,7 +10,8 @@ public class Animal extends Entity {
     public Animal(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
         this.direction = Direction.DOWN;
-        this.speed = 2;
+        this.defaultSpeed = 2;
+        this.runSpeed = 2;
         this.damageSound = Constants.SOUND_TROOPER_HURT;
         this.entityType = EntityType.ANIMAL;
         this.name = "Animal";
@@ -23,9 +24,15 @@ public class Animal extends Entity {
         this.maxHealth = 20;
         this.health = this.maxHealth;
         this.weapons = null;
-        this.isFriendly = false;
+        this.isFriendly = true;
         this.isFrenzy = true;
-        this.moveStatus = MoveStatus.FRENZY;
+        setDefaultState(MoveStatus.FRENZY);
+    }
+
+    @Override
+    public void takeDamage(int amount, Entity attacker) {
+        super.takeDamage(amount, attacker);
+        setPath(this.gamePanel.pathfinder.findPath(getLocation(), this.getPathLocation(attacker)));
     }
 
     @Override

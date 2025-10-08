@@ -16,6 +16,7 @@ public class LaserProjectile extends Projectile {
         this.price = PRICE;
         this.damage = DAMAGE;
         this.setImage(Constants.WEAPON_PROJECTILE_LASER);
+        init();
     }
 
     public LaserProjectile(GamePanel gamePanel) {
