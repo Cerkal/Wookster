@@ -294,6 +294,7 @@ public abstract class Entity {
             if (this.attackingTarget == null && target && entity.isDead == false) {
                 this.attackingTarget = entity;
                 clearPath();
+                System.out.println("Entity: " + this.name + " spotted target: " + entity.name);
                 actionTimeout();
                 changeState(MoveStatus.CHASING);
                 printDebugData(this.name + " attacking: " + this.attackingTarget + " going to chase");

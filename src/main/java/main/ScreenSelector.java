@@ -334,4 +334,8 @@ public class ScreenSelector implements KeyListener {
     public void setPageSize(int value) {
         this.pageSize = value < 1 ?  PAGE_SIZE : value;
     }
+
+    public int getNumberOfScreens() {
+        return this.screens.size();
+    }
 }

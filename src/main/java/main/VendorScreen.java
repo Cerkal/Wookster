@@ -47,6 +47,13 @@ public class VendorScreen {
 
         setVendorPrices(this.vendorInventory);
 
+        if (this.screenSelector.getNumberOfScreens() > 2) {
+            this.screenSelector.clearScreens();
+            this.screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItemsForSale(), false));
+            this.screenSelector.addScreen(getSelectionItems(this.vendorInventory, true));
+            this.screenSelector.setScreen(0);
+        }
+
         this.screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale(), false));
         this.screenSelector.set(1, getSelectionItems(this.vendorInventory, true));
 

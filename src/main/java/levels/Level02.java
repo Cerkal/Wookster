@@ -47,13 +47,13 @@ public class Level02 extends LevelBase {
         addNPC(new NPCTrooper(this.gamePanel, 11, 40));
         addNPC(new NPCTrooper(this.gamePanel, 29, 8));
         NPCTrooper trooper = new NPCTrooper(this.gamePanel, 36, 32);
-        trooper.changeState(MoveStatus.WANDER);
+        trooper.setDefaultState(MoveStatus.IDLE);
         addNPC(trooper);
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {
             @Override
             public void postDialogAction() {
-                changeState(MoveStatus.FOLLOW);
+                setDefaultState(MoveStatus.FOLLOW);
                 Level02 level = (Level02) gamePanel.levelManager.getCurrentLevel();
                 level.signObject.removeObject();
                 if (gamePanel.questManager.isActiveQuest(QuestDescriptions.MOM)) {
@@ -70,7 +70,6 @@ public class Level02 extends LevelBase {
             }
         };
         mom.setDialogue(Dialogue.LEVEL_01_MOM);
-        mom.pushback = false;
         addNPC(mom);
 
         this.gamePanel.eventHandler.setRandomDamageTile(5);
