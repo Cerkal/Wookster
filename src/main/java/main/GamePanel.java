@@ -48,6 +48,8 @@ public class GamePanel extends Canvas implements Runnable {
         DEATH
     }
 
+    public enum Difficulty { EASY, MEDIUM, HARD }
+
     public boolean debugAll = false;
     public boolean debugMap = false;
     public boolean debugMapBuilder = false;
@@ -79,11 +81,15 @@ public class GamePanel extends Canvas implements Runnable {
     public LevelManager levelManager = new LevelManager(this);
     public EventHandler eventHandler = new EventHandler(this);
     public HashMap<String, Quest> quests = new HashMap<>();
+
+    // Game vars
     public long gameTime = 0;
     public int fps;
     public BufferedImage background;
     public boolean loaded = false;
+    public Difficulty difficulty = Difficulty.EASY;
 
+    // Game stuff
     public List<SuperObject> objects = new ArrayList<>();
     public List<Entity> npcs = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();

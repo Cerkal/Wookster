@@ -14,6 +14,7 @@ import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.Utils;
+import main.GamePanel.Difficulty;
 
 public class Projectile {
 
@@ -235,7 +236,20 @@ public class Projectile {
 
     protected void handleEntityCollision(Entity entity) {
         if (entity instanceof Player) {
-            adjustDamage(this.npcDamage);
+            switch (this.gamePanel.difficulty) {
+                case EASY:
+                    adjustDamage(.5);
+                    break;
+                case MEDIUM:
+                    adjustDamage(.75);
+                    break;
+                case HARD:
+                    adjustDamage(1);
+                    break;
+                default:
+                    adjustDamage(.5);
+                    break;
+            }
         }
         entity.takeDamage(this.damage, this.entity);
     }
