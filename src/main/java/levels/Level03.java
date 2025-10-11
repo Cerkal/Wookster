@@ -47,7 +47,7 @@ public class Level03 extends LevelBase {
     NPCTrooper trooper02;
     NPCTrooper trooper03;
 
-    boolean attackVillage = false;
+    List<Entity> troopers = new ArrayList<>();
 
     public ContainerObject momBox;
 
@@ -61,7 +61,7 @@ public class Level03 extends LevelBase {
     public void init() {
         super.init();
 
-        this.attackVillage = false;
+        this.troopers = new ArrayList<>();
 
         List<Point> pigArea = List.of(
             new Point(15, 35),
@@ -118,7 +118,15 @@ public class Level03 extends LevelBase {
                     this.gamePanel.questManager.getQuest(QuestDescriptions.MOM_HOME).completeQuest(this.gamePanel);
                     Level03 level = (Level03) this.gamePanel.levelManager.getCurrentLevel();
                     level.momBox.isLocked = false;
-                    level.attackVillage = true;
+
+                    Quest protectVillage = new Quest(QuestDescriptions.PROTECT_VILLAGE, 
+                        new HashMap<>(){{
+                            put(ResolutionLevel.NEGATIVE, 5);
+                            put(ResolutionLevel.NEUTRAL, 10);
+                            put(ResolutionLevel.POSTIVE, 15);
+                        }}
+                    );
+                    this.gamePanel.questManager.addQuest(protectVillage);
                 }
             }
         };
@@ -188,6 +196,16 @@ public class Level03 extends LevelBase {
         this.villager03.setDefaultState(MoveStatus.WANDER);
         this.villager03.setHat(Constants.WOOKSER_DAD_HAT);
         addNPC(this.villager03);
+
+        this.trooper01 = new NPCTrooper(this.gamePanel, 15, 40);
+        this.trooper01.setDefaultState(MoveStatus.WANDER);
+        this.trooper02 = new NPCTrooper(this.gamePanel, 16, 40);
+        this.trooper02.setDefaultState(MoveStatus.WANDER);
+        this.trooper03 = new NPCTrooper(this.gamePanel, 17, 40);
+        this.trooper03.setDefaultState(MoveStatus.WANDER);
+        this.troopers.add(trooper01);
+        this.troopers.add(trooper02);
+        this.troopers.add(trooper03);
     }
 
     @Override
@@ -271,22 +289,14 @@ public class Level03 extends LevelBase {
             }
         }
 
-        if (this.attackVillage &&
-            this.trooper01 == null &&
-            this.trooper02 == null &&
-            this.trooper03 == null
+        if (this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() < 50
         ){
-            this.trooper01 = new NPCTrooper(this.gamePanel, 15, 40);
-            this.trooper01.setDefaultState(MoveStatus.WANDER);
-            addNPC(this.trooper01);
-            this.trooper02 = new NPCTrooper(this.gamePanel, 16, 40);
-            this.trooper02.setDefaultState(MoveStatus.WANDER);
-            addNPC(this.trooper02);
-            this.trooper03 = new NPCTrooper(this.gamePanel, 17, 40);
-            this.trooper03.setDefaultState(MoveStatus.WANDER);
-            addNPC(this.trooper03);
+            addNPC(this.troopers);
 
-            this.warner.defaultSpeed = 4;
+            int runSpeed = 3;
+
+            this.warner.defaultSpeed = runSpeed;
             this.warner.setLocation(new Point(20, 19));
             this.warner.clearPath();
             this.warner.setDefaultState(MoveStatus.FOLLOW);
@@ -295,24 +305,71 @@ public class Level03 extends LevelBase {
             };
             this.warner.setDialogue(warnerLine);
 
-            this.villager01.speed = 4;
+            this.villager01.defaultSpeed = runSpeed;
             this.villager01.setDefaultState(MoveStatus.FRENZY);
 
-            this.villager02.speed = 4;
+            this.villager02.defaultSpeed = runSpeed;
             this.villager02.setDefaultState(MoveStatus.FRENZY);
 
-            this.villager03.speed = 4;
+            this.villager03.defaultSpeed = runSpeed;
             this.villager03.setDefaultState(MoveStatus.FRENZY);
 
-            this.vendor.speed = 4;
+            this.vendor.defaultSpeed = runSpeed;
             this.vendor.setDefaultState(MoveStatus.FRENZY);
+
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).setProgress(50);
         }
 
-        if (this.gamePanel.player.collisionEntity == this.warner && this.attackVillage) {
+        if (
+            this.gamePanel.player.collisionEntity == this.warner &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() == 50 &&
+            this.warner.moveStatus == MoveStatus.FOLLOW
+        ){
             this.warner.speak();
-            this.warner.defaultSpeed = 4;
+            this.warner.defaultSpeed = 3;
             this.warner.setDefaultState(MoveStatus.FRENZY);
-            this.attackVillage = false;
+        }
+
+        if (
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() == 50
+        ){
+            int deadCount = 0;
+            for (Entity trooper : troopers) {
+                if (trooper.isDead) deadCount++;
+            }
+            if (this.troopers.size() == deadCount) {
+                this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).setProgress(75);
+            }
+        }
+
+        if (
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() == 75
+        ){
+            int speed = 2;
+
+            this.warner.defaultSpeed = speed;
+            this.warner.clearPath();
+            this.warner.setDefaultState(MoveStatus.WANDER);
+
+            this.villager01.defaultSpeed = speed;
+            this.villager01.clearPath();
+            this.villager01.setDefaultState(MoveStatus.WANDER);
+
+            this.villager02.defaultSpeed = speed;
+            this.villager02.clearPath();
+            this.villager02.setDefaultState(MoveStatus.WANDER);
+
+            this.villager03.defaultSpeed = speed;
+            this.villager03.clearPath();
+            this.villager03.setDefaultState(MoveStatus.WANDER);
+
+            this.vendor.defaultSpeed = speed;
+            this.vendor.clearPath();
+            this.vendor.setDefaultState(MoveStatus.WANDER);
+
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).completeQuest(gamePanel);
         }
     }
 

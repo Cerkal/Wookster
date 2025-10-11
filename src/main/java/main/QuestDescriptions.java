@@ -11,6 +11,7 @@ public class QuestDescriptions {
     public static final String INVENTORY = "INVENTORY PRO";
     public static final String MOM = "MISSING MOM";
     public static final String MOM_HOME = "MOM HOME";
+    public static final String PROTECT_VILLAGE = "PROTECT THE VILLAGE";
 
     public static final HashMap<String, List<String>> DESCRIPTIONS = new HashMap<>(){{
         put(
@@ -35,6 +36,12 @@ public class QuestDescriptions {
             MOM_HOME,
             List.of(
                 "Get your mom back to her hut."
+            )
+        );
+        put(
+            PROTECT_VILLAGE,
+            List.of(
+                "Protect the village from the troopers."
             )
         );
     }};
