@@ -15,8 +15,6 @@ import java.util.Queue;
 
 import javax.imageio.ImageIO;
 
-import com.google.gson.Gson;
-
 import effects.AlertEffect;
 import effects.BloodEffect;
 import effects.Effect;
@@ -131,7 +129,9 @@ public abstract class Entity {
         IDLE {
             @Override
             void update(Entity e) {
-                // Idle means do nothing
+                if (!e.isBackAtStart() && e.currentPath.isEmpty()) {
+                    e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), new Point(e.startingX, e.startingY)));
+                }
             }
 
             @Override
@@ -254,7 +254,6 @@ public abstract class Entity {
         }
 
         if ((collidedWithEntity || collidedWithPlayer)) {
-            // TODO: FIX
             if (this.moveStatus == MoveStatus.FOLLOW && collidedWithPlayer) {
                 followCollisionCounter++;
                 if (followCollisionCounter > 150) {
@@ -489,17 +488,15 @@ public abstract class Entity {
     }
 
     private boolean isBackAtStart() {
-        if (this.moveQueue.isEmpty() && this.defaults.moveStatus == MoveStatus.IDLE) {
-            int x = this.getLocation().x;
-            int y = this.getLocation().y;
-            if (
-                (x >= this.startingX - 1 || x <= this.solidAreaDefaultX + 1) &&
-                (y >= this.startingY - 1 || y <= this.solidAreaDefaultY + 1)
-            ){
-                this.direction = Direction.DOWN;
-                this.isMoving = false;
-                this.attacking = false;
-            }
+        int x = this.getLocation().x;
+        int y = this.getLocation().y;
+        if (
+            (x >= this.startingX - 1 || x <= this.solidAreaDefaultX + 1) &&
+            (y >= this.startingY - 1 || y <= this.solidAreaDefaultY + 1)
+        ){
+            this.direction = Direction.DOWN;
+            this.isMoving = false;
+            this.attacking = false;
             return true;
         }
         return false;

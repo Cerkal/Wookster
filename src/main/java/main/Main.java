@@ -10,8 +10,12 @@ public class Main {
 
     public static JFrame window;
 
+    private static boolean debug = false;
+
     public static void main(String[] args) {
-        // setupLogging();
+        if (debug) {
+            setupLogging();
+        }
         try {
             window = new JFrame();
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,7 +46,6 @@ public class Main {
             System.out.println("Java2D pipeline: " + System.getProperty("sun.java2d.opengl"));
             System.out.println("Java2D D3D: " + System.getProperty("sun.java2d.d3d"));
         } catch (Throwable t) {
-            
             System.err.println("Fatal error during game startup:");
             t.printStackTrace();
         }

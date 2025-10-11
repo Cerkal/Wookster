@@ -14,7 +14,6 @@ import entity.Player;
 import main.Constants;
 import main.GamePanel;
 import main.Utils;
-import main.GamePanel.Difficulty;
 
 public class Projectile {
 

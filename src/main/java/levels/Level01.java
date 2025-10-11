@@ -41,11 +41,11 @@ public class Level01 extends LevelBase {
     public void init() {
         super.init();
         this.gamePanel.eventHandler.setRandomDamageTile(5);
-        addNPC(new NPCTrooper(gamePanel, 23, 12));
+        // addNPC(new NPCTrooper(gamePanel, 23, 12));
         NPCTrooper trooper = new NPCTrooper(gamePanel, 38, 8);
-        trooper.changeState(MoveStatus.WANDER);
+        trooper.changeState(MoveStatus.IDLE);
         addNPC(trooper);
-        addNPC(new NPCTrooper(gamePanel, 30, 39));
+        // addNPC(new NPCTrooper(gamePanel, 30, 39));
     }
 
     @Override
