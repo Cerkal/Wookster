@@ -289,7 +289,8 @@ public class Level03 extends LevelBase {
             }
         }
 
-        if (this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
+        if (
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
             this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() < 50
         ){
             addNPC(this.troopers);
@@ -322,6 +323,7 @@ public class Level03 extends LevelBase {
 
         if (
             this.gamePanel.player.collisionEntity == this.warner &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
             this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() == 50 &&
             this.warner.moveStatus == MoveStatus.FOLLOW
         ){

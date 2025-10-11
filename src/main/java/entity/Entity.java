@@ -248,7 +248,7 @@ public abstract class Entity {
         boolean collidedWithPlayer = collisionPlayer != null;
 
         if (collidedWithPlayer || collidedWithEntity) {
-            // handlePlayerCollision();
+            handlePlayerCollision();
         } else {
             if (this.primaryWeapon != null) this.weapon = this.primaryWeapon;
         }
@@ -351,17 +351,22 @@ public abstract class Entity {
             this.primaryWeapon.shoot(this);
         }
         if (closeEnough && canSeeTarget) {
-            int dx = attackingX - entityX;
-            int dy = attackingY - entityY;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
-            } else if (Math.abs(dy) > 0) {
-                this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
-            }
-            this.movable = false;
-            this.isMoving = false;
-            this.attacking = true;
+            faceAttackingEntity();
         }
+    }
+
+    private void faceAttackingEntity() { // Experimental
+        clearPath(); // not sure about this
+        int dx = this.attackingTarget.getLocation().x - getLocation().x;
+        int dy = this.attackingTarget.getLocation().y - getLocation().y;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+        } else if (Math.abs(dy) > 0) {
+            this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
+        }
+        this.movable = false;
+        this.isMoving = false;
+        this.attacking = true;
     }
 
     // MOVEMENT METHODS

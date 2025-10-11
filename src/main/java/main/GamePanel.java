@@ -71,7 +71,6 @@ public class GamePanel extends Canvas implements Runnable {
     public Pathfinder pathfinder = new Pathfinder(this);
     public KeyHandler keyHandler = new KeyHandler(this);
     public MouseHandler mouseHandler = new MouseHandler(this);
-    public MouseMoveHandler mouseMoveHandler = new MouseMoveHandler(this);
     public QuestManager questManager = new QuestManager(this);
     public Sound sound = new Sound();
     public Config config = new Config(this);
@@ -102,7 +101,7 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
 
-    static final int NEW_GAME_LEVEL_INDEX = 1;
+    static final int NEW_GAME_LEVEL_INDEX = 0;
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
@@ -110,7 +109,6 @@ public class GamePanel extends Canvas implements Runnable {
         setFocusable(true);
         addKeyListener(this.player.keyHandler);
         addMouseListener(this.mouseHandler);
-        // addMouseMotionListener(this.mouseMoveHandler);
         setDefaultCursor();
         loadLevels();
     }

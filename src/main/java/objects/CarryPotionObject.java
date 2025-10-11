@@ -57,6 +57,7 @@ public class CarryPotionObject extends SuperObject {
         this.sellable = this.spell.sellable;
         this.price = this.spell.price;
         this.inventoryItem = new InventoryItem(this, 1, true);
+        this.removeWalkableTile();
     }
 
     public void activateObject() {

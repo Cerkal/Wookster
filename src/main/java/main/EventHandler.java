@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Entity.Direction;
+import main.GamePanel.Difficulty;
 import spells.HealthSpell;
 import spells.KeySpell;
 import spells.SpeedSpell;
@@ -52,6 +53,14 @@ public class EventHandler {
         }
     }
 
+    public void setRandomDamageTile() {
+        switch (this.gamePanel.difficulty) {
+            case EASY -> setRandomDamageTile(2);
+            case MEDIUM -> setRandomDamageTile(5);
+            case HARD -> setRandomDamageTile(7);
+        }
+    }
+
     public void checkEvent() {
         int xDistance = Math.abs(this.gamePanel.player.worldX - previousX);
         int yDistance = Math.abs(this.gamePanel.player.worldY - previousY);
@@ -78,8 +87,11 @@ public class EventHandler {
             this.eventRectangle[col][row].eventFinished = true;
         }
         this.canTouchAgain = false;
-        int random = Utils.generateRandomInt(0, 1);
-        if (random == 0) {
+        playerCollided();
+    }
+
+    private void playerCollided() {
+        if (Utils.randomBoolean() && this.gamePanel.difficulty != Difficulty.EASY) {
             damagePlayer();
         } else {
             spellPlayer();

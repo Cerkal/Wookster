@@ -37,6 +37,7 @@ public class PotionObject extends SuperObject {
         this.name = this.objectType.name();
         this.setImage(Constants.OBJECT_GREEN_POTION_IMAGE);
         this.soundPrimary = Constants.SOUND_LOCK;
+        this.removeWalkableTile();
     }
 
     public void activateObject() {

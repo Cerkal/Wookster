@@ -16,6 +16,10 @@ public class Utils {
         return random.nextInt(max - min + 1) + min;
     }
 
+    public static boolean randomBoolean() {
+        return generateRandomInt(0, 1) == 0;
+    }
+
     public static String capitalizeString(String string) {
         if (string == null || string.isEmpty()) {
             return string;
