@@ -50,6 +50,10 @@ public class Quest {
         this.resolution = resolution;
     }
 
+    public ResolutionLevel getResolutionLevel() {
+        return this.resolution;
+    }
+
     public void setProgress(int progress) {
         this.progress = progress;
     }

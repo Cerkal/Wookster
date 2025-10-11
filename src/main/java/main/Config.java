@@ -125,6 +125,13 @@ public class Config {
     }
 
     public void loadSetting(String name, int value) {
+        Screen settingsScreen = this.gamePanel.ui.titleScreen.screens.get(TitleScreen.SETTINGS_SCREEN);
+        if (settingsScreen == null) return;
+        for (Option option : settingsScreen.options) {
+            if (option.name.equalsIgnoreCase(name) && option instanceof Toggle) {
+                option.setDefaultValue(value); // value is the index
+            }
+        }
         switch (name) {
             case Constants.GAME_SETTINGS_MUSIC_TOGGLE:
                 boolean musicCheck = ToggleOption.isToggleOn(value);
@@ -176,12 +183,7 @@ public class Config {
         if (settingsScreen == null) { return; }
         for (Option option : settingsScreen.options) {
             if (option.name.equalsIgnoreCase(name)) {
-                if (option instanceof Toggle) {
-                    int indexForToggle = ToggleOption.isToggleOn(value) ? ToggleOption.INDEX_ON : ToggleOption.INDEX_OFF;
-                    option.setDefaultValue(indexForToggle);
-                } else {
-                    option.setDefaultValue(value);
-                }
+                option.setDefaultValue(value); // value is the index for toggles
             }
         }
     }

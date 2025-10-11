@@ -37,6 +37,8 @@ public class Toggle extends Option {
 
     @Override
     public void setDefaultValue(int index) {
+        if (index < 0) index = 0;
+        if (index >= this.values.size()) index = this.values.size() - 1;
         this.currentIndex = index;
         this.currentValue = this.values.get(this.currentIndex);
     }
@@ -53,6 +55,6 @@ public class Toggle extends Option {
 
     @Override
     public int getValue() {
-        return this.currentValue.value == ToggleOption.OFF ? 0 : 1;
+        return this.currentIndex;
     }
 }

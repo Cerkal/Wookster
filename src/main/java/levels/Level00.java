@@ -15,6 +15,7 @@ import entity.NPCOld;
 import main.Constants;
 import main.Dialogue;
 import main.GamePanel;
+import main.InventoryItem;
 import main.KeyHandler;
 import main.Quest;
 import main.QuestDescriptions;
@@ -26,6 +27,7 @@ import objects.PotionObject;
 import objects.SignObject;
 import objects.SuperObject;
 import objects.weapons.Weapon.WeaponType;
+import spells.HealthSpell;
 import spells.SpeedSpell;
 import spells.SuperSpell;
 
@@ -41,6 +43,8 @@ public class Level00 extends LevelBase {
     Entity oldmanDad;
 
     List<Entity> pigs;
+
+    boolean savior;
 
     public Level00(GamePanel gamePanel) {
         super(gamePanel);
@@ -86,6 +90,23 @@ public class Level00 extends LevelBase {
             public void postDialogAction() {
                 this.gamePanel.questManager.addQuest(new Quest(QuestDescriptions.MOM));
                 this.gamePanel.player.addWeapon(WeaponType.CROSSBOW);
+
+                // Savior of the pigs
+                if (
+                    this.gamePanel.questManager.getQuest(QuestDescriptions.PIGS) != null &&
+                    this.gamePanel.questManager.getQuest(QuestDescriptions.PIGS).getResolutionLevel() == ResolutionLevel.POSTIVE
+                ){
+                    this.gamePanel.player.addInventoryItem(
+                        new InventoryItem(
+                            new CarryPotionObject(
+                                gamePanel,
+                                new HealthSpell(10)
+                            ),
+                        1, true
+                        )
+                    );
+                }
+
                 Quest tutorial = new Quest(QuestDescriptions.TUTORIAL_COMPLETE);
                 tutorial.setDisplay(false);
                 this.gamePanel.questManager.addQuest(tutorial);
@@ -173,6 +194,15 @@ public class Level00 extends LevelBase {
                 Quest quest = this.gamePanel.questManager.getCurrentQuest(QuestDescriptions.PIGS);
                 String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
                 quest.setResolution(ResolutionLevel.POSTIVE);
+                if (deadCount == 0) {
+                    String[] savior = {"Oh and take this health potion, you little pig savior you."};
+                    String[] mergedLines = Arrays.copyOf(
+                        Dialogue.TUTORIAL_COMPLETE,
+                        Dialogue.TUTORIAL_COMPLETE.length + savior.length
+                    );
+                    System.arraycopy(savior, 0, mergedLines, Dialogue.TUTORIAL_COMPLETE.length, savior.length);
+                    this.oldmanDad.setDialogue(mergedLines);
+                }
                 if (deadCount > 0) {
                     lines = Dialogue.TUTORIAL_PIGS_NEUTRAL;
                     quest.setResolution(ResolutionLevel.NEUTRAL);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import main.GamePanel.Difficulty;
 import main.GamePanel.GameState;
 import main.Screen.Option;
 import main.Screen.Screen;
@@ -97,35 +98,24 @@ public class TitleScreen {
                 SETTINGS_SCREEN,
                 List.of(
                     new Toggle(
-                        Constants.GAME_SETTINGS_MUSIC_TOGGLE,
+                        "Difficulty: ",
                         List.of(
-                            new ToggleOption(ToggleOption.ON) {
+                            new ToggleOption(Difficulty.EASY.name()) {
                                 @Override
                                 public void action(GamePanel gamePanel) {
-                                    gamePanel.sound.toggleMusic();
+                                    gamePanel.setDifficulty(Difficulty.EASY);
                                 }
                             },
-                            new ToggleOption(ToggleOption.OFF) {
+                            new ToggleOption(Difficulty.MEDIUM.name()) {
                                 @Override
                                 public void action(GamePanel gamePanel) {
-                                    gamePanel.sound.toggleMusic();
-                                }
-                            }
-                        )
-                    ),
-                    new Toggle(
-                        Constants.GAME_SETTINGS_EFFECTS_TOGGLE,
-                        List.of(
-                            new ToggleOption(ToggleOption.ON) {
-                                @Override
-                                public void action(GamePanel gamePanel) {
-                                    gamePanel.sound.toggleEffects();
+                                    gamePanel.setDifficulty(Difficulty.MEDIUM);
                                 }
                             },
-                            new ToggleOption(ToggleOption.OFF) {
+                            new ToggleOption(Difficulty.HARD.name()) {
                                 @Override
                                 public void action(GamePanel gamePanel) {
-                                    gamePanel.sound.toggleEffects();
+                                    gamePanel.setDifficulty(Difficulty.HARD);
                                 }
                             }
                         )

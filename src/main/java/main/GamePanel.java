@@ -35,6 +35,7 @@ public class GamePanel extends Canvas implements Runnable {
     private BufferStrategy bufferStrategy;
     
     private static final String GAME_THREAD = "GameThread";
+    private static final int GAME_BUFFER_THREADS = 3;
     
     public enum GameState {
         LOADING,
@@ -174,7 +175,7 @@ public class GamePanel extends Canvas implements Runnable {
             } catch (InterruptedException ignored) {}
         }
 
-        createBufferStrategy(3);
+        createBufferStrategy(GAME_BUFFER_THREADS);
         this.bufferStrategy = getBufferStrategy();
 
         final int TARGET_FPS = 60;
@@ -338,7 +339,7 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void quit() {
-        running = false;
+        this.running = false;
         if (SwingUtilities.getWindowAncestor(this) != null) {
             SwingUtilities.getWindowAncestor(this).dispose();
         }
@@ -388,5 +389,9 @@ public class GamePanel extends Canvas implements Runnable {
 
     public Entity getPlayer() {
         return this.player;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
     }
 }
