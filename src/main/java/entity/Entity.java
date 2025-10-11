@@ -351,6 +351,13 @@ public abstract class Entity {
             this.primaryWeapon.shoot(this);
         }
         if (closeEnough && canSeeTarget) {
+            int dx = attackingX - entityX;
+            int dy = attackingY - entityY;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                this.direction = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+            } else if (Math.abs(dy) > 0) {
+                this.direction = dy > 0 ? Direction.DOWN : Direction.UP;
+            }
             this.movable = false;
             this.isMoving = false;
             this.attacking = true;
