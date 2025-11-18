@@ -156,6 +156,11 @@ public abstract class Entity {
                     e.speed = e.defaultSpeed;
                     Entity target = e.attackingTarget;
                     if (target != null) {
+                        if (target.isDead) {
+                            e.attackingTarget = null;
+                            e.defaults.revertToDefault(e);
+                            return;
+                        }
                         e.printDebugData("Setting path from chase from move status update");
                         e.setPath(e.gamePanel.pathfinder.findPath(e.getLocation(), target.getLocation()));
                     }

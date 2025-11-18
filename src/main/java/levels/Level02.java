@@ -44,8 +44,13 @@ public class Level02 extends LevelBase {
     public void init() {
         super.init();
 
-        addNPC(new NPCTrooper(this.gamePanel, 11, 40));
-        addNPC(new NPCTrooper(this.gamePanel, 29, 8));
+        NPCTrooper trooperTest = new NPCTrooper(this.gamePanel, 11, 40);
+        addNPC(trooperTest);
+        
+        NPCTrooper trooperTest2 = new NPCTrooper(this.gamePanel, 29, 8);
+        trooperTest2.accuracy = 1;
+        addNPC(trooperTest2);
+        
         NPCTrooper trooper = new NPCTrooper(this.gamePanel, 36, 32);
         trooper.setDefaultState(MoveStatus.IDLE);
         addNPC(trooper);

@@ -94,7 +94,6 @@ public abstract class LevelBase {
 
     public void loadFromSaveFile() {
         DataWrapper dataWrapper = this.gamePanel.config.dataWrapper;
-        setStaticObjects();
         if (
             dataWrapper != null &&
             dataWrapper.getSavedLevelData(this.levelIndex) != null &&
@@ -107,9 +106,9 @@ public abstract class LevelBase {
         } else {
             setObjects();
         }
+        setStaticObjects();
     }
 
-    // Load static objects first so non static objects wont overlap
     public abstract void setStaticObjects();
     public abstract void setObjects();
 
