@@ -104,6 +104,7 @@ public class Constants {
     public static final String TARGET_CURSOR_SMALL = "/menu/target_small.png";
     public static final String TARGET_CURSOR_WHITE_LARGE = "/menu/target_white.png";
     public static final String TARGET_CURSOR_WHITE_SMALL = "/menu/target_white_small.png";
+    public static final String GAME_ICON = "/icons/icon.png";
     
     // Files
     public static final String SAVE_FILE = "save.json";

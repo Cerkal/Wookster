@@ -101,7 +101,7 @@ public class GamePanel extends Canvas implements Runnable {
     boolean isFullScreen = false;
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
-
+ 
     static final int NEW_GAME_LEVEL_INDEX = 0;
 
     public GamePanel(int width, int height) {
@@ -393,5 +393,14 @@ public class GamePanel extends Canvas implements Runnable {
 
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public void setIcon() {
+        try {
+            BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(Constants.GAME_ICON));
+            SwingUtilities.getWindowAncestor(this).setIconImage(icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

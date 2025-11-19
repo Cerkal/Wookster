@@ -856,6 +856,10 @@ public abstract class Entity {
         }
         if (itemList.isEmpty()) {
             inventory.remove(name);
+            // if the item is sold out and this entity is the player, switch to fist
+            if (this instanceof Player) {
+                this.gamePanel.player.switchWeapon(WeaponType.FIST);
+            }
         }
         return remaining <= 0;
     }

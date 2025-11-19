@@ -38,6 +38,7 @@ public class Main {
             gamePanel.requestFocus();
             gamePanel.start();
             gamePanel.setFocusTraversalKeysEnabled(false);
+            gamePanel.setIcon();
 
             // Game loop to be added to EDT
             javax.swing.SwingUtilities.invokeLater(gamePanel::start);
