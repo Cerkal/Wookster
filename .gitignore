@@ -1,9 +1,6 @@
 # Saved game
 save.json
 
-# VS Code
-.vscode/
-
 # Gradle build output
 /build/
 .gradle/

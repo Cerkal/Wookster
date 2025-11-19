@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "LevelCreator",
+            "request": "launch",
+            "mainClass": "main.LevelCreator",
+            "projectName": "Wookster"
+        },
+        {
+            "type": "java",
+            "name": "Gradle Run",
+            "request": "launch",
+            "mainClass": "main.Main",
+            "projectName": "Wookster",
+            "vmArgs": "-Dsun.java2d.opengl=True"
+        }
+    ]
+}
