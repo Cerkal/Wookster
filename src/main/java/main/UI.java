@@ -177,7 +177,7 @@ public class UI {
                     if (option != null) { option.action(this.gamePanel); }
                 }
 
-                // Handle Toggle Option
+                // Handle Toggle Optionrm
                 if (selectedItem.customKeyPress != -1 && option instanceof Toggle) {
                     if (option != null) { option.action(this.gamePanel); }
                 }
@@ -188,6 +188,7 @@ public class UI {
                         case KeyEvent.VK_A -> { ((SettingSlider) option).decrease(); }
                         case KeyEvent.VK_D -> { ((SettingSlider) option).increase(); }
                     }
+                    option.action(this.gamePanel);
                 }
                 this.screenSelector.clearSelectionLeaveHighlight();
             }
