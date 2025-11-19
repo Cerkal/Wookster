@@ -13,7 +13,7 @@ Compile build
 
 Package to portable .exe
 ```
-./gradlew jpackage
+./gradlew jpackagePortable
 ```
 
 Play with Java options to fix any render issues

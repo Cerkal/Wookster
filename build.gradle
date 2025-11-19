@@ -78,5 +78,18 @@ tasks.register("jpackagePortable", Exec) {
         println "Copied Wookster.cfg to output/Wookster/app/"
         println "Completed export"
         println "Folder location: $buildDir/portable/output/Wookster"
+
+        // Zip the entire output/Wookster folder as Wookster.zip
+        def outputFolder = file("$buildDir/portable/output/Wookster")
+        def zipFile = file("$buildDir/portable/output/Wookster.zip")
+
+        if (outputFolder.exists()) {
+            ant.zip(destfile: zipFile) {
+                fileset(dir: outputFolder)
+            }
+            println "Zipped ${outputFolder} -> ${zipFile}"
+        } else {
+            println "Output folder not found, skipping zip: ${outputFolder}"
+        }
     }
 }
