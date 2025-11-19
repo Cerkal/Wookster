@@ -25,7 +25,9 @@ import objects.DoorObject;
 import objects.KeyObject;
 import objects.LasersObject;
 import objects.LevelDoorObject;
+import objects.PotionObject;
 import objects.SignObject;
+import spells.HealthSpell;
 import spells.InvincibilitySpell;
 
 public class Level02 extends LevelBase {
@@ -44,32 +46,16 @@ public class Level02 extends LevelBase {
     public void init() {
         super.init();
 
-        NPCTrooper trooperTest = new NPCTrooper(this.gamePanel, 10, 32);
-        trooperTest.setArea(new ArrayList<>(
-            List.of(
-                new Point(10, 10),
-                new Point(30, 30)
-            )
-        ));
-        addNPC(trooperTest);
+        NPCTrooper trooper01 = new NPCTrooper(this.gamePanel, 11, 40);
+        addNPC(trooper01);
         
-        NPCTrooper trooperTest2 = new NPCTrooper(this.gamePanel, 29, 8);
-        trooperTest2.setArea(new ArrayList<>(
-            List.of(
-                new Point(10, 10),
-                new Point(30, 30)
-            )
-        ));
-        addNPC(trooperTest2);
+        NPCTrooper trooper02 = new NPCTrooper(this.gamePanel, 29, 8);
+        trooper02.accuracy = 1;
+        addNPC(trooper02);
         
-        NPCTrooper trooperTest3 = new NPCTrooper(this.gamePanel, 36, 32);
-        trooperTest3.setArea(new ArrayList<>(
-            List.of(
-                new Point(27, 30),
-                new Point(37, 41)
-            )
-        ));
-        addNPC(trooperTest3);
+        NPCTrooper trooper03 = new NPCTrooper(this.gamePanel, 36, 32);
+        trooper03.setDefaultState(MoveStatus.IDLE);
+        addNPC(trooper03);
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {
             @Override
@@ -121,6 +107,7 @@ public class Level02 extends LevelBase {
         addGameObject(new DoorObject(this.gamePanel, 27, 38));
         addGameObject(new KeyObject(this.gamePanel, 30, 30));
         addGameObject(new CarryPotionObject(this.gamePanel, new InvincibilitySpell(), 10, 10));
+        addGameObject(new PotionObject(this.gamePanel, new HealthSpell(50), 10, 12));
 
         ContainerObject chest = new ContainerObject(this.gamePanel, 11, 41);
         chest.name = "Random Chest";

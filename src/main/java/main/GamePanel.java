@@ -60,7 +60,7 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugAllWeapons = false;
     
     // Mouse Aim
-    public boolean mouseAim = true;
+    public boolean mouseAim = false;
     public Cursor cursorSmall;
     public Cursor cursorLarge;
     public Cursor defaultCursor;

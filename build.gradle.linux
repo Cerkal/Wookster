@@ -1,0 +1,104 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'main.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.13.1'
+}
+
+tasks.withType(JavaCompile).configureEach { 
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+/**
+ * Explicit resource inclusion (safe + clear)
+ */
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+            include '**/*'
+        }
+    }
+}
+
+/**
+ * Shadow JAR configuration
+ */
+tasks.shadowJar {
+    archiveBaseName.set('Wookster')
+    archiveVersion.set(version)
+    archiveClassifier.set('')
+
+    manifest {
+        attributes(
+            'Main-Class': application.mainClass
+        )
+    }
+}
+
+/**
+ * Portable build with fat jar
+ */
+tasks.register("jpackagePortable", Exec) {
+    dependsOn tasks.shadowJar
+
+    def portableDir = file("$buildDir/portable")
+    def inputDir = file("$portableDir/input")
+    def outputDir = file("$portableDir/output")
+    def appDir = file("$outputDir/Wookster")
+    def fatJar = file("$buildDir/libs/Wookster-${version}.jar")
+
+    doFirst {
+        delete(portableDir)
+        mkdir(inputDir)
+
+        copy {
+            from(fatJar)
+            into(inputDir)
+        }
+    }
+
+    workingDir = portableDir
+
+    commandLine(
+        'jpackage',
+        '--type', 'app-image',
+        '--input', inputDir.absolutePath,
+        '--dest', outputDir.absolutePath,
+        '--main-jar', fatJar.name,
+        '--main-class', application.mainClass.get(),
+        '--name', 'Wookster',
+        '--app-version', version,
+    )
+
+    doLast {
+        copy {
+            from("$rootDir/Wookster.cfg")
+            into("$appDir/app")
+        }
+
+        println "Export complete"
+        println "Location: $appDir"
+    }
+}
+
