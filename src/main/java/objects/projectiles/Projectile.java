@@ -28,7 +28,7 @@ public class Projectile {
     public boolean collisionOn = false;
     public Entity entity;
 
-    public Rectangle solidArea = new Rectangle(Constants.TILE_SIZE/2, Constants.TILE_SIZE/2, 1, 1);
+    public Rectangle solidArea = new Rectangle(Constants.TILE_SIZE/2, Constants.TILE_SIZE/2, 2, 2);
     public int solidAreaDefaultX = solidArea.x;
     public int solidAreaDefaultY = solidArea.y;
 

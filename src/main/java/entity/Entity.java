@@ -24,6 +24,7 @@ import main.GamePanel;
 import main.InventoryItem;
 import main.Utils;
 import main.GamePanel.GameState;
+import objects.BlasterObject;
 import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
@@ -33,10 +34,10 @@ public abstract class Entity {
 
     protected GamePanel gamePanel;
 
-    public static final int SOLID_AREA_X = 10;
-    public static final int SOLID_AREA_Y = 4;
-    public static final int SOLID_AREA_WIDTH = 28;
-    public static final int SOLID_AREA_HEIGHT = 40;
+    public static final int SOLID_AREA_X = 12;
+    public static final int SOLID_AREA_Y = 6;
+    public static final int SOLID_AREA_WIDTH = 24;
+    public static final int SOLID_AREA_HEIGHT = 36;
     public static final int DEFAULT_AREA_RADIUS = 10;
     public static final int DEFAULT_TIMEOUT = 15000; // ms
 
@@ -642,11 +643,20 @@ public abstract class Entity {
             this.gamePanel.death();
             return;
         }
+        if (this.isDead) {
+            // dropPrimaryWeapon();
+            attacker.revertToDefaultState();
+        }
         if (this instanceof Player) { return; }
         if (this.getClass() == attacker.getClass()) { return; }
 
-        printDebugData(this.entityType + ": " + getCurrentHealth());
+        System.out.println(this.entityType + ": " + getCurrentHealth());
 
+        retaliate(attacker);
+    }
+
+    private void retaliate(Entity attacker) {
+        if (attacker == null) { return; }
         if (
             (attacker instanceof Player && this.warned) ||
             (attacker instanceof Player == false)
@@ -663,6 +673,13 @@ public abstract class Entity {
                 changeState(MoveStatus.FRENZY);
             }
         }
+    }
+
+    private void dropPrimaryWeapon() {
+        if (this.primaryWeapon == null) { return; }
+        this.gamePanel.objects.add(
+            new BlasterObject(this.gamePanel, getRawX(), getRawY())
+        );
     }
 
     public Entity getAttackingTarget() {
@@ -936,6 +953,11 @@ public abstract class Entity {
         this.solidAreaDefaultX = predictiveEntity.solidArea.x;
         this.solidAreaDefaultY = predictiveEntity.solidArea.y;
         this.direction = predictiveEntity.direction;
+    }
+
+    public void revertToDefaultState() {
+        if (this.defaults == null) return;
+        this.defaults.revertToDefault(this);
     }
 
     class Defaults {

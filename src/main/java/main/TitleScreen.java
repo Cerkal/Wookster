@@ -135,16 +135,16 @@ public class TitleScreen {
                     new Toggle(
                         Constants.GAME_SETTINGS_MOUSE_AIM,
                         List.of(
-                            new ToggleOption(ToggleOption.ON) {
-                                @Override
-                                public void action(GamePanel gamePanel) {
-                                    gamePanel.mouseAim = true;
-                                }
-                            },
                             new ToggleOption(ToggleOption.OFF) {
                                 @Override
                                 public void action(GamePanel gamePanel) {
                                     gamePanel.mouseAim = false;
+                                }
+                            },
+                            new ToggleOption(ToggleOption.ON) {
+                                @Override
+                                public void action(GamePanel gamePanel) {
+                                    gamePanel.mouseAim = true;
                                 }
                             }
                         )

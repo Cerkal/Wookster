@@ -114,7 +114,12 @@ public class SuperObject {
     }
 
     public void removeInventoryItem() {
-        if (this.objectType != SuperObject.ObjectType.POTION) return;
+        if (
+            this.objectType != SuperObject.ObjectType.POTION &&
+            this.objectType != SuperObject.ObjectType.BLASER
+        ){
+            return;
+        }
         for (int x = this.gamePanel.player.getRawX() - 1; x < this.gamePanel.player.getRawX() + 1; x++) {
             for (int y = this.gamePanel.player.getRawY() - 1; y < this.gamePanel.player.getRawY() + 1; y++) {
                 if (this.gamePanel.tileManager.walkableTiles[x][y]) {

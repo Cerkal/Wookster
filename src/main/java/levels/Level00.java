@@ -174,7 +174,7 @@ public class Level00 extends LevelBase {
                 if (entity instanceof Animal) {
                     entity.movable = false;
                     entity.isMoving = false;
-                    if ( entity.isDead) {                
+                    if (entity.isDead) {
                         deadCount++;
                     }
                 }
@@ -195,7 +195,7 @@ public class Level00 extends LevelBase {
                 String[] lines = Dialogue.TUTORIAL_PIGS_POSITIVE;
                 quest.setResolution(ResolutionLevel.POSTIVE);
                 if (deadCount == 0) {
-                    String[] savior = {"Oh and take this health potion, you little pig savior you."};
+                    String[] savior = Dialogue.TUTORIAL_COMPLETE_SAVIOR;
                     String[] mergedLines = Arrays.copyOf(
                         Dialogue.TUTORIAL_COMPLETE,
                         Dialogue.TUTORIAL_COMPLETE.length + savior.length

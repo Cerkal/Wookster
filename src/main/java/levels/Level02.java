@@ -44,16 +44,32 @@ public class Level02 extends LevelBase {
     public void init() {
         super.init();
 
-        NPCTrooper trooperTest = new NPCTrooper(this.gamePanel, 11, 40);
+        NPCTrooper trooperTest = new NPCTrooper(this.gamePanel, 10, 32);
+        trooperTest.setArea(new ArrayList<>(
+            List.of(
+                new Point(10, 10),
+                new Point(30, 30)
+            )
+        ));
         addNPC(trooperTest);
         
         NPCTrooper trooperTest2 = new NPCTrooper(this.gamePanel, 29, 8);
-        trooperTest2.accuracy = 1;
+        trooperTest2.setArea(new ArrayList<>(
+            List.of(
+                new Point(10, 10),
+                new Point(30, 30)
+            )
+        ));
         addNPC(trooperTest2);
         
-        NPCTrooper trooper = new NPCTrooper(this.gamePanel, 36, 32);
-        trooper.setDefaultState(MoveStatus.IDLE);
-        addNPC(trooper);
+        NPCTrooper trooperTest3 = new NPCTrooper(this.gamePanel, 36, 32);
+        trooperTest3.setArea(new ArrayList<>(
+            List.of(
+                new Point(27, 30),
+                new Point(37, 41)
+            )
+        ));
+        addNPC(trooperTest3);
 
         NPCMom mom = new NPCMom(gamePanel, 38, 9) {
             @Override

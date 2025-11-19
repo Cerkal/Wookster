@@ -54,7 +54,7 @@ public class Level03 extends LevelBase {
     public Level03(GamePanel gamePanel) {
         super(gamePanel);
         this.mapPath = Constants.WORLD_03;
-        this.playerStartLocation = new Point(15, 43);
+        this.playerStartLocation = new Point(15, 41);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class Level03 extends LevelBase {
         }
         this.mom.setDialogue(lines);
         this.mom.setDefaultState(MoveStatus.FOLLOW);
-        this.mom.debugEntity = true;
+        // this.mom.debugEntity = true;
         addNPC(this.mom);
 
         this.warner = new NPCGeneric(gamePanel, 15, 23) {

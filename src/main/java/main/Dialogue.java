@@ -94,6 +94,10 @@ public class Dialogue {
         "I'm your dad by the way."
     };
 
+    public static final String[] TUTORIAL_COMPLETE_SAVIOR = {
+        "Oh and take this health potion, you little pig savior you."
+    };
+
     // Level 02
     public static final String[] LEVEL_01_MOM = {
         "Trees hu?",

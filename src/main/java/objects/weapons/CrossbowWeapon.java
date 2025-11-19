@@ -70,7 +70,7 @@ public class CrossbowWeapon extends Weapon {
             }
         } else {
             if (canShoot()) {
-                this.speed = Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / SPEED_MODIFIER;
+                this.speed = Utils.generateRandomInt(HOLD_COUNT_MIN, HOLD_COUNT_MAX) / 2;
                 shootArrow();
                 entity.attacking = false;
             } else {
