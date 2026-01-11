@@ -25,6 +25,7 @@ import main.InventoryItem;
 import main.Utils;
 import main.GamePanel.GameState;
 import objects.BlasterObject;
+import objects.LasersObject;
 import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
@@ -644,7 +645,7 @@ public abstract class Entity {
             return;
         }
         if (this.isDead) {
-            // dropPrimaryWeapon();
+            dropPrimaryWeapon();
             attacker.revertToDefaultState();
         }
         if (this instanceof Player) { return; }
@@ -677,9 +678,15 @@ public abstract class Entity {
 
     private void dropPrimaryWeapon() {
         if (this.primaryWeapon == null) { return; }
-        this.gamePanel.objects.add(
-            new BlasterObject(this.gamePanel, getRawX(), getRawY())
-        );
+        switch (this.primaryWeapon.weaponType) {
+            case BLASTER:
+                this.gamePanel.objects.add(
+                    new BlasterObject(this.gamePanel, getRawX(), getRawY())
+                );
+                break;
+            default:
+                break;
+        }
     }
 
     public Entity getAttackingTarget() {

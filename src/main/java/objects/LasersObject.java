@@ -8,8 +8,8 @@ import objects.projectiles.LaserProjectile;
 
 public class LasersObject extends SuperObject {
 
-    static final int MIN_RANDOM_LASER_AMOUNT = 10;
-    static final int MAX_RANDOM_LASER_AMOUNT = 50;
+    static final int MIN_RANDOM_LASER_AMOUNT = 5;
+    static final int MAX_RANDOM_LASER_AMOUNT = 20;
 
     static final int PRICE = LaserProjectile.PRICE;
 
@@ -36,6 +36,7 @@ public class LasersObject extends SuperObject {
         this.collision = true;
         this.sellable = true;
         this.price = PRICE;
+        this.collision = false;
         this.inventoryItem = new InventoryItem(
             this.name,
             Utils.generateRandomInt(MIN_RANDOM_LASER_AMOUNT, MAX_RANDOM_LASER_AMOUNT), 
