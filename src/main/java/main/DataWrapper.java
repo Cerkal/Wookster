@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 
 import entity.Player.PlayerWrapper;
 import levels.LevelBase.LevelWrapper;
-import main.InventoryItem.InventoryItemWrapper;
+import main.InventoryItem.InventoryRecord;
 
 public class DataWrapper {
 
@@ -43,8 +43,8 @@ public class DataWrapper {
         return null;
     }
 
-    public List<InventoryItemWrapper> getSavedInventoryItems() {
-        return new ArrayList<>(this.player.inventory.values());
+    public HashMap<String, InventoryRecord> getSavedInventoryItems() {
+        return this.player.inventory;
     }
 
     public String getDataForSave(GamePanel gamePanel) {

@@ -6,21 +6,25 @@ import objects.SuperObject;
 import objects.SuperObject.SuperObjectWrapper;
 import objects.projectiles.Projectile;
 import objects.weapons.Weapon;
-import objects.weapons.Weapon.InventoryWeaponWrapper;
-import spells.SuperSpell;
+import objects.weapons.Weapon.WeaponType;
+import objects.projectiles.Projectile.ProjectileType;
 
 public class InventoryItem {
 
-    public static class InventoryItemWrapper {
+    public static class InventoryRecord {
         public String itemName;
         public int count;
-        public SuperSpell spell;
-        public SuperObjectWrapper object;
-        public InventoryWeaponWrapper weapon;
         public boolean usable;
         public boolean visibility;
         public boolean sellable;
         public int price;
+        public WeaponRecord weapon;
+        public SuperObjectWrapper object;
+
+        public static class WeaponRecord {
+            public WeaponType weaponType;
+            public ProjectileType projectileType;
+        }
     }
 
     public Weapon weapon;
@@ -69,7 +73,7 @@ public class InventoryItem {
         this.price = other.price;
         this.object = other.object;
         this.weapon = other.weapon;
-        this.projectile = other.projectile; 
+        this.projectile = other.projectile;
     }
 
     public InventoryItem copy() {
@@ -89,18 +93,12 @@ public class InventoryItem {
     }
 
     public void select() {
-        if (this.weapon != null) {
-            this.weapon.select();
-        }
-        if (this.object != null) {
-            this.object.useObject();
-        }
+        if (this.weapon != null) this.weapon.select();
+        if (this.object != null) this.object.useObject();
     }
 
     public void remove() {
-        if (this.object != null) {
-            this.object.removeInventoryItem();
-        }
+        if (this.object != null) this.object.removeInventoryItem();
     }
 
     @Override
@@ -109,28 +107,26 @@ public class InventoryItem {
     }
 
     public void drawInfo(Graphics2D graphics2D, int x, int y) {
-        if (this.weapon != null) {
-            this.weapon.drawDetails(graphics2D, x, y);
-        }
-        if (this.object != null) {
-            this.object.drawDetails(graphics2D, x, y);
-        }
+        if (this.weapon != null) this.weapon.drawDetails(graphics2D, x, y);
+        if (this.object != null) this.object.drawDetails(graphics2D, x, y);
     }
 
-    public InventoryItemWrapper getInventoryWrapper() {
-        InventoryItemWrapper inventoryItemWrapper = new InventoryItemWrapper();
-        inventoryItemWrapper.count = this.count;
-        inventoryItemWrapper.itemName = this.name;
-        inventoryItemWrapper.usable = this.usable;
-        inventoryItemWrapper.visibility = this.visibility;
-        inventoryItemWrapper.sellable = this.sellable;
-        inventoryItemWrapper.price = this.price;
+    public InventoryRecord toRecord() {
+        InventoryRecord record = new InventoryRecord();
+        record.count = this.count;
+        record.itemName = this.name;
+        record.usable = this.usable;
+        record.visibility = this.visibility;
+        record.sellable = this.sellable;
+        record.price = this.price;
         if (this.object != null) {
-            inventoryItemWrapper.object = this.object.getSuperObjectWrapper();
+            record.object = this.object.getSuperObjectWrapper();
         }
         if (this.weapon != null) {
-            inventoryItemWrapper.weapon = this.weapon.getInventoryWeaponWrapper();
+            record.weapon = new InventoryRecord.WeaponRecord();
+            record.weapon.weaponType = this.weapon.weaponType;
+            record.weapon.projectileType = this.weapon.projectileType;
         }
-        return inventoryItemWrapper;
+        return record;
     }
 }

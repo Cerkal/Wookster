@@ -24,7 +24,7 @@ import tile.TileManager.TileLocation;
 
 public class SuperObject {
 
-    public class SuperObjectWrapper {
+    public static class SuperObjectWrapper {
         public String name;
         public int worldX;
         public int worldY;

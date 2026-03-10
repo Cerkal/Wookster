@@ -1,24 +1,22 @@
 package objects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.InventoryManager;
 import main.GamePanel.GameState;
 
 public class ContainerObject extends SuperObject {
 
-    List<InventoryItem> inventoryItems = new ArrayList<>();
-    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
+    public InventoryManager inventory;
 
     public boolean isLocked = false;
 
     public ContainerObject(GamePanel gamePanel, int worldX, int worldY) {
         super(gamePanel, worldX, worldY);
+        this.inventory = new InventoryManager(gamePanel, false);
         init();
     }
 
@@ -48,62 +46,20 @@ public class ContainerObject extends SuperObject {
     }
 
     public List<InventoryItem> getInventoryItems() {
-        List<InventoryItem> inventoryItems = new ArrayList<>();
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-
-            int totalCount = items.stream()
-                .mapToInt(item -> item.count)
-                .sum();
-
-            if (totalCount > 0) {
-                InventoryItem first = items.get(0);
-                InventoryItem item = new InventoryItem(first);
-                item.count = totalCount;
-
-                inventoryItems.add(item);
-            }
-        }
-        return inventoryItems;
+        return this.inventory.getSellableItems();
     }
 
     public void addInventoryItemFromVendor(InventoryItem item) {
-        if (item == null || item.count <= 0) return;
-        List<InventoryItem> itemList = inventory.computeIfAbsent(item.name, k -> new ArrayList<>());
-        for (InventoryItem existing : itemList) {
-            if (existing.canStackWith(item)) {
-                existing.count += item.count;
-                return;
-            }
-        }
-        InventoryItem copy = new InventoryItem(item);
-        copy.count = item.count;
-        itemList.add(copy);
+        this.inventory.add(item);
     }
 
     public boolean removeInventoryItemFromVendor(String name, int count) {
-        List<InventoryItem> itemList = inventory.get(name);
-        if (itemList == null) return false;
-        int remaining = count;
-        for (Iterator<InventoryItem> it = itemList.iterator(); it.hasNext() && remaining > 0;) {
-            InventoryItem current = it.next();
-            if (current.count > remaining) {
-                current.count -= remaining;
-                remaining = 0;
-            } else {
-                remaining -= current.count;
-                it.remove();
-            }
-        }
-        if (itemList.isEmpty()) {
-            inventory.remove(name);
-        }
-        return remaining <= 0;
+        if (!this.inventory.has(name, count)) return false;
+        this.inventory.remove(name, count);
+        return true;
     }
 
     public void setInventoryItems(List<InventoryItem> inventoryItems) {
-        for (InventoryItem item : inventoryItems) {
-            this.inventory.put(item.name, new ArrayList<>(List.of(item)));
-        }
+        this.inventory.setStock(inventoryItems);
     }
 }

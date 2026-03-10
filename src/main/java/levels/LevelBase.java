@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -14,10 +13,8 @@ import entity.Entity;
 import main.Constants;
 import main.DataWrapper;
 import main.GamePanel;
-import main.InventoryItem;
 import main.Utils;
 import main.GamePanel.GameState;
-import main.InventoryItem.InventoryItemWrapper;
 import objects.CarryPotionObject;
 import objects.PotionObject;
 import objects.SuperObject;
@@ -57,29 +54,33 @@ public abstract class LevelBase {
         this.gamePanel.gameState = GameState.LOADING;
         long loadingStartTime = System.currentTimeMillis();
         new Thread(() -> {
-            init();
-            boolean entitiesReady = true;
-            while (entitiesReady) {
-                for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
-                    if (!entity.isReady) {
-                        System.out.println("Entity " + entity.name + " not ready yet.");
-                        entitiesReady = false;
-                    } else {
-                        System.out.println("Entity " + entity.name + " ready.");
+            try {
+                init();
+                boolean entitiesReady = true;
+                while (entitiesReady) {
+                    for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
+                        if (!entity.isReady) {
+                            System.out.println("Entity " + entity.name + " not ready yet.");
+                            entitiesReady = false;
+                        } else {
+                            System.out.println("Entity " + entity.name + " ready.");
+                        }
                     }
+                    if (entitiesReady) { break; }
                 }
-                if (entitiesReady) { break; }
+                long elapsed = System.currentTimeMillis() - loadingStartTime;
+                if (elapsed < Constants.MIN_LOADING) {
+                    try {
+                        Thread.sleep(Constants.MIN_LOADING - elapsed);
+                    } catch (InterruptedException ignored) {}
+                }
+            } catch (Exception e) {
+                System.err.println("Error during level init: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                this.gamePanel.gameState = GameState.PLAY;
+                this.gamePanel.config.saveConfig();
             }
-            
-            long elapsed = System.currentTimeMillis() - loadingStartTime;
-            if (elapsed < Constants.MIN_LOADING) {
-                try {
-                    Thread.sleep(Constants.MIN_LOADING - elapsed);
-                } catch (InterruptedException ignored) {}
-            }
-            this.gamePanel.gameState = GameState.PLAY;
-            this.gamePanel.config.saveConfig();
-            
         }).start();
     }
 
@@ -193,41 +194,11 @@ public abstract class LevelBase {
     }
 
     public void loadInventoryItems(DataWrapper dataWrapper) {
-        this.gamePanel.player.inventory = new HashMap<>();
-        List<InventoryItemWrapper> inventoryItems = dataWrapper.getSavedInventoryItems();
-        if (inventoryItems != null) {
-            List<InventoryItem> others = new ArrayList<>();
-            List<WeaponType> weapons = new ArrayList<>();
-
-            for (InventoryItemWrapper item : inventoryItems) {
-                InventoryItem inventoryItem;
-                if (item.object != null) {
-                    for (int i = 0; i < item.count; i++) {
-                        SuperObject object = ObjectType.create(gamePanel, item.object);
-                        others.add(object.inventoryItem);
-                    }
-                } else if (item.weapon != null) {
-                    weapons.add(item.weapon.weaponType);
-                } else {
-                    inventoryItem = new InventoryItem(
-                        item.itemName,
-                        item.count,
-                        item.usable,
-                        item.visibility,
-                        item.sellable,
-                        item.price
-                    );
-                    others.add(inventoryItem);
-                }
-            }
-
-            for (InventoryItem item : others) {
-                this.gamePanel.player.addInventoryItem(item);
-            }
-
-            for (WeaponType item : weapons) {
-                this.gamePanel.player.addWeapon(item);
-            }
+        List<WeaponType> weapons = this.gamePanel.player.inventory.loadFromRecords(
+            dataWrapper.getSavedInventoryItems()
+        );
+        for (WeaponType wt : weapons) {
+            this.gamePanel.player.addWeapon(wt);
         }
     }
 

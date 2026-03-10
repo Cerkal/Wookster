@@ -7,9 +7,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 
@@ -22,10 +20,9 @@ import entity.SpriteManager.Sprite;
 import main.Constants;
 import main.GamePanel;
 import main.InventoryItem;
+import main.InventoryManager;
 import main.Utils;
-import main.GamePanel.GameState;
 import objects.BlasterObject;
-import objects.LasersObject;
 import objects.weapons.FistWeapon;
 import objects.weapons.MeleeWeapon;
 import objects.weapons.Weapon;
@@ -121,7 +118,7 @@ public abstract class Entity {
 
     // Inventory Items
     public boolean isVendor = false;
-    public HashMap<String, List<InventoryItem>> inventory = new HashMap<>();
+    public InventoryManager inventory;
     public int priceModifier = 1;
 
 
@@ -213,6 +210,7 @@ public abstract class Entity {
         this.attackingTimeout = DEFAULT_TIMEOUT;
         this.moveStatus = MoveStatus.IDLE;
         this.speed = this.defaultSpeed;
+        this.inventory = new InventoryManager(gamePanel, false);
         this.weapons.put(WeaponType.FIST, new FistWeapon(this.gamePanel, this));
         this.loadSprites();
         this.setPredictiveEntity();
@@ -792,9 +790,7 @@ public abstract class Entity {
 
     public void setVendor(List<InventoryItem> items) {
         this.isVendor = true;
-        for (InventoryItem item : items) {
-            this.inventory.put(item.name, new ArrayList<>(List.of(item)));
-        }
+        this.inventory.setStock(items);
     }
 
     public boolean isVendor() {
@@ -802,122 +798,38 @@ public abstract class Entity {
     }
 
     public void addCredits(int amount) {
-        InventoryItem item = new InventoryItem(
-            Constants.CREDITS,
-            amount,
-            false,
-            true,
-            false,
-            1
-        );
-        if (this.inventory.containsKey(Constants.CREDITS)) {
-            this.inventory.get(Constants.CREDITS).get(0).count += amount;
-            displayInventoryMessage(item);
-        } else {
-            addInventoryItem(item);
-        }
+        this.inventory.addCredits(amount);
     }
 
     public void removeCredits(int amount) {
-        if (this.inventory.containsKey(Constants.CREDITS)) {
-            this.inventory.get(Constants.CREDITS).get(0).count -= amount;
-        }
+        this.inventory.removeCredits(amount);
     }
 
     public int getCredits() {
-        return this.inventory.get(Constants.CREDITS).get(0).count;
+        return this.inventory.getCredits();
     }
 
     public void addInventoryItem(InventoryItem item) {
-        this.inventory.computeIfAbsent(item.name, k -> new ArrayList<>()).add(item);
-        displayInventoryMessage(item);
-    }
-
-    private void displayInventoryMessage(InventoryItem item) {
-        if (this instanceof Player == false || this.gamePanel.gameState == GameState.VENDOR) { return; }
-        if (item.count > 1) {
-            this.gamePanel.ui.displayMessage(item.count + " " + item.name.toLowerCase() + Constants.MESSGE_INVENTORY_ADDED);
-        } else {
-            this.gamePanel.ui.displayMessage(item.name + Constants.MESSGE_INVENTORY_ADDED);
-        }
+        this.inventory.add(item);
     }
 
     public void addInventoryItemFromVendor(InventoryItem item) {
-        if (item == null || item.count <= 0) return;
-        if (!item.sellable) return;
-        List<InventoryItem> itemList = inventory.computeIfAbsent(item.name, k -> new ArrayList<>());
-        for (InventoryItem existing : itemList) {
-            if (existing.canStackWith(item)) {
-                existing.count += item.count;
-                return;
-            }
-        }
-        InventoryItem copy = new InventoryItem(item);
-        copy.count = item.count;
-        if (item.weapon != null && !this.weapons.containsKey(item.weapon.weaponType)) {
-            this.weapons.put(item.weapon.weaponType, item.weapon);
-        }
-        itemList.add(copy);
+        this.inventory.add(item);
     }
 
     public boolean removeInventoryItemFromVendor(String name, int count) {
-        List<InventoryItem> itemList = inventory.get(name);
-        if (itemList == null) return false;
-        int remaining = count;
-        for (Iterator<InventoryItem> it = itemList.iterator(); it.hasNext() && remaining > 0;) {
-            InventoryItem current = it.next();
-            if (!current.sellable) continue;
-            if (current.count > remaining) {
-                current.count -= remaining;
-                remaining = 0;
-                if (current.weapon != null && !this.weapons.containsKey(current.weapon.weaponType)) {
-                    this.weapons.remove(current.weapon.weaponType);
-                }
-            } else {
-                remaining -= current.count;
-                it.remove();
-            }
+        if (!this.inventory.has(name, count)) return false;
+        InventoryItem item = this.inventory.get(name);
+        if (item == null || !item.sellable) return false;
+        if (this instanceof Player && count >= this.inventory.getCount(name)) {
+            this.gamePanel.player.switchWeapon(WeaponType.FIST);
         }
-        if (itemList.isEmpty()) {
-            inventory.remove(name);
-            // if the item is sold out and this entity is the player, switch to fist
-            if (this instanceof Player) {
-                this.gamePanel.player.switchWeapon(WeaponType.FIST);
-            }
-        }
-        return remaining <= 0;
+        this.inventory.remove(name, count);
+        return true;
     }
 
     public List<InventoryItem> getInventoryItemsForSale() {
-        List<InventoryItem> weaponList = new ArrayList<>();
-        List<InventoryItem> otherList = new ArrayList<>();
-
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-
-            int totalCount = items.stream()
-                .filter(item -> item.sellable)
-                .mapToInt(item -> item.count)
-                .sum();
-
-            if (totalCount > 0) {
-                InventoryItem first = items.get(0);
-                InventoryItem item = new InventoryItem(first);
-                item.count = totalCount;
-
-                if (item.weapon != null) {
-                    weaponList.add(item);
-                } else {
-                    otherList.add(item);
-                }
-            }
-        }
-        weaponList.sort(Comparator.comparing(item -> item.name));
-        otherList.sort(Comparator.comparing(item -> item.name));
-        List<InventoryItem> selectableList = new ArrayList<>();
-        selectableList.addAll(weaponList);
-        selectableList.addAll(otherList);
-        return selectableList;
+        return this.inventory.getSellableItems();
     }
 
     // SPRITE METHODS

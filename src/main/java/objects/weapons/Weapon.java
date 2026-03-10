@@ -19,11 +19,6 @@ import objects.projectiles.Projectile.ProjectileType;
 
 public abstract class Weapon {
 
-    public static class InventoryWeaponWrapper {
-        public WeaponType weaponType;
-        public ProjectileType projectileType;
-    }
-
     GamePanel gamePanel;
     Entity entity;
     
@@ -96,13 +91,6 @@ public abstract class Weapon {
         }
         y += Constants.NEW_LINE_SIZE;
         graphics2D.drawString("Max Damage: " + String.valueOf(this.maxDamage), x, y);
-    }
-
-    public InventoryWeaponWrapper getInventoryWeaponWrapper() {
-        InventoryWeaponWrapper inventoryWeaponWrapper = new InventoryWeaponWrapper();
-        inventoryWeaponWrapper.projectileType = this.projectileType;
-        inventoryWeaponWrapper.weaponType = this.weaponType;
-        return inventoryWeaponWrapper;
     }
 
     public Weapon copy() {

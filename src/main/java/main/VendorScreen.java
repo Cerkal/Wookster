@@ -46,14 +46,6 @@ public class VendorScreen {
         drawBoxes(graphics2D);
 
         setVendorPrices(this.vendorInventory);
-
-        if (this.screenSelector.getNumberOfScreens() > 2) {
-            this.screenSelector.clearScreens();
-            this.screenSelector.addScreen(getSelectionItems(this.gamePanel.player.getInventoryItemsForSale(), false));
-            this.screenSelector.addScreen(getSelectionItems(this.vendorInventory, true));
-            this.screenSelector.setScreen(0);
-        }
-
         this.screenSelector.set(0, getSelectionItems(this.gamePanel.player.getInventoryItemsForSale(), false));
         this.screenSelector.set(1, getSelectionItems(this.vendorInventory, true));
 
@@ -96,57 +88,30 @@ public class VendorScreen {
         // Handle Inventory Vending
         if (selectedItem.selected && selectedItem.customKeyPress == -1) {
             InventoryItem inventoryItem = (InventoryItem) selectedItem.selectedObject;
-
             if (inventoryItem == null) return;
 
             if (selectedItem.selectedScreenIndex == Constants.VENDOR_PLAYER_INDEX) {
-                if (!this.isContainer && entity != null && entity.getCredits() - inventoryItem.price < 0) { return; }
-                // Adding to Container
-                if (this.isContainer) {
+                // Player selling/depositing
+                if (!isContainer && entity != null && !entity.inventory.canAfford(inventoryItem.price)) return;
+                if (isContainer) {
                     ContainerObject chest = (ContainerObject) this.gamePanel.player.collisionObject;
-                    if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                        InventoryItem singleItem = new InventoryItem(inventoryItem);
-                        singleItem.count = 1;
-                        singleItem.sellable = true;
-                        chest.addInventoryItemFromVendor(singleItem);
-                    }
-                // Selling to vendor
+                    this.gamePanel.player.inventory.transfer(inventoryItem.name, 1, chest.inventory);
                 } else {
-                    if (this.gamePanel.player.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                        InventoryItem singleItem = new InventoryItem(inventoryItem);
-                        singleItem.count = 1;
-                        singleItem.sellable = true;
-                        this.gamePanel.player.addCredits(inventoryItem.price);
-                        entity.removeCredits(inventoryItem.price);
-                        entity.addInventoryItemFromVendor(singleItem);
+                    if (this.gamePanel.player.inventory.transfer(inventoryItem.name, 1, entity.inventory)) {
+                        this.gamePanel.player.inventory.addCredits(inventoryItem.price);
+                        entity.inventory.removeCredits(inventoryItem.price);
                     }
                 }
             } else {
-                int price = this.vendorPrices.get(inventoryItem.name) == null ?
-                    inventoryItem.price : this.vendorPrices.get(inventoryItem.name);
-
-                if (!this.isContainer && this.gamePanel.player.getCredits() - price < 0) { return; }
-                // Taking from Container
-                if (this.isContainer) {
+                int price = vendorPrices.getOrDefault(inventoryItem.name, inventoryItem.price);
+                if (!isContainer && !this.gamePanel.player.inventory.canAfford(price)) return;
+                if (isContainer) {
                     ContainerObject chest = (ContainerObject) this.gamePanel.player.collisionObject;
-                    if (chest.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                        InventoryItem singleItem = new InventoryItem(inventoryItem);
-                        singleItem.count = 1;
-                        singleItem.sellable = true;
-                        this.gamePanel.player.addInventoryItemFromVendor(singleItem);
-                    }
-                // Buying from vendor
+                    chest.inventory.transfer(inventoryItem.name, 1, this.gamePanel.player.inventory);
                 } else {
-                    if (entity != null && entity.removeInventoryItemFromVendor(inventoryItem.name, 1)) {
-                        InventoryItem singleItem = new InventoryItem(inventoryItem);
-                        singleItem.count = 1;
-                        singleItem.sellable = true;
-                        if (this.vendorPrices != null && this.vendorPrices.containsKey(inventoryItem.name)) {
-                            singleItem.sellable = true;
-                        }
-                        entity.addCredits(price);
-                        this.gamePanel.player.removeCredits(price);
-                        this.gamePanel.player.addInventoryItemFromVendor(singleItem);
+                    if (entity != null && entity.inventory.transfer(inventoryItem.name, 1, this.gamePanel.player.inventory)) {
+                        entity.inventory.addCredits(price);
+                        this.gamePanel.player.inventory.removeCredits(price);
                     }
                 }
             }

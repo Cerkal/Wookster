@@ -1,8 +1,9 @@
 package entity;
 
 import main.KeyHandler;
+import main.InventoryItem.InventoryRecord;
+import main.InventoryManager;
 import main.Utils;
-import main.InventoryItem.InventoryItemWrapper;
 import objects.ContainerObject;
 import objects.GameMap;
 import objects.SuperObject;
@@ -16,9 +17,6 @@ import spells.SuperSpell;
 import spells.SuperSpell.SpellType;
 
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +31,13 @@ public class Player extends Entity {
 
     public static class PlayerWrapper {
         public int worldX = Constants.TILE_SIZE * 23; // Set from level base
-        public int worldY = Constants.TILE_SIZE * 21; 
+        public int worldY = Constants.TILE_SIZE * 21;
         public int speed;
         public Direction direction;
         public int maxHealth;
         public int health;
         public WeaponType weapon;
-        public HashMap<String, InventoryItemWrapper> inventory;
+        public HashMap<String, InventoryRecord> inventory;
         public HashMap<SuperSpell.SpellType, SuperSpell> spells = new HashMap<>();
     }
 
@@ -75,7 +73,7 @@ public class Player extends Entity {
         this.invincable = false;
         this.weapon = null;
         this.isDead = false;
-        this.inventory = new HashMap<>();
+        this.inventory = new InventoryManager(this.gamePanel, true);
         this.weapons = new HashMap<>();
         this.spells.clear();
         this.accuracy = 50;
@@ -146,58 +144,19 @@ public class Player extends Entity {
     }
 
     public void removeInventoryItem(InventoryItem item) {
-        if (this.inventory.containsKey(item.name)) {
-            List<InventoryItem> list = this.inventory.get(item.name);
-            if (item.count > 1) {
-                item.count--;
-            } else {
-                list.remove(0);
-            }
-            if (list.isEmpty()) {
-                this.inventory.remove(item.name);
-            }
-        }
+        this.inventory.remove(item.name);
     }
 
     public void removeInventoryItem(String name) {
-        if (this.inventory.containsKey(name)) {
-            List<InventoryItem> list = this.inventory.get(name);
-            InventoryItem first = list.get(0);
-            if (first.count > 1) {
-                first.count--;
-            } else {
-                list.remove(0);
-            }
-            if (list.isEmpty()) {
-                this.inventory.remove(name);
-            }
-        }
+        this.inventory.remove(name);
     }
 
-    public int getInventoryItem(String objectType) {
-        if (!this.inventory.containsKey(objectType)) { return 0; }
-        int total = 0;
-        for (InventoryItem item : this.inventory.get(objectType)) {
-            total += item.count;
-        }
-        return total;
+    public int getInventoryItem(String name) {
+        return this.inventory.getCount(name);
     }
 
-    public HashMap<String, InventoryItem> getInventory() {
-        HashMap<String, InventoryItem> selectableMap = new HashMap<>();
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-            int totalCount = 0;
-            for (InventoryItem item : items) {
-                totalCount += item.count;
-            }
-            InventoryItem firstCopy = new InventoryItem(items.get(0));
-            firstCopy.count = totalCount;
-            if (firstCopy.usable || firstCopy.visibility) {
-                selectableMap.put(key, firstCopy);
-            }
-        }
-        return selectableMap;
+    public List<InventoryItem> getInventoryItems() {
+        return this.inventory.getDisplayItems();
     }
 
     public PlayerWrapper getPlayerSaveState() {
@@ -209,87 +168,9 @@ public class Player extends Entity {
         playerWrapper.maxHealth = this.maxHealth;
         playerWrapper.health = this.health;
         if (this.weapon != null) playerWrapper.weapon = this.weapon.weaponType;
-        playerWrapper.inventory = getInventoryItemsForSave();
+        playerWrapper.inventory = this.inventory.toRecords();
         playerWrapper.spells = this.spells;
         return playerWrapper;
-    }
-
-    public List<String> getInventoryString() {
-        List<String> weaponList = new ArrayList<>();
-        List<String> otherList = new ArrayList<>();
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-            int totalCount = 0;
-            for (InventoryItem item : items) {
-                totalCount += item.count;
-            }
-            InventoryItem first = items.get(0);
-            if (first.usable || first.visibility) {
-                String name = first.name;
-                if (totalCount > 1) {
-                    name += " (" + totalCount + ")";
-                }
-                if (first.weapon != null) {
-                    weaponList.add(name);
-                } else {
-                    otherList.add(name);
-                }
-            }
-        }
-        Collections.sort(weaponList);
-        Collections.sort(otherList);
-        List<String> selectableList = new ArrayList<>();
-        selectableList.addAll(weaponList);
-        selectableList.addAll(otherList);
-        return selectableList;
-    }
-
-    public List<InventoryItem> getInventoryItems() {
-        List<InventoryItem> weaponList = new ArrayList<>();
-        List<InventoryItem> otherList = new ArrayList<>();
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-            int totalCount = 0;
-            for (InventoryItem item : items) {
-                totalCount += item.count;
-            }
-            InventoryItem first = items.get(0);
-            InventoryItem item = first.copy();
-            item.count = totalCount;
-            if (item.usable || item.visibility) {
-                if (item.weapon != null) {
-                    weaponList.add(item);
-                } else {
-                    otherList.add(item);
-                }
-            }
-        }
-        weaponList.sort(Comparator.comparing(weapon -> weapon.name));
-        otherList.sort(Comparator.comparing(other -> other.name));
-        List<InventoryItem> selectableList = new ArrayList<>();
-        selectableList.addAll(weaponList);
-        selectableList.addAll(otherList);
-        return selectableList;
-    }
-
-    public HashMap<String, InventoryItemWrapper> getInventoryItemsForSave() {
-        HashMap<String, InventoryItemWrapper> inventoryMap = new HashMap<>();
-        for (String key : this.inventory.keySet()) {
-            List<InventoryItem> items = this.inventory.get(key);
-            int totalCount = 0;
-            for (InventoryItem item : items) {
-                totalCount += item.count;
-                if (item.count == 1) {
-                    inventoryMap.put(key, item.getInventoryWrapper());
-                    continue;
-                }
-            }
-            InventoryItem first = items.get(0);
-            InventoryItemWrapper firstWrapper = first.getInventoryWrapper();
-            firstWrapper.count = totalCount;
-            inventoryMap.put(key, firstWrapper);
-        }
-        return inventoryMap;
     }
 
     public void addWeapon(WeaponType weaponType) {
@@ -553,5 +434,12 @@ public class Player extends Entity {
         this.direction = playerWrapper.direction;
         this.maxHealth = playerWrapper.maxHealth;
         this.health = playerWrapper.health;
+        if (playerWrapper.spells != null) {
+            for (SuperSpell spell : playerWrapper.spells.values()) {
+                if (spell != null && spell.spellType != null) {
+                    this.spells.put(spell.spellType, SpellType.create(spell));
+                }
+            }
+        }
     }
 }
