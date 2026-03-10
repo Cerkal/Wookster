@@ -28,6 +28,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+// Copy runtime dependencies to build/dependencies for VSCode launch
+tasks.register('copyDeps', Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/dependencies"
+}
+
 // Configure the existing shadowJar task
 shadowJar {
     archiveBaseName.set('Wookster-all')

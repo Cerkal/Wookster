@@ -2,6 +2,20 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "gradle-compile",
+            "type": "shell",
+            "command": "./gradlew classes copyDeps",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$javac",
+            "presentation": {
+                "reveal": "silent",
+                "close": true
+            }
+        },
+        {
             "label": "gradle-run",
             "type": "shell",
             "command": "./gradlew run",

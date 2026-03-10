@@ -3,18 +3,30 @@
     "configurations": [
         {
             "type": "java",
-            "name": "LevelCreator",
-            "request": "launch",
-            "mainClass": "main.LevelCreator",
-            "projectName": "Wookster"
-        },
-        {
-            "type": "java",
             "name": "Gradle Run",
             "request": "launch",
             "mainClass": "main.Main",
             "projectName": "Wookster",
-            "vmArgs": "-Dsun.java2d.opengl=True"
+            "vmArgs": "-Dsun.java2d.opengl=True",
+            "preLaunchTask": "gradle-compile",
+            "classPaths": [
+                "${workspaceFolder}/build/classes/java/main",
+                "${workspaceFolder}/build/resources/main",
+                "${workspaceFolder}/build/dependencies/*"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "LevelCreator",
+            "request": "launch",
+            "mainClass": "main.LevelCreator",
+            "projectName": "Wookster",
+            "preLaunchTask": "gradle-compile",
+            "classPaths": [
+                "${workspaceFolder}/build/classes/java/main",
+                "${workspaceFolder}/build/resources/main",
+                "${workspaceFolder}/build/dependencies/*"
+            ]
         }
     ]
 }
