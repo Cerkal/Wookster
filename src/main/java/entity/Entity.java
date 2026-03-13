@@ -595,6 +595,7 @@ public abstract class Entity {
         if (this.dialogue == null) { return; }
         this.gamePanel.gameState = GamePanel.GameState.DIALOGUE;
         if (this.dialogueIndex >= this.dialogue.length) {
+            this.gamePanel.player.entityInDialogue = null;
             this.gamePanel.ui.stopDialogue();
             this.dialogueIndex = 0;
             postDialogAction();
@@ -602,7 +603,7 @@ public abstract class Entity {
         }
         this.gamePanel.ui.displayDialog(this.dialogue[this.dialogueIndex]);
         this.dialogueIndex++;
-    
+        this.gamePanel.player.entityInDialogue = this;
         this.direction = getOppositeDirection(this.gamePanel.player.direction);
     }
 
@@ -680,9 +681,15 @@ public abstract class Entity {
         if (this.primaryWeapon == null) { return; }
         switch (this.primaryWeapon.weaponType) {
             case BLASTER:
-                this.gamePanel.objects.add(
-                    new BlasterObject(this.gamePanel, getRawX(), getRawY())
-                );
+                if (Utils.randomBoolean()) {
+                    this.gamePanel.objects.add(
+                        new BlasterObject(this.gamePanel, getRawX(), getRawY())
+                    );
+                } else {
+                    this.gamePanel.objects.add(
+                        new LasersObject(this.gamePanel, getRawX(), getRawY())
+                    );
+                }
                 break;
             default:
                 break;

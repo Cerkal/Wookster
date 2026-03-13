@@ -33,6 +33,9 @@ public class Constants {
 
     public static final int NEW_LINE_SIZE = TILE_SIZE - 5;
 
+    public static final String SECRET_KEY = "you-be-more-careful";
+    public static final String HASH_TYPE = "HmacSHA256";
+
     // Background Size
     public static final int BACKGROUND_WIDTH = 2800;
     public static final int BACKGROUND_HEIGHT = 2400;
@@ -55,6 +58,7 @@ public class Constants {
     public static final String GAME_TITLE = "BLAM!";
     public static final String GAME_PAUSED = "Game Paused";
     public static final String GAME_DEATH = "Dead";
+    public static final String GAME_COMPLETED = "Completed";
     public static final String GAME_LOADING = "Loading";
     public static final String GAME_SAVING = "Saving";
     public static final String GAME_TITLE_SCREEN_CONTINUE = "Continue";

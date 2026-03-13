@@ -12,6 +12,7 @@ public class QuestDescriptions {
     public static final String MOM = "MISSING MOM";
     public static final String MOM_HOME = "MOM HOME";
     public static final String PROTECT_VILLAGE = "PROTECT THE VILLAGE";
+    public static final String COMPLETED = "COMPLETED";
 
     public static final HashMap<String, List<String>> DESCRIPTIONS = new HashMap<>(){{
         put(
@@ -42,6 +43,12 @@ public class QuestDescriptions {
             PROTECT_VILLAGE,
             List.of(
                 "Protect the village from the troopers."
+            )
+        );
+        put(
+            COMPLETED,
+            List.of(
+                "Demo completed."
             )
         );
     }};

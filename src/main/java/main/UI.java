@@ -9,9 +9,14 @@ import java.awt.FontFormatException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import main.GamePanel.GameState;
 import main.Screen.Option;
@@ -97,6 +102,7 @@ public class UI {
 
         drawPauseScreen(graphics2D);
         drawDeathScreen(graphics2D);
+        drawCompletedScreen(graphics2D);
         drawInventory(graphics2D);
         drawVendor(graphics2D);
     }
@@ -242,6 +248,39 @@ public class UI {
             graphics2D.drawString(Constants.GAME_DEATH, x, y);
             this.gamePanel.stopMusic();
         }
+    }
+
+    public void drawCompletedScreen(Graphics2D graphics2D) {
+        if (this.gamePanel.gameState == GamePanel.GameState.COMPLETED) {
+            graphics2D.setFont(this.customFontLarge);
+            graphics2D.setColor(Color.WHITE);
+            int x = getXForCenteredText(graphics2D, Constants.GAME_COMPLETED, this.customFontLarge);
+            int y = getYForCenteredText();
+            graphics2D.drawString(Constants.GAME_COMPLETED, x, y);
+            this.gamePanel.stopMusic();
+            try {
+                String code = generateCode();
+                String message = "Completion code: " + code;
+                graphics2D.setFont(this.customFontMedium);
+                graphics2D.setColor(Color.WHITE);
+                int codeX = getXForCenteredText(graphics2D, message, this.customFontMedium);
+                int codeY = getYForCenteredText() + 50;
+                graphics2D.drawString(message, codeX, codeY);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    public static String generateCode() throws Exception {
+        Mac mac = Mac.getInstance(Constants.HASH_TYPE);
+        SecretKeySpec secretKey = new SecretKeySpec(Constants.SECRET_KEY.getBytes(), Constants.HASH_TYPE);
+        mac.init(secretKey);
+        String input = "12345";
+        byte[] hash = mac.doFinal(input.getBytes());
+        String base32 = Base64.getEncoder().encodeToString(hash)
+                .replaceAll("[^A-Z0-9]", "");
+        return base32.substring(0, 5);
     }
 
     private void drawInventoryBox(Graphics2D graphics2D, String title) {

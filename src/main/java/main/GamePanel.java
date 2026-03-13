@@ -46,7 +46,8 @@ public class GamePanel extends Canvas implements Runnable {
         DIALOGUE,
         INVENTORY,
         VENDOR,
-        DEATH
+        DEATH,
+        COMPLETED
     }
 
     public enum Difficulty { EASY, MEDIUM, HARD }

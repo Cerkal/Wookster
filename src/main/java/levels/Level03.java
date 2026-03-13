@@ -20,6 +20,7 @@ import main.InventoryItem;
 import main.Quest;
 import main.QuestDescriptions;
 import main.Utils;
+import main.GamePanel.GameState;
 import main.Quest.ResolutionLevel;
 import objects.ArrowsObject;
 import objects.CarryPotionObject;
@@ -42,6 +43,7 @@ public class Level03 extends LevelBase {
     Entity villager02;
     Entity villager03;
     Entity warner;
+    Entity princess;
 
     NPCTrooper trooper01;
     NPCTrooper trooper02;
@@ -302,7 +304,8 @@ public class Level03 extends LevelBase {
             this.warner.clearPath();
             this.warner.setDefaultState(MoveStatus.FOLLOW);
             String[] warnerLine = {
-                "Troopers! Attacking from the south! Protect the village!",
+                "Troopers! Attacking from the south!",
+                "Protect the village!",
             };
             this.warner.setDialogue(warnerLine);
 
@@ -371,7 +374,36 @@ public class Level03 extends LevelBase {
             this.vendor.clearPath();
             this.vendor.setDefaultState(MoveStatus.WANDER);
 
+            this.princess = new NPCGeneric(gamePanel, 14, 12) {
+                @Override
+                public void postDialogAction() {
+                    this.gamePanel.gameState = GameState.COMPLETED;
+                }
+            };
+            this.princess = new NPCGeneric(gamePanel, 14, 12);
+            String[] princessDialogue = {"You have defeated the evil that was here!", "You once were a boy but now you are a man!"};
+            this.princess.setDialogue(princessDialogue);
+            this.princess.setDefaultState(MoveStatus.FOLLOW);
+            this.princess.setHat(Constants.WOOKSER_DAD_HAT);
+            this.princess.defaultSpeed = 4;
+            addNPC(this.princess);
+
             this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).completeQuest(gamePanel);
+        }
+
+        if (
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE) != null &&
+            this.gamePanel.questManager.getQuest(QuestDescriptions.PROTECT_VILLAGE).getProgress() == 100 &&
+            this.gamePanel.player.collisionEntity == this.princess &&
+            this.princess.moveStatus == MoveStatus.FOLLOW && 
+            this.gamePanel.questManager.getQuest(QuestDescriptions.COMPLETED) == null
+        ){
+            this.princess.speak();
+            this.princess.defaultSpeed = 2;
+            this.princess.setDefaultState(MoveStatus.WANDER);
+
+            Quest completed = new Quest(QuestDescriptions.COMPLETED);
+            this.gamePanel.questManager.addQuest(completed);
         }
     }
 
