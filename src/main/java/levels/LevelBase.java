@@ -62,10 +62,7 @@ public abstract class LevelBase {
             while (entitiesReady) {
                 for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
                     if (!entity.isReady) {
-                        System.out.println("Entity " + entity.name + " not ready yet.");
                         entitiesReady = false;
-                    } else {
-                        System.out.println("Entity " + entity.name + " ready.");
                     }
                 }
                 if (entitiesReady) { break; }

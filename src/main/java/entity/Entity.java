@@ -59,7 +59,7 @@ public abstract class Entity {
     protected BufferedImage hat;
     public boolean isMoving = false;
     protected Sprite sprite;
-    protected SpriteManager spriteManager = new SpriteManager();
+    public SpriteManager spriteManager = new SpriteManager();
 
     // Collision
     public Rectangle solidArea = new Rectangle(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
@@ -652,7 +652,7 @@ public abstract class Entity {
         if (this instanceof Player) { return; }
         if (this.getClass() == attacker.getClass()) { return; }
 
-        System.out.println(this.entityType + ": " + getCurrentHealth());
+        printDebugData(this.entityType + ": " + getCurrentHealth());
 
         retaliate(attacker);
     }
@@ -759,7 +759,7 @@ public abstract class Entity {
 
     protected void drawEffect(Graphics2D graphics2D) {
         if (this.effect != null) {
-            if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > 500) {
+            if ((this.gamePanel.gameTime - this.effect.startTime) / Constants.MILLISECOND > this.effect.effectTime) {
                 this.effect = null;
             } else {
                 this.effect.worldX = this.worldX;

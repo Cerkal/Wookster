@@ -81,6 +81,13 @@ public class KeyHandler implements KeyListener {
                     this.gamePanel.gameState = GameState.PLAY;
                 }
                 break;
+            case GameState.COMPLETED:
+                if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_ENTER) {
+                    this.gamePanel.newGame();
+                    this.gamePanel.config.saveConfig();
+                    this.gamePanel.gameState = GameState.TITLE;
+                }
+                break;
             case GameState.DIALOGUE:
                 if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                     if (this.gamePanel.player.entityInDialogue != null) {

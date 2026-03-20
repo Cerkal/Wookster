@@ -1,5 +1,7 @@
 package entity;
 
+import java.awt.Point;
+
 import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
 import main.Constants;
@@ -25,14 +27,16 @@ public class Animal extends Entity {
         this.health = this.maxHealth;
         this.weapons = null;
         this.isFriendly = true;
-        this.isFrenzy = true;
-        setDefaultState(MoveStatus.FRENZY);
+        this.isFrenzy = false;
+        setDefaultState(MoveStatus.WANDER);
     }
 
     @Override
     public void takeDamage(int amount, Entity attacker) {
         super.takeDamage(amount, attacker);
         setPath(this.gamePanel.pathfinder.findPath(getLocation(), this.getPathLocation(attacker)));
+        this.defaultSpeed = 4;
+        changeState(MoveStatus.FRENZY);
     }
 
     @Override

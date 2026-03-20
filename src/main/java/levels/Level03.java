@@ -69,11 +69,11 @@ public class Level03 extends LevelBase {
             new Point(15, 35),
             new Point(25, 45)
         );
-        Animal animal1 = new Animal(this.gamePanel, 15, 27);
+        Animal animal1 = new Animal(this.gamePanel, 15, 37);
         animal1.setArea(pigArea);
-        Animal animal2 = new Animal(this.gamePanel, 15, 29);
+        Animal animal2 = new Animal(this.gamePanel, 15, 39);
         animal2.setArea(pigArea);
-        Animal animal3 = new Animal(this.gamePanel, 15, 32);
+        Animal animal3 = new Animal(this.gamePanel, 15, 42);
         animal3.setArea(pigArea);
         addNPC(List.of(animal1, animal2, animal3));
 
@@ -142,7 +142,6 @@ public class Level03 extends LevelBase {
         }
         this.mom.setDialogue(lines);
         this.mom.setDefaultState(MoveStatus.FOLLOW);
-        // this.mom.debugEntity = true;
         addNPC(this.mom);
 
         this.warner = new NPCGeneric(gamePanel, 15, 23) {
@@ -380,7 +379,6 @@ public class Level03 extends LevelBase {
                     this.gamePanel.gameState = GameState.COMPLETED;
                 }
             };
-            this.princess = new NPCGeneric(gamePanel, 14, 12);
             String[] princessDialogue = {"You have defeated the evil that was here!", "You once were a boy but now you are a man!"};
             this.princess.setDialogue(princessDialogue);
             this.princess.setDefaultState(MoveStatus.FOLLOW);

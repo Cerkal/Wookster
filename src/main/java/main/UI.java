@@ -17,7 +17,11 @@ import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
 
+import entity.SpriteManager;
+import entity.SpriteManager.Sprite;
+import entity.SpriteManager.SpriteAnimation;
 import main.GamePanel.GameState;
 import main.Screen.Option;
 import main.Screen.Screen;
@@ -260,7 +264,7 @@ public class UI {
             this.gamePanel.stopMusic();
             try {
                 String code = generateCode();
-                String message = "Completion code: " + code;
+                String message = "Completion Code: " + Constants.USER_ID + "-" + code;
                 graphics2D.setFont(this.customFontMedium);
                 graphics2D.setColor(Color.WHITE);
                 int codeX = getXForCenteredText(graphics2D, message, this.customFontMedium);
@@ -276,11 +280,9 @@ public class UI {
         Mac mac = Mac.getInstance(Constants.HASH_TYPE);
         SecretKeySpec secretKey = new SecretKeySpec(Constants.SECRET_KEY.getBytes(), Constants.HASH_TYPE);
         mac.init(secretKey);
-        String input = "12345";
-        byte[] hash = mac.doFinal(input.getBytes());
-        String base32 = Base64.getEncoder().encodeToString(hash)
-                .replaceAll("[^A-Z0-9]", "");
-        return base32.substring(0, 5);
+        byte[] hash = mac.doFinal(Constants.USER_ID.getBytes());
+        String base32 = Base64.getEncoder().encodeToString(hash).replaceAll("[^A-Z0-9]", "");
+        return base32.substring(0, 4);
     }
 
     private void drawInventoryBox(Graphics2D graphics2D, String title) {

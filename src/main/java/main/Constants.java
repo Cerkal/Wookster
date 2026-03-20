@@ -10,6 +10,9 @@ import objects.weapons.Weapon.WeaponType;
 
 public class Constants {
 
+    // User
+    public static final String USER_ID = "" + ((int)(Math.random() * 9000) + 1000);
+
     // Settings
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;

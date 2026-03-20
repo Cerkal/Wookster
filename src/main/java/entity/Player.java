@@ -95,6 +95,14 @@ public class Player extends Entity {
         }
     }
 
+    @Override
+    public void takeDamage(int amount, Entity attacker) {
+        if (this.gamePanel.debugGodMode) {
+            return;
+        }
+        super.takeDamage(amount, attacker);
+    }
+
     public void update() {
         this.isMoving = false;
         if (((

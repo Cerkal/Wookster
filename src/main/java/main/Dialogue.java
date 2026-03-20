@@ -55,11 +55,11 @@ public class Dialogue {
 
     public static final String[] TUTORIAL_INVENTORY_START = {
         "Hey, I'm over here now. I'm very fast.",
-        "Potions can make you fast.",
-        "Here, take one.",
+        "Potions can make you fast. Here, take one.",
         "You can find them all over the place.",
         "I'm not sure why but people leave them laying around.",
         "Press " + KeyHandler.TAB + " to open your inventory.",
+        "Then run around a bit and come back when you are done."
     };
 
     public static final String[] TUTORIAL_INVENTORY_REMINDER = {

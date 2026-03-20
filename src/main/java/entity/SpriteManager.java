@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import entity.Entity.Direction;
 import main.Constants;
+import main.GamePanel;
 import main.Utils;
 import main.GamePanel.GameState;
 

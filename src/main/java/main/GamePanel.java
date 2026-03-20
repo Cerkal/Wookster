@@ -58,7 +58,9 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugRenderTime = false;
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
-    public boolean debugAllWeapons = false;
+    public boolean debugAllWeapons = true;
+    public boolean debugGodMode = true;
+    public int debugLevel = 3;
     
     // Mouse Aim
     public boolean mouseAim = false;
@@ -103,7 +105,7 @@ public class GamePanel extends Canvas implements Runnable {
     int fullScreenWidth = Constants.FULL_SCREEN_WIDTH;
     int fullScreenHeight = Constants.FULL_SCREEN_HEIGHT;
  
-    static final int NEW_GAME_LEVEL_INDEX = 0;
+    public final int NEW_GAME_LEVEL_INDEX = this.debugLevel > 0 ? this.debugLevel : 0;
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
