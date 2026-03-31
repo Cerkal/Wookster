@@ -142,6 +142,8 @@ public class Level03 extends LevelBase {
         }
         this.mom.setDialogue(lines);
         this.mom.setDefaultState(MoveStatus.FOLLOW);
+        this.mom.debugPath = true;
+
         addNPC(this.mom);
 
         this.warner = new NPCGeneric(gamePanel, 15, 23) {

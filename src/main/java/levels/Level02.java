@@ -77,6 +77,7 @@ public class Level02 extends LevelBase {
             }
         };
         mom.setDialogue(Dialogue.LEVEL_01_MOM);
+        mom.debugPath = true;
         addNPC(mom);
 
         this.gamePanel.eventHandler.setRandomDamageTile();

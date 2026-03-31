@@ -54,6 +54,7 @@ public abstract class Entity {
     
     // Debug
     public boolean debugEntity;
+    public boolean debugPath;
 
     // Sprite
     protected BufferedImage hat;
@@ -93,8 +94,8 @@ public abstract class Entity {
     Defaults defaults;
 
     // Pathfinding
-    protected List<Point> currentPath = new ArrayList<>();
-    protected int pathIndex = 0;
+    public List<Point> currentPath = new ArrayList<>();
+    public int pathIndex = 0;
 
     // Timeouts
     protected long stateExpireTime = 0;
@@ -382,6 +383,11 @@ public abstract class Entity {
         try {
             if (currentPath == null || pathIndex >= currentPath.size()) return;
             moveEntityStep(currentPath.get(pathIndex));
+
+            // Debug path
+            if (this.debugPath) {
+                this.gamePanel.ui.entity = this;
+            }
 
             // reached this step?
             Point step = currentPath.get(pathIndex);

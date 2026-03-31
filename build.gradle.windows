@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'main.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.13.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// Configure the existing shadowJar task
+shadowJar {
+    archiveBaseName.set('Wookster-all')
+    archiveVersion.set('1.0.0')
+    archiveClassifier.set('')
+}
+
+// Portable build with fat jar
+tasks.register("jpackagePortable", Exec) {
+    dependsOn 'shadowJar'
+    workingDir "$buildDir/portable"
+
+    def inputDir = file("$buildDir/portable/input")
+    def outputDir = file("$buildDir/portable/output/Wookster")
+    def fatJar = file("$buildDir/libs/Wookster-all-1.0.0.jar")
+
+    doFirst {
+        // Clean input folder
+        mkdir(inputDir)
+        copy {
+            from(fatJar)
+            into(inputDir)
+        }
+
+        // Clean output folder
+        if (outputDir.exists()) {
+            println "Deleting existing output folder..."
+            delete(outputDir)
+        }
+    }
+
+    commandLine 'jpackage',
+        '--type', 'app-image',
+        '--input', "$buildDir/portable/input",
+        '--dest', "$buildDir/portable/output",
+        '--main-jar', fatJar.name,
+        '--main-class', 'main.Main',
+        '--name', 'Wookster',
+        '--app-version', version,
+        '--icon', "$projectDir/src/main/resources/icons/icon.ico"
+        // '--win-console'
+
+    doLast {
+        copy {
+            from("$rootDir/Wookster.cfg")
+            into("$buildDir/portable/output/Wookster/app")
+        }
+        println "Copied Wookster.cfg to output/Wookster/app/"
+        println "Completed export"
+        println "Folder location: $buildDir/portable/output/Wookster"
+
+        // Zip the entire output/Wookster folder as Wookster.zip
+        def outputFolder = file("$buildDir/portable/output/Wookster")
+        def zipFile = file("$buildDir/portable/output/Wookster.zip")
+
+        if (outputFolder.exists()) {
+            ant.zip(destfile: zipFile) {
+                fileset(dir: outputFolder)
+            }
+            println "Zipped ${outputFolder} -> ${zipFile}"
+        } else {
+            println "Output folder not found, skipping zip: ${outputFolder}"
+        }
+    }
+}

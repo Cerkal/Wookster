@@ -3,10 +3,12 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.FontFormatException;
 import java.io.IOException;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -19,6 +21,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 
+import entity.Entity;
 import entity.SpriteManager;
 import entity.SpriteManager.Sprite;
 import entity.SpriteManager.SpriteAnimation;
@@ -61,6 +64,7 @@ public class UI {
 
     public TitleScreen titleScreen;
     public VendorScreen vendorScreen;
+    public Entity entity;
 
     int commandNumber = 0;
     int currentTab = 0;
@@ -251,6 +255,26 @@ public class UI {
             int y = getYForCenteredText();
             graphics2D.drawString(Constants.GAME_DEATH, x, y);
             this.gamePanel.stopMusic();
+        }
+    }
+
+    public void drawPath(Graphics2D graphics2D) {
+        if (entity == null) { return; }
+        graphics2D.setFont(this.customFontSmall);
+        int x = 10;
+        int y = 150;
+        int currentPointInt = 0;
+        
+        graphics2D.drawString("Path Index: " + entity.pathIndex, x, y);
+        y += 20;
+
+        for (Point point : entity.currentPath) {
+            y += 20;
+            Color color = (entity.pathIndex == currentPointInt) ? Color.GREEN : Color.WHITE;
+            graphics2D.setColor(color);
+            graphics2D.drawString(point.x + ", " + point.y, x, y);
+            currentPointInt++;
+            if (currentPointInt > 10) { return; }
         }
     }
 
@@ -505,6 +529,8 @@ public class UI {
         for (String line : debugLines) {
             graphics2D.drawString(line, 10, debugLine -= debugLineDiff);
         }
+
+        drawPath(graphics2D);
     }
 
     private String combineToString(List<String> strings) {

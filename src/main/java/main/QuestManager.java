@@ -17,16 +17,16 @@ public class QuestManager {
 
     public void addQuest(Quest quest) {
         this.currentQuests.put(quest.name, quest);
+        
     }
-
     public boolean isActiveQuest(String name) {
         return this.currentQuests.containsKey(name);
     }
 
     public boolean isCompletedQuest(String name) {
         return this.completedQuests.containsKey(name);
+        
     }
-
     public int getProgress(String name) {
         if (isActiveQuest(name)) {
             return getCurrentQuest(name).getProgress();
@@ -35,11 +35,11 @@ public class QuestManager {
         }
         return 0;
     }
-
     public void removeQuest(String name) {
-        this.currentQuests.remove(name);
-    }
 
+        this.currentQuests.remove(name);
+        
+    }
     public Quest getCurrentQuest(String name) {
         return this.currentQuests.get(name);
     }

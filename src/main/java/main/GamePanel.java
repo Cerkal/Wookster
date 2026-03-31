@@ -58,9 +58,9 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugRenderTime = false;
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
-    public boolean debugAllWeapons = true;
-    public boolean debugGodMode = true;
-    public int debugLevel = 3;
+    public boolean debugAllWeapons = false;
+    public boolean debugGodMode = false;
+    public int debugLevel = 0;
     
     // Mouse Aim
     public boolean mouseAim = false;
