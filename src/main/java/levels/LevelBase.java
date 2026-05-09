@@ -57,26 +57,30 @@ public abstract class LevelBase {
         this.gamePanel.gameState = GameState.LOADING;
         long loadingStartTime = System.currentTimeMillis();
         new Thread(() -> {
-            init();
-            boolean entitiesReady = true;
-            while (entitiesReady) {
-                for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
-                    if (!entity.isReady) {
-                        entitiesReady = false;
+            try {
+                init();
+                boolean entitiesReady = true;
+                while (entitiesReady) {
+                    for (Entity entity : new ArrayList<>(this.gamePanel.npcs)) {
+                        if (!entity.isReady) {
+                            entitiesReady = false;
+                        }
                     }
+                    if (entitiesReady) { break; }
                 }
-                if (entitiesReady) { break; }
+
+                long elapsed = System.currentTimeMillis() - loadingStartTime;
+                if (elapsed < Constants.MIN_LOADING) {
+                    try {
+                        Thread.sleep(Constants.MIN_LOADING - elapsed);
+                    } catch (InterruptedException ignored) {}
+                }
+                this.gamePanel.gameState = GameState.PLAY;
+                this.gamePanel.config.saveConfig();
+            } catch (Throwable t) {
+                System.err.println("=== EXCEPTION in level loading thread (level=" + this.getClass().getSimpleName() + ", loadFromSave=" + loadFromSave + ") ===");
+                t.printStackTrace(System.err);
             }
-            
-            long elapsed = System.currentTimeMillis() - loadingStartTime;
-            if (elapsed < Constants.MIN_LOADING) {
-                try {
-                    Thread.sleep(Constants.MIN_LOADING - elapsed);
-                } catch (InterruptedException ignored) {}
-            }
-            this.gamePanel.gameState = GameState.PLAY;
-            this.gamePanel.config.saveConfig();
-            
         }).start();
     }
 

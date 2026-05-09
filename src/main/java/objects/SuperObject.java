@@ -105,7 +105,9 @@ public class SuperObject {
     }
 
     public void activateObject() {
-        this.gamePanel.ui.stopDialogue();
+        if (this.gamePanel.gameState == GamePanel.GameState.DIALOGUE) {
+            this.gamePanel.ui.stopDialogue();
+        }
     }
 
     public void useObject() {

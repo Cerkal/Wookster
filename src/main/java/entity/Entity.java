@@ -636,31 +636,36 @@ public abstract class Entity {
     // DAMAGE METHODS
 
     public void takeDamage(int amount, Entity attacker) {
-        if (this.invincable) { return; }
-        this.gamePanel.playSoundEffect(this.damageSound);
-        this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
-        this.effect = new AlertEffect(this.gamePanel, this);
-        this.health -= amount;
-        if (this.health <= 0) {
-            this.health = 0;
-            this.isDead = true;
-            this.movable = false;
-            this.weapon = null;
-        }
-        if (this.isDead && this.isNeeded) {
-            this.gamePanel.death();
-            return;
-        }
-        if (this.isDead) {
-            dropPrimaryWeapon();
-            attacker.revertToDefaultState();
-        }
-        if (this instanceof Player) { return; }
-        if (this.getClass() == attacker.getClass()) { return; }
+        try {
+            if (this.invincable) { return; }
+            this.gamePanel.playSoundEffect(this.damageSound);
+            this.gamePanel.effects.add(new BloodEffect(this.gamePanel, this.worldX, this.worldY));
+            this.effect = new AlertEffect(this.gamePanel, this);
+            this.health -= amount;
+            if (this.health <= 0) {
+                this.health = 0;
+                this.isDead = true;
+                this.movable = false;
+                this.weapon = null;
+            }
+            if (this.isDead && this.isNeeded) {
+                this.gamePanel.death();
+                return;
+            }
+            if (this.isDead) {
+                dropPrimaryWeapon();
+                attacker.revertToDefaultState();
+            }
+            if (this instanceof Player) { return; }
+            if (this.getClass() == attacker.getClass()) { return; }
 
-        printDebugData(this.entityType + ": " + getCurrentHealth());
+            printDebugData(this.entityType + ": " + getCurrentHealth());
 
-        retaliate(attacker);
+            retaliate(attacker);
+        } catch (Exception e) {
+            System.err.println("=== EXCEPTION in takeDamage (this=" + this.getClass().getSimpleName() + ", attacker=" + (attacker == null ? "null" : attacker.getClass().getSimpleName()) + ") ===");
+            e.printStackTrace(System.err);
+        }
     }
 
     private void retaliate(Entity attacker) {

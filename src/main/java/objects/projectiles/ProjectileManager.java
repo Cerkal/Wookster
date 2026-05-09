@@ -2,6 +2,7 @@ package objects.projectiles;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ProjectileManager {
@@ -12,18 +13,25 @@ public class ProjectileManager {
         this.projectiles.add(projectile);
     }
 
-    public void removeProjectiles() {
-        this.projectiles.removeAll(toRemove);
+    public void update() {
+        if (toRemove.isEmpty()) return;
+        Iterator<Projectile> it = projectiles.iterator();
+        while (it.hasNext()) {
+            if (toRemove.contains(it.next())) {
+                it.remove();
+            }
+        }
+        toRemove.clear();
     }
 
     public void draw(Graphics2D graphics2D) {
-        for (Projectile projectile : this.projectiles) {
+        for (Projectile projectile : new ArrayList<>(this.projectiles)) {
             projectile.draw(graphics2D);
         }
-        this.removeProjectiles();
     }
 
     public void clear() {
         this.projectiles.clear();
+        this.toRemove.clear();
     }
 }

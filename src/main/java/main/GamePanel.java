@@ -58,9 +58,9 @@ public class GamePanel extends Canvas implements Runnable {
     public boolean debugRenderTime = false;
     public boolean debugUpdateTime = false;
     public boolean debugCollision = false;
-    public boolean debugAllWeapons = false;
+    public boolean debugAllWeapons = true;
     public boolean debugGodMode = false;
-    public int debugLevel = 0;
+    public int debugLevel = 3;
     
     // Mouse Aim
     public boolean mouseAim = false;
@@ -127,14 +127,20 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void loadGame(int levelIndex) {
+        System.out.println("[loadGame] start levelIndex=" + levelIndex);
         this.config.loadConfig();
+        System.out.println("[loadGame] loadConfig done");
         this.restartLevel();
+        System.out.println("[loadGame] restartLevel done");
         this.levelManager.loadLevel(
             levelIndex,
             true
         );
+        System.out.println("[loadGame] loadLevel returned (async loading kicked off)");
         this.stopMusic();
+        System.out.println("[loadGame] stopMusic done");
         this.playMusic(Constants.SOUND_BG_01);
+        System.out.println("[loadGame] playMusic done");
         System.out.println("Loaded game.");
     }
 
@@ -245,6 +251,7 @@ public class GamePanel extends Canvas implements Runnable {
                 npc.update();
             }
             this.levelManager.update();
+            this.projectileManager.update();
         }
     }
 
@@ -286,6 +293,7 @@ public class GamePanel extends Canvas implements Runnable {
     }
 
     public void death() {
+        System.out.println("[death] called, current gameState=" + this.gameState);
         long loadingStartTime = System.currentTimeMillis();
         this.gameState = GameState.DEATH;
         new Thread(() -> {
@@ -295,7 +303,14 @@ public class GamePanel extends Canvas implements Runnable {
                     Thread.sleep(Constants.DEAD_LOADING - elapsed);
                 } catch (InterruptedException ignored) {}
             }
-            this.loadGame();
+            try {
+                System.out.println("[death thread] calling loadGame");
+                this.loadGame();
+                System.out.println("[death thread] loadGame returned");
+            } catch (Throwable t) {
+                System.err.println("=== EXCEPTION in death->loadGame ===");
+                t.printStackTrace(System.err);
+            }
         }).start();
     }
 
@@ -367,7 +382,9 @@ public class GamePanel extends Canvas implements Runnable {
             cursorLarge = Toolkit.getDefaultToolkit().createCustomCursor(cursorImageLarge, new Point(8, 8), Constants.TARGET_CURSOR_WHITE_LARGE);
 
             currentCursor = cursorSmall;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     public void targetMouse() {

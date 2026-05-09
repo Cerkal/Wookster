@@ -56,12 +56,10 @@ public class DataWrapper {
             this.completedQuests = gamePanel.questManager.getCompletedQuests();
             this.player = gamePanel.player.getPlayerSaveState();
             LevelWrapper levelWrapper = gamePanel.levelManager.getLevelWrapper();
-            try {
-                this.levels.set(levelWrapper.levelIndex, levelWrapper);
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(e.getMessage());
-                this.levels.add(levelWrapper);
+            while (this.levels.size() <= levelWrapper.levelIndex) {
+                this.levels.add(null);
             }
+            this.levels.set(levelWrapper.levelIndex, levelWrapper);
             this.currentLevel = gamePanel.levelManager.getCurrentLevel().getLevelName();
             this.currentLevelIndex = gamePanel.levelManager.currentLevelIndex;
         }
